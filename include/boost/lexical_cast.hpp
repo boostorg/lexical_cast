@@ -1,28 +1,41 @@
 #ifndef BOOST_LEXICAL_CAST_INCLUDED
 #define BOOST_LEXICAL_CAST_INCLUDED
 
-// boost lexical_cast.hpp header  --------------------------------------------//
-
-// See http://www.boost.org/libs/conversion for documentation.
+// Boost lexical_cast.hpp header  -------------------------------------------//
+//
+// See http://www.boost.org for most recent version including documentation.
 // See end of this header for rights and permissions.
 //
 // what:  lexical_cast custom keyword cast
 // who:   contributed by Kevlin Henney,
 //        enhanced with contributions from Terje Slettebø,
 //        with additional fixes and suggestions from Gennaro Prota,
-//        Dave Abrahams, Daryle Walker, and other Boosters on the list
+//        Beman Dawes, Dave Abrahams, Daryle Walker, Peter Dimov,
+//        and other Boosters
 // when:  November 2000, March 2003
 
 #include <string>
 #include <typeinfo>
 #include <boost/config.hpp>
 #include <boost/limits.hpp>
-#include <boost/type_traits.hpp>
+#include <boost/type_traits/is_pointer.hpp>
 
 #ifdef BOOST_NO_STRINGSTREAM
 #include <strstream>
 #else
 #include <sstream>
+#endif
+
+#if defined(BOOST_NO_STRINGSTREAM) || \
+    defined(BOOST_NO_STD_WSTRING) || \
+    defined(BOOST_NO_STD_LOCALE) || \
+    defined(BOOST_NO_CWCHAR) || \
+    defined(BOOST_MSVC) && (BOOST_MSVC <= 1200)
+#define DISABLE_WIDE_CHAR_SUPPORT
+#endif
+
+#ifdef BOOST_NO_INTRINSIC_WCHAR_T
+#include <cwchar>
 #endif
 
 namespace boost
@@ -69,7 +82,7 @@ namespace boost
             typedef char type;
         };
 
-        #ifndef BOOST_NO_STRINGSTREAM
+        #ifndef DISABLE_WIDE_CHAR_SUPPORT
         template<>
         struct stream_char<wchar_t>
         {
@@ -140,11 +153,21 @@ namespace boost
                        stream >> output &&
                        (stream >> std::ws).eof();
             }
-            template<typename Char, typename Traits, typename Allocator>
-            bool operator>>(std::basic_string<Char, Traits, Allocator> &output)
+            bool operator>>(std::string &output)
             {
-                return std::getline(stream, output, char_type()).eof();
+                #if defined(BOOST_NO_STRINGSTREAM)
+                stream << '\0';
+                #endif
+                output = stream.str();
+                return true;
             }
+            #ifndef DISABLE_WIDE_CHAR_SUPPORT
+            bool operator>>(std::wstring &output)
+            {
+                output = stream.str();
+                return true;
+            }
+            #endif
         private:
             typedef typename widest_char<
                 typename stream_char<Target>::type,
@@ -152,6 +175,8 @@ namespace boost
 
             #if defined(BOOST_NO_STRINGSTREAM)
             std::strstream stream;
+            #elif defined(BOOST_NO_STD_LOCALE)
+            std::stringstream stream;
             #else
             std::basic_stringstream<char_type> stream;
             #endif
@@ -178,4 +203,5 @@ namespace boost
 //
 // This software is provided "as is" without express or implied warranty.
 
+#undef DISABLE_WIDE_CHAR_SUPPORT
 #endif
