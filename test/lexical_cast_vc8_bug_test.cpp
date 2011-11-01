@@ -1,3 +1,17 @@
+//  Unit test for boost::lexical_cast.
+//
+//  See http://www.boost.org for most recent version, including documentation.
+//
+//  Copyright Alexander Nasonov, 2007.
+//
+//  Distributed under the Boost
+//  Software License, Version 1.0. (See accompanying file
+//  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt).
+//
+// This tests now must pass on vc8, because lexical_cast
+// implementation has changed and it does not use stringstream for casts
+// to integral types
+
 #include <boost/config.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/cstdint.hpp>
@@ -46,7 +60,7 @@ void test_vc8_bug()
 
 unit_test::test_suite *init_unit_test_suite(int, char *[])
 {
-    unit_test_framework::test_suite *suite =
+    unit_test::test_suite *suite =
         BOOST_TEST_SUITE("lexical_cast vc8 bug unit test");
     suite->add(BOOST_TEST_CASE(test_vc8_bug));
     return suite;
