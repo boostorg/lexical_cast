@@ -2058,9 +2058,9 @@ namespace boost {
         {};
 
         template<typename Target, typename Source>
-        struct lexical_cast_do_cast
+        struct lexical_converter_impl
         {
-            static inline bool try_lexical_cast_impl(const Source& arg, Target& result)
+            static inline bool try_convert(const Source& arg, Target& result)
             {
                 typedef lexical_cast_stream_traits<Source, Target>  stream_trait;
                 
@@ -2090,90 +2090,94 @@ namespace boost {
 
                 return true;
             }
-
-            static inline Target lexical_cast_impl(const Source& arg)
-            {
-                // Target type must be default constructible
-                Target result;
-
-                if(!try_lexical_cast_impl(arg, result))
-                    BOOST_LCAST_THROW_BAD_CAST(Source, Target);
-
-                return result;
-            }
         };
 
         template <typename Target, typename Source>
-        struct lexical_cast_copy
+        struct copy_converter_impl
         {
-            static inline bool try_lexical_cast_impl(const Source& arg, Target& result)
+            static inline bool try_convert(const Source& arg, Target& result)
             {
                 result = arg;
                 return true;
             }
+        };
 
-            static inline const Source& lexical_cast_impl(const Source &arg) BOOST_NOEXCEPT
-            {
-                return arg;
+        template <class Source >
+        struct detect_precision_loss
+        {
+            typedef Source source_type;
+            typedef boost::numeric::Trunc<Source> Rounder;
+            typedef BOOST_DEDUCED_TYPENAME mpl::if_<
+                boost::is_arithmetic<Source>, Source, Source const&
+            >::type argument_type ;
+
+            static inline source_type nearbyint(argument_type s, bool& is_ok) BOOST_NOEXCEPT {
+                const source_type near_int = Rounder::nearbyint(s);
+                if (near_int && is_ok) {
+                    const source_type orig_div_round = s / near_int;
+                    const source_type eps = std::numeric_limits<source_type>::epsilon();
+
+                    is_ok = !((orig_div_round > 1 ? orig_div_round - 1 : 1 - orig_div_round) > eps);
+                }
+
+                return s;
+            }
+
+            typedef typename Rounder::round_style round_style;
+        };
+
+        template <typename Base, class Source>
+        struct fake_precision_loss: public Base
+        {
+            typedef Source source_type ;
+            typedef BOOST_DEDUCED_TYPENAME mpl::if_<
+                boost::is_arithmetic<Source>, Source, Source const&
+            >::type argument_type ;
+
+            static inline source_type nearbyint(argument_type s, bool& /*is_ok*/) BOOST_NOEXCEPT {
+                return s;
             }
         };
 
-        template <class Source, class Target >
-        struct detect_precision_loss
-        {
-         typedef boost::numeric::Trunc<Source> Rounder;
-         typedef Source source_type ;
-
-         typedef BOOST_DEDUCED_TYPENAME mpl::if_<
-            boost::is_arithmetic<Source>, Source, Source const&
-          >::type argument_type ;
-
-         static source_type nearbyint ( argument_type s )
-         {
-            const source_type near_int = Rounder::nearbyint(s);
-            if (near_int) {
-                const source_type orig_div_round = s / near_int;
-                const source_type eps = std::numeric_limits<source_type>::epsilon();
-
-                if ((orig_div_round > 1 ? orig_div_round - 1 : 1 - orig_div_round) > eps)
-                    BOOST_LCAST_THROW_BAD_CAST(Source, Target);
-            }
-
-            return s ;
-         }
-
-         typedef typename Rounder::round_style round_style;
-        } ;
-
-        template <class Source, class Target >
         struct nothrow_overflow_handler
         {
-          void operator() ( boost::numeric::range_check_result r )
-          {
-            if (r != boost::numeric::cInRange)
-                BOOST_LCAST_THROW_BAD_CAST(Source, Target);
-          }
-        } ;
+            inline bool operator() ( boost::numeric::range_check_result r ) const BOOST_NOEXCEPT {
+                return (r == boost::numeric::cInRange);
+            }
+        };
+
+        template <class Converter, typename Target, typename Source>
+        inline bool stateful_numeric_convert(const Source& arg, Target& result) BOOST_NOEXCEPT {
+            typedef BOOST_DEDUCED_TYPENAME boost::mpl::if_c<
+                boost::is_base_of< detect_precision_loss<Source >, Converter >::value,
+                Converter,
+                fake_precision_loss<Converter, Source>
+            >::type converter_t;
+
+            bool res = nothrow_overflow_handler()(converter_t::out_of_range(arg));
+            result = converter_t::low_level_convert(converter_t::nearbyint(arg, res));
+            return res;
+        }
 
         template <typename Target, typename Source>
         struct lexical_cast_dynamic_num_not_ignoring_minus
         {
-            static inline Target lexical_cast_impl(const Source &arg)
+            static inline bool try_convert(const Source &arg, Target& result) BOOST_NOEXCEPT
             {
-                return boost::numeric::converter<
+                return stateful_numeric_convert<boost::numeric::converter<
                         Target,
                         Source,
                         boost::numeric::conversion_traits<Target,Source>,
-                        nothrow_overflow_handler<Source, Target>,
-                        detect_precision_loss<Source, Target>
-                >::convert(arg);
+                        nothrow_overflow_handler,
+                        detect_precision_loss<Source >
+                > >(arg, result);
             }
         };
 
         template <typename Target, typename Source>
         struct lexical_cast_dynamic_num_ignoring_minus
         {
-            static inline Target lexical_cast_impl(const Source &arg)
+            static inline bool try_convert(const Source &arg, Target& result) BOOST_NOEXCEPT
             {
                 typedef BOOST_DEDUCED_TYPENAME boost::mpl::eval_if_c<
                         boost::is_float<Source>::value,
@@ -2184,14 +2188,18 @@ namespace boost {
                 typedef boost::numeric::converter<
                         Target,
                         usource_t,
-                        boost::numeric::conversion_traits<Target,usource_t>,
-                        nothrow_overflow_handler<usource_t, Target>,
-                        detect_precision_loss<usource_t, Target>
+                        boost::numeric::conversion_traits<Target, usource_t>,
+                        nothrow_overflow_handler,
+                        detect_precision_loss<usource_t >
                 > converter_t;
-
-                return (
-                    arg < 0 ? static_cast<Target>(0u - converter_t::convert(0u - arg)) : converter_t::convert(arg)
-                );
+        
+                if (arg < 0) {
+                    const bool res = stateful_numeric_convert<converter_t>(0u - arg, result);
+                    result = static_cast<Target>(0u - result);
+                    return res;
+                } else {
+                    return stateful_numeric_convert<converter_t>(arg, result);
+                }
             }
         };
 
@@ -2214,20 +2222,9 @@ namespace boost {
          * and the result will be the two's complement.
          */
         template <typename Target, typename Source>
-        struct lexical_cast_dynamic_num
+        struct dynamic_num_converter_impl
         {
-            static inline bool try_lexical_cast_impl(const Source& arg, Target& result)
-            {
-                try {
-                    result = lexical_cast_impl(arg);
-                } catch (const bad_lexical_cast& e) {
-                    return false;
-                }
-
-                return true;
-            }
-
-            static inline Target lexical_cast_impl(const Source &arg)
+            static inline bool try_convert(const Source &arg, Target& result) BOOST_NOEXCEPT
             {
                 typedef BOOST_DEDUCED_TYPENAME boost::mpl::if_c<
                     boost::type_traits::ice_and<
@@ -2247,64 +2244,59 @@ namespace boost {
                     lexical_cast_dynamic_num_not_ignoring_minus<Target, Source>
                 >::type caster_type;
 
-                return caster_type::lexical_cast_impl(arg);
+                return caster_type::try_convert(arg, result);
             }
         };
+    }
 
-        template <typename Target, typename Source>
-        struct lexical_cast_caster_type_detector {
-            typedef BOOST_DEDUCED_TYPENAME boost::detail::array_to_pointer_decay<Source>::type src;
 
-            typedef BOOST_DEDUCED_TYPENAME boost::type_traits::ice_or<
-                boost::detail::is_xchar_to_xchar<Target, src >::value,
-                boost::detail::is_char_array_to_stdstring<Target, src >::value,
-                boost::type_traits::ice_and<
-                     boost::is_same<Target, src >::value,
-                     boost::detail::is_stdstring<Target >::value
-                >::value,
-                boost::type_traits::ice_and<
-                     boost::is_same<Target, src >::value,
-                     boost::detail::is_character<Target >::value
-                >::value
-            > shall_we_copy_t;
+    template <typename Target, typename Source>
+    inline bool try_lexical_cast(const Source &arg, Target& result)
+    {
+        typedef BOOST_DEDUCED_TYPENAME boost::detail::array_to_pointer_decay<Source>::type src;
 
-            typedef boost::detail::is_arithmetic_and_not_xchars<Target, src >
-                shall_we_copy_with_dynamic_check_t;
+        typedef BOOST_DEDUCED_TYPENAME boost::type_traits::ice_or<
+            boost::detail::is_xchar_to_xchar<Target, src >::value,
+            boost::detail::is_char_array_to_stdstring<Target, src >::value,
+            boost::type_traits::ice_and<
+                 boost::is_same<Target, src >::value,
+                 boost::detail::is_stdstring<Target >::value
+            >::value,
+            boost::type_traits::ice_and<
+                 boost::is_same<Target, src >::value,
+                 boost::detail::is_character<Target >::value
+            >::value
+        > shall_we_copy_t;
 
-            // We do evaluate second `if_` lazily to avoid unnecessary instantiations
-            // of `shall_we_copy_with_dynamic_check_t` and improve compilation times.
-            typedef BOOST_DEDUCED_TYPENAME boost::mpl::if_c<
-                shall_we_copy_t::value,
-                boost::mpl::identity<boost::detail::lexical_cast_copy<Target, src > >,
-                boost::mpl::if_<
-                     shall_we_copy_with_dynamic_check_t,
-                     boost::detail::lexical_cast_dynamic_num<Target, src >,
-                     boost::detail::lexical_cast_do_cast<Target, src >
-                >
-            >::type caster_type_lazy;
+        typedef boost::detail::is_arithmetic_and_not_xchars<Target, src >
+            shall_we_copy_with_dynamic_check_t;
 
-            typedef BOOST_DEDUCED_TYPENAME caster_type_lazy::type caster_type;
-        };
+        // We do evaluate second `if_` lazily to avoid unnecessary instantiations
+        // of `shall_we_copy_with_dynamic_check_t` and improve compilation times.
+        typedef BOOST_DEDUCED_TYPENAME boost::mpl::if_c<
+            shall_we_copy_t::value,
+            boost::mpl::identity<boost::detail::copy_converter_impl<Target, src > >,
+            boost::mpl::if_<
+                 shall_we_copy_with_dynamic_check_t,
+                 boost::detail::dynamic_num_converter_impl<Target, src >,
+                 boost::detail::lexical_converter_impl<Target, src >
+            >
+        >::type caster_type_lazy;
+
+        typedef BOOST_DEDUCED_TYPENAME caster_type_lazy::type caster_type;
+
+        return caster_type::try_convert(arg, result);
     }
 
     template <typename Target, typename Source>
     inline Target lexical_cast(const Source &arg)
     {
-        typedef BOOST_DEDUCED_TYPENAME
-            boost::detail::lexical_cast_caster_type_detector<Target, Source>
-        ::caster_type caster_type;
+        Target result;
 
-        return caster_type::lexical_cast_impl(arg);
-    }
+        if (!try_lexical_cast(arg, result)) 
+            BOOST_LCAST_THROW_BAD_CAST(Source, Target);
 
-    template <typename Target, typename Source>
-    inline bool try_lexical_cast(const Source &arg, Target& result)
-    {
-        typedef BOOST_DEDUCED_TYPENAME
-            boost::detail::lexical_cast_caster_type_detector<Target, Source>
-        ::caster_type caster_type;
-
-        return caster_type::try_lexical_cast_impl(arg, result);
+        return result;
     }
 
     template <typename Target>
