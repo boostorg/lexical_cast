@@ -2060,26 +2060,35 @@ namespace boost {
         template<typename Target, typename Source>
         struct lexical_converter_impl
         {
-            static inline bool try_convert(const Source& arg, Target& result)
-            {
-                typedef lexical_cast_stream_traits<Source, Target>  stream_trait;
-                
-                typedef detail::lexical_istream_limited_src<
-                    BOOST_DEDUCED_TYPENAME stream_trait::char_type, 
-                    BOOST_DEDUCED_TYPENAME stream_trait::traits, 
-                    stream_trait::requires_stringbuf,
-                    stream_trait::len_t::value + 1
-                > i_interpreter_type;
+            typedef lexical_cast_stream_traits<Source, Target>  stream_trait;
 
-                typedef detail::lexical_ostream_limited_src<
-                    BOOST_DEDUCED_TYPENAME stream_trait::char_type, 
-                    BOOST_DEDUCED_TYPENAME stream_trait::traits
-                > o_interpreter_type;
+            typedef detail::lexical_istream_limited_src<
+                BOOST_DEDUCED_TYPENAME stream_trait::char_type,
+                BOOST_DEDUCED_TYPENAME stream_trait::traits,
+                stream_trait::requires_stringbuf,
+                stream_trait::len_t::value + 1
+            > i_interpreter_type;
 
+            typedef detail::lexical_ostream_limited_src<
+                BOOST_DEDUCED_TYPENAME stream_trait::char_type,
+                BOOST_DEDUCED_TYPENAME stream_trait::traits
+            > o_interpreter_type;
+
+#ifndef BOOST_NO_CXX11_RVALUE_REFERENCES
+            template <class T>
+            static inline bool try_convert(T&& arg, Target& result) {
+                typedef T&& forward_type;
+#else
+            static inline bool try_convert(const Source& arg, Target& result) {
+                typedef const Source& forward_type;
+#endif
                 i_interpreter_type i_interpreter;
 
                 // Disabling ADL, by directly specifying operators.
-                if (!(i_interpreter.operator <<(arg)))
+                //
+                // For compilers with perfect forwarding `static_cast<forward_type>(arg)` is
+                // eqaul to `std::forward<T>(arg)`.
+                if (!(i_interpreter.operator <<(static_cast<forward_type>(arg))))
                     return false;
 
                 o_interpreter_type out(i_interpreter.cbegin(), i_interpreter.cend());
@@ -2095,11 +2104,18 @@ namespace boost {
         template <typename Target, typename Source>
         struct copy_converter_impl
         {
-            static inline bool try_convert(const Source& arg, Target& result)
-            {
+#ifndef BOOST_NO_CXX11_RVALUE_REFERENCES
+            template <class T>
+            static inline bool try_convert(T&& arg, Target& result) {
+                result = static_cast<T&&>(arg); // eqaul to `result = std::forward<T>(arg);`
+                return true;
+            }
+#else
+            static inline bool try_convert(const Source& arg, Target& result) {
                 result = arg;
                 return true;
             }
+#endif
         };
 
         template <class Source >
@@ -2146,12 +2162,20 @@ namespace boost {
             }
         };
 
-        template <class Converter, typename Target, typename Source>
-        inline bool stateful_numeric_convert(const Source& arg, Target& result) BOOST_NOEXCEPT {
+        template <typename Target, typename Source>
+        inline bool noexcept_numeric_convert(const Source& arg, Target& result) BOOST_NOEXCEPT {
+            typedef boost::numeric::converter<
+                    Target,
+                    Source,
+                    boost::numeric::conversion_traits<Target, Source >,
+                    nothrow_overflow_handler,
+                    detect_precision_loss<Source >
+            > converter_orig_t;
+
             typedef BOOST_DEDUCED_TYPENAME boost::mpl::if_c<
-                boost::is_base_of< detect_precision_loss<Source >, Converter >::value,
-                Converter,
-                fake_precision_loss<Converter, Source>
+                boost::is_base_of< detect_precision_loss<Source >, converter_orig_t >::value,
+                converter_orig_t,
+                fake_precision_loss<converter_orig_t, Source>
             >::type converter_t;
 
             bool res = nothrow_overflow_handler()(converter_t::out_of_range(arg));
@@ -2162,43 +2186,27 @@ namespace boost {
         template <typename Target, typename Source>
         struct lexical_cast_dynamic_num_not_ignoring_minus
         {
-            static inline bool try_convert(const Source &arg, Target& result) BOOST_NOEXCEPT
-            {
-                return stateful_numeric_convert<boost::numeric::converter<
-                        Target,
-                        Source,
-                        boost::numeric::conversion_traits<Target,Source>,
-                        nothrow_overflow_handler,
-                        detect_precision_loss<Source >
-                > >(arg, result);
+            static inline bool try_convert(const Source &arg, Target& result) BOOST_NOEXCEPT {
+                return noexcept_numeric_convert<Target, Source >(arg, result);
             }
         };
 
         template <typename Target, typename Source>
         struct lexical_cast_dynamic_num_ignoring_minus
         {
-            static inline bool try_convert(const Source &arg, Target& result) BOOST_NOEXCEPT
-            {
+            static inline bool try_convert(const Source &arg, Target& result) BOOST_NOEXCEPT {
                 typedef BOOST_DEDUCED_TYPENAME boost::mpl::eval_if_c<
                         boost::is_float<Source>::value,
                         boost::mpl::identity<Source>,
                         boost::make_unsigned<Source>
                 >::type usource_t;
-
-                typedef boost::numeric::converter<
-                        Target,
-                        usource_t,
-                        boost::numeric::conversion_traits<Target, usource_t>,
-                        nothrow_overflow_handler,
-                        detect_precision_loss<usource_t >
-                > converter_t;
         
                 if (arg < 0) {
-                    const bool res = stateful_numeric_convert<converter_t>(0u - arg, result);
+                    const bool res = noexcept_numeric_convert<Target, usource_t>(0u - arg, result);
                     result = static_cast<Target>(0u - result);
                     return res;
                 } else {
-                    return stateful_numeric_convert<converter_t>(arg, result);
+                    return noexcept_numeric_convert<Target, usource_t>(arg, result);
                 }
             }
         };
@@ -2224,8 +2232,7 @@ namespace boost {
         template <typename Target, typename Source>
         struct dynamic_num_converter_impl
         {
-            static inline bool try_convert(const Source &arg, Target& result) BOOST_NOEXCEPT
-            {
+            static inline bool try_convert(const Source &arg, Target& result) BOOST_NOEXCEPT {
                 typedef BOOST_DEDUCED_TYPENAME boost::mpl::if_c<
                     boost::type_traits::ice_and<
                         boost::is_unsigned<Target>::value,
@@ -2250,10 +2257,23 @@ namespace boost {
     }
 
 
+#ifndef BOOST_NO_CXX11_RVALUE_REFERENCES
     template <typename Target, typename Source>
-    inline bool try_lexical_cast(const Source &arg, Target& result)
+    inline bool try_lexical_convert(Source&& arg, Target& result)
     {
-        typedef BOOST_DEDUCED_TYPENAME boost::detail::array_to_pointer_decay<Source>::type src;
+        typedef BOOST_DEDUCED_TYPENAME boost::remove_const<
+            BOOST_DEDUCED_TYPENAME boost::remove_reference<Source>::type
+        >::type no_cr_source_t;
+
+        typedef Source&& forward_type;
+#else
+    template <typename Target, typename Source>
+    inline bool try_lexical_convert(const Source& arg, Target& result)
+    {
+        typedef Source no_cr_source_t;
+        typedef const Source& forward_type;
+#endif
+        typedef BOOST_DEDUCED_TYPENAME boost::detail::array_to_pointer_decay<no_cr_source_t>::type src;
 
         typedef BOOST_DEDUCED_TYPENAME boost::type_traits::ice_or<
             boost::detail::is_xchar_to_xchar<Target, src >::value,
@@ -2285,7 +2305,7 @@ namespace boost {
 
         typedef BOOST_DEDUCED_TYPENAME caster_type_lazy::type caster_type;
 
-        return caster_type::try_convert(arg, result);
+        return caster_type::try_convert(static_cast<forward_type>(arg), result);
     }
 
     template <typename Target, typename Source>
@@ -2293,7 +2313,7 @@ namespace boost {
     {
         Target result;
 
-        if (!try_lexical_cast(arg, result)) 
+        if (!try_lexical_convert(arg, result))
             BOOST_LCAST_THROW_BAD_CAST(Source, Target);
 
         return result;
@@ -2308,9 +2328,9 @@ namespace boost {
     }
 
     template <typename Target>
-    inline bool try_lexical_cast(const char* chars, std::size_t count, Target& result)
+    inline bool try_lexical_convert(const char* chars, std::size_t count, Target& result)
     {
-        return ::boost::try_lexical_cast(
+        return ::boost::try_lexical_convert(
             ::boost::iterator_range<const char*>(chars, chars + count), result
         );
     }
@@ -2324,9 +2344,9 @@ namespace boost {
     }
 
     template <typename Target>
-    inline bool try_lexical_cast(const unsigned char* chars, std::size_t count, Target& result)
+    inline bool try_lexical_convert(const unsigned char* chars, std::size_t count, Target& result)
     {
-        return ::boost::try_lexical_cast(
+        return ::boost::try_lexical_convert(
             ::boost::iterator_range<const unsigned char*>(chars, chars + count), result
         );
     }
@@ -2340,9 +2360,9 @@ namespace boost {
     }
 
     template <typename Target>
-    inline bool try_lexical_cast(const signed char* chars, std::size_t count, Target& result)
+    inline bool try_lexical_convert(const signed char* chars, std::size_t count, Target& result)
     {
-        return ::boost::try_lexical_cast(
+        return ::boost::try_lexical_convert(
             ::boost::iterator_range<const signed char*>(chars, chars + count), result
         );
     }
@@ -2357,9 +2377,9 @@ namespace boost {
     }
 
     template <typename Target>
-    inline bool try_lexical_cast(const wchar_t* chars, std::size_t count, Target& result)
+    inline bool try_lexical_convert(const wchar_t* chars, std::size_t count, Target& result)
     {
-        return ::boost::try_lexical_cast(
+        return ::boost::try_lexical_convert(
             ::boost::iterator_range<const wchar_t*>(chars, chars + count), result
         );
     }
@@ -2374,9 +2394,9 @@ namespace boost {
     }
 
     template <typename Target>
-    inline bool try_lexical_cast(const char16_t* chars, std::size_t count, Target& result)
+    inline bool try_lexical_convert(const char16_t* chars, std::size_t count, Target& result)
     {
-        return ::boost::try_lexical_cast(
+        return ::boost::try_lexical_convert(
             ::boost::iterator_range<const char16_t*>(chars, chars + count), result
         );
     }
@@ -2391,9 +2411,9 @@ namespace boost {
     }
 
     template <typename Target>
-    inline bool try_lexical_cast(const char32_t* chars, std::size_t count, Target& result)
+    inline bool try_lexical_convert(const char32_t* chars, std::size_t count, Target& result)
     {
-        return ::boost::try_lexical_cast(
+        return ::boost::try_lexical_convert(
             ::boost::iterator_range<const char32_t*>(chars, chars + count), result
         );
     }
