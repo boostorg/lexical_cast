@@ -1394,7 +1394,14 @@ namespace boost {
             }
 
             template<typename InputStreamable>
+#ifndef BOOST_NO_CXX11_RVALUE_REFERENCES
+            bool shl_input_streamable(InputStreamable&& input) {
+                typedef InputStreamable&& forward_type;
+#else
             bool shl_input_streamable(InputStreamable& input) {
+                typedef InputStreamable& forward_type;
+#endif // BOOST_NO_CXX11_RVALUE_REFERENCES
+
 #if defined(BOOST_NO_STRINGSTREAM) || defined(BOOST_NO_STD_LOCALE)
                 // If you have compilation error at this point, than your STL library
                 // does not support such conversions. Try updating it.
@@ -1405,7 +1412,7 @@ namespace boost {
                 out_stream.exceptions(std::ios::badbit);
                 try {
 #endif
-                bool const result = !(out_stream << input).fail();
+                bool const result = !(out_stream << static_cast<forward_type>(input)).fail();
                 const buffer_t* const p = static_cast<buffer_t*>(
                     static_cast<std::basic_streambuf<CharT, Traits>*>(out_stream.rdbuf())
                 );
