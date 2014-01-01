@@ -1394,14 +1394,7 @@ namespace boost {
             }
 
             template<typename InputStreamable>
-#ifndef BOOST_NO_CXX11_RVALUE_REFERENCES
-            bool shl_input_streamable(InputStreamable&& input) {
-                typedef InputStreamable&& forward_type;
-#else
             bool shl_input_streamable(InputStreamable& input) {
-                typedef InputStreamable& forward_type;
-#endif // BOOST_NO_CXX11_RVALUE_REFERENCES
-
 #if defined(BOOST_NO_STRINGSTREAM) || defined(BOOST_NO_STD_LOCALE)
                 // If you have compilation error at this point, than your STL library
                 // does not support such conversions. Try updating it.
@@ -1412,7 +1405,7 @@ namespace boost {
                 out_stream.exceptions(std::ios::badbit);
                 try {
 #endif
-                bool const result = !(out_stream << static_cast<forward_type>(input)).fail();
+                bool const result = !(out_stream << input).fail();
                 const buffer_t* const p = static_cast<buffer_t*>(
                     static_cast<std::basic_streambuf<CharT, Traits>*>(out_stream.rdbuf())
                 );
@@ -1673,7 +1666,6 @@ namespace boost {
                 return ((*this) << reinterpret_cast<boost::array<C, N> const& >(input)); 
             }
 #endif
-            
             template <class InStreamable>
             bool operator<<(const InStreamable& input)  { return shl_input_streamable(input); }
         };
@@ -2081,21 +2073,14 @@ namespace boost {
                 BOOST_DEDUCED_TYPENAME stream_trait::traits
             > o_interpreter_type;
 
-#ifndef BOOST_NO_CXX11_RVALUE_REFERENCES
-            template <class T>
-            static inline bool try_convert(T&& arg, Target& result) {
-                typedef T&& forward_type;
-#else
             static inline bool try_convert(const Source& arg, Target& result) {
-                typedef const Source& forward_type;
-#endif
                 i_interpreter_type i_interpreter;
 
                 // Disabling ADL, by directly specifying operators.
                 //
                 // For compilers with perfect forwarding `static_cast<forward_type>(arg)` is
                 // eqaul to `std::forward<T>(arg)`.
-                if (!(i_interpreter.operator <<(static_cast<forward_type>(arg))))
+                if (!(i_interpreter.operator <<(arg)))
                     return false;
 
                 o_interpreter_type out(i_interpreter.cbegin(), i_interpreter.cend());
@@ -2263,56 +2248,76 @@ namespace boost {
         };
     }
 
+    namespace conversion { namespace detail {
 
 #ifndef BOOST_NO_CXX11_RVALUE_REFERENCES
-    template <typename Target, typename Source>
-    inline bool try_lexical_convert(Source&& arg, Target& result)
-    {
-        typedef BOOST_DEDUCED_TYPENAME boost::remove_const<
-            BOOST_DEDUCED_TYPENAME boost::remove_reference<Source>::type
-        >::type no_cr_source_t;
+        template <typename Target, typename Source>
+        inline bool try_lexical_convert(Source&& arg, Target& result)
+        {
+            typedef BOOST_DEDUCED_TYPENAME boost::remove_const<
+                BOOST_DEDUCED_TYPENAME boost::remove_reference<Source>::type
+            >::type no_cr_source_t;
 
-        typedef Source&& forward_type;
+            typedef Source&& forward_type;
 #else
-    template <typename Target, typename Source>
-    inline bool try_lexical_convert(const Source& arg, Target& result)
-    {
-        typedef Source no_cr_source_t;
-        typedef const Source& forward_type;
+        template <typename Target, typename Source>
+        inline bool try_lexical_convert(const Source& arg, Target& result)
+        {
+            typedef Source no_cr_source_t;
+            typedef const Source& forward_type;
 #endif
-        typedef BOOST_DEDUCED_TYPENAME boost::detail::array_to_pointer_decay<no_cr_source_t>::type src;
+            typedef BOOST_DEDUCED_TYPENAME boost::detail::array_to_pointer_decay<no_cr_source_t>::type src;
 
-        typedef BOOST_DEDUCED_TYPENAME boost::type_traits::ice_or<
-            boost::detail::is_xchar_to_xchar<Target, src >::value,
-            boost::detail::is_char_array_to_stdstring<Target, src >::value,
-            boost::type_traits::ice_and<
-                 boost::is_same<Target, src >::value,
-                 boost::detail::is_stdstring<Target >::value
-            >::value,
-            boost::type_traits::ice_and<
-                 boost::is_same<Target, src >::value,
-                 boost::detail::is_character<Target >::value
-            >::value
-        > shall_we_copy_t;
+            typedef BOOST_DEDUCED_TYPENAME boost::type_traits::ice_or<
+                boost::detail::is_xchar_to_xchar<Target, src >::value,
+                boost::detail::is_char_array_to_stdstring<Target, src >::value,
+                boost::type_traits::ice_and<
+                     boost::is_same<Target, src >::value,
+                     boost::detail::is_stdstring<Target >::value
+                >::value,
+                boost::type_traits::ice_and<
+                     boost::is_same<Target, src >::value,
+                     boost::detail::is_character<Target >::value
+                >::value
+            > shall_we_copy_t;
 
-        typedef boost::detail::is_arithmetic_and_not_xchars<Target, src >
-            shall_we_copy_with_dynamic_check_t;
+            typedef boost::detail::is_arithmetic_and_not_xchars<Target, src >
+                shall_we_copy_with_dynamic_check_t;
 
-        // We do evaluate second `if_` lazily to avoid unnecessary instantiations
-        // of `shall_we_copy_with_dynamic_check_t` and improve compilation times.
-        typedef BOOST_DEDUCED_TYPENAME boost::mpl::if_c<
-            shall_we_copy_t::value,
-            boost::mpl::identity<boost::detail::copy_converter_impl<Target, src > >,
-            boost::mpl::if_<
-                 shall_we_copy_with_dynamic_check_t,
-                 boost::detail::dynamic_num_converter_impl<Target, src >,
-                 boost::detail::lexical_converter_impl<Target, src >
-            >
-        >::type caster_type_lazy;
+            // We do evaluate second `if_` lazily to avoid unnecessary instantiations
+            // of `shall_we_copy_with_dynamic_check_t` and improve compilation times.
+            typedef BOOST_DEDUCED_TYPENAME boost::mpl::if_c<
+                shall_we_copy_t::value,
+                boost::mpl::identity<boost::detail::copy_converter_impl<Target, src > >,
+                boost::mpl::if_<
+                     shall_we_copy_with_dynamic_check_t,
+                     boost::detail::dynamic_num_converter_impl<Target, src >,
+                     boost::detail::lexical_converter_impl<Target, src >
+                >
+            >::type caster_type_lazy;
 
-        typedef BOOST_DEDUCED_TYPENAME caster_type_lazy::type caster_type;
+            typedef BOOST_DEDUCED_TYPENAME caster_type_lazy::type caster_type;
 
-        return caster_type::try_convert(static_cast<forward_type>(arg), result);
+            return caster_type::try_convert(static_cast<forward_type>(arg), result);
+        }
+
+        template <typename Target, typename CharacterT>
+        inline bool try_lexical_convert(const CharacterT* chars, std::size_t count, Target& result)
+        {
+            BOOST_STATIC_ASSERT_MSG(
+                boost::detail::is_character<CharacterT>::value,
+                "This overload of try_lexical_convert is meant to be used only with arrays of characters."
+            );
+            return ::boost::conversion::detail::try_lexical_convert(
+                ::boost::iterator_range<const CharacterT*>(chars, chars + count), result
+            );
+        }
+
+    }} // namespace conversion::detail
+
+    namespace conversion {
+        // ADL barrier
+        using ::boost::conversion::detail::try_lexical_convert;
     }
 
     template <typename Target, typename Source>
@@ -2320,7 +2325,7 @@ namespace boost {
     {
         Target result;
 
-        if (!try_lexical_convert(arg, result))
+        if (!boost::conversion::detail::try_lexical_convert(arg, result))
             BOOST_LCAST_THROW_BAD_CAST(Source, Target);
 
         return result;
@@ -2335,26 +2340,10 @@ namespace boost {
     }
 
     template <typename Target>
-    inline bool try_lexical_convert(const char* chars, std::size_t count, Target& result)
-    {
-        return ::boost::try_lexical_convert(
-            ::boost::iterator_range<const char*>(chars, chars + count), result
-        );
-    }
-
-    template <typename Target>
     inline Target lexical_cast(const unsigned char* chars, std::size_t count)
     {
-         return ::boost::lexical_cast<Target>(
+        return ::boost::lexical_cast<Target>(
             ::boost::iterator_range<const unsigned char*>(chars, chars + count)
-         );
-    }
-
-    template <typename Target>
-    inline bool try_lexical_convert(const unsigned char* chars, std::size_t count, Target& result)
-    {
-        return ::boost::try_lexical_convert(
-            ::boost::iterator_range<const unsigned char*>(chars, chars + count), result
         );
     }
 
@@ -2366,28 +2355,12 @@ namespace boost {
         );
     }
 
-    template <typename Target>
-    inline bool try_lexical_convert(const signed char* chars, std::size_t count, Target& result)
-    {
-        return ::boost::try_lexical_convert(
-            ::boost::iterator_range<const signed char*>(chars, chars + count), result
-        );
-    }
-
 #ifndef BOOST_LCAST_NO_WCHAR_T
     template <typename Target>
     inline Target lexical_cast(const wchar_t* chars, std::size_t count)
     {
         return ::boost::lexical_cast<Target>(
             ::boost::iterator_range<const wchar_t*>(chars, chars + count)
-        );
-    }
-
-    template <typename Target>
-    inline bool try_lexical_convert(const wchar_t* chars, std::size_t count, Target& result)
-    {
-        return ::boost::try_lexical_convert(
-            ::boost::iterator_range<const wchar_t*>(chars, chars + count), result
         );
     }
 #endif
@@ -2399,14 +2372,6 @@ namespace boost {
             ::boost::iterator_range<const char16_t*>(chars, chars + count)
         );
     }
-
-    template <typename Target>
-    inline bool try_lexical_convert(const char16_t* chars, std::size_t count, Target& result)
-    {
-        return ::boost::try_lexical_convert(
-            ::boost::iterator_range<const char16_t*>(chars, chars + count), result
-        );
-    }
 #endif
 #ifndef BOOST_NO_CXX11_CHAR32_T
     template <typename Target>
@@ -2414,14 +2379,6 @@ namespace boost {
     {
         return ::boost::lexical_cast<Target>(
             ::boost::iterator_range<const char32_t*>(chars, chars + count)
-        );
-    }
-
-    template <typename Target>
-    inline bool try_lexical_convert(const char32_t* chars, std::size_t count, Target& result)
-    {
-        return ::boost::try_lexical_convert(
-            ::boost::iterator_range<const char32_t*>(chars, chars + count), result
         );
     }
 #endif
