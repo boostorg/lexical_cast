@@ -30,9 +30,9 @@ feature.compose <nowchar>on : <cxxflags>/Zc:wchar_t- ;
 test-suite conversion
   : [ run implicit_cast.cpp ]
     [ compile-fail implicit_cast_fail.cpp ]
-    [ run ../cast_test.cpp ]
-    [ run ../numeric_cast_test.cpp ]
-    [ run ../lexical_cast_test.cpp ]
+    [ run cast_test.cpp ]
+    [ run numeric_cast_test.cpp ]
+    [ run lexical_cast_test.cpp ]
     [ run lexical_cast_loopback_test.cpp ]
     [ run lexical_cast_abstract_test.cpp ]
     [ run lexical_cast_noncopyable_test.cpp ]
