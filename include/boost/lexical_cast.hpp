@@ -2096,7 +2096,8 @@ namespace boost {
         template <typename Target, typename Source>
         struct copy_converter_impl
         {
-#ifndef BOOST_NO_CXX11_RVALUE_REFERENCES
+// MSVC fail to forward an array. This error is reported to MSVC's developer.
+#if !defined(BOOST_NO_CXX11_RVALUE_REFERENCES) && !defined(BOOST_MSVC)
             template <class T>
             static inline bool try_convert(T&& arg, Target& result) {
                 result = static_cast<T&&>(arg); // eqaul to `result = std::forward<T>(arg);`
@@ -2250,7 +2251,8 @@ namespace boost {
 
     namespace conversion { namespace detail {
 
-#ifndef BOOST_NO_CXX11_RVALUE_REFERENCES
+// MSVC fail to forward an array. This error is reported to MSVC's developer.
+#if !defined(BOOST_NO_CXX11_RVALUE_REFERENCES) && !defined(BOOST_MSVC)
         template <typename Target, typename Source>
         inline bool try_lexical_convert(Source&& arg, Target& result)
         {
