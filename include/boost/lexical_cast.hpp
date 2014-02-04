@@ -19,7 +19,7 @@
 //        Beman Dawes, Dave Abrahams, Daryle Walker, Peter Dimov,
 //        Alexander Nasonov, Antony Polukhin, Justin Viiret, Michael Hofmann,
 //        Cheng Yang, Matthew Bradbury, David W. Birdsall, Pavel Korzh and other Boosters
-// when:  November 2000, March 2003, June 2005, June 2006, March 2011 - 2013
+// when:  November 2000, March 2003, June 2005, June 2006, March 2011 - 2014
 
 #include <boost/config.hpp>
 #if defined(BOOST_NO_STRINGSTREAM) || defined(BOOST_NO_STD_WSTRING)
@@ -2096,8 +2096,9 @@ namespace boost {
         template <typename Target, typename Source>
         struct copy_converter_impl
         {
-// MSVC fail to forward an array. This error is reported to MSVC's developer.
-#if !defined(BOOST_NO_CXX11_RVALUE_REFERENCES) && !defined(BOOST_MSVC)
+// MSVC fail to forward an array (DevDiv#555157 "SILENT BAD CODEGEN triggered by perfect forwarding",
+// fixed in 2013 RTM).
+#if !defined(BOOST_NO_CXX11_RVALUE_REFERENCES) && (!defined(BOOST_MSVC) || BOOST_MSVC >= 1800)
             template <class T>
             static inline bool try_convert(T&& arg, Target& result) {
                 result = static_cast<T&&>(arg); // eqaul to `result = std::forward<T>(arg);`
@@ -2251,8 +2252,9 @@ namespace boost {
 
     namespace conversion { namespace detail {
 
-// MSVC fail to forward an array. This error is reported to MSVC's developer.
-#if !defined(BOOST_NO_CXX11_RVALUE_REFERENCES) && !defined(BOOST_MSVC)
+// MSVC fail to forward an array (DevDiv#555157 "SILENT BAD CODEGEN triggered by perfect forwarding",
+// fixed in 2013 RTM).
+#if !defined(BOOST_NO_CXX11_RVALUE_REFERENCES) && (!defined(BOOST_MSVC) || BOOST_MSVC >= 1800)
         template <typename Target, typename Source>
         inline bool try_lexical_convert(Source&& arg, Target& result)
         {
@@ -2515,7 +2517,7 @@ namespace boost {
 
 // Copyright Kevlin Henney, 2000-2005.
 // Copyright Alexander Nasonov, 2006-2010.
-// Copyright Antony Polukhin, 2011-2013.
+// Copyright Antony Polukhin, 2011-2014.
 //
 // Distributed under the Boost Software License, Version 1.0. (See
 // accompanying file LICENSE_1_0.txt or copy at

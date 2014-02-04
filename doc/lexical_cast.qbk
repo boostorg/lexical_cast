@@ -3,7 +3,7 @@
     [version 1.0]
     [copyright 2000-2005 Kevlin Henney]
     [copyright 2006-2010 Alexander Nasonov]
-    [copyright 2011-2013 Antony Polukhin]
+    [copyright 2011-2014 Antony Polukhin]
     [category String and text processing]
     [category Miscellaneous]
     [license
@@ -238,7 +238,7 @@ limitation of compiler options that you use.
 
 * [*boost 1.56.0 :]
 
-    * Added `try_lexical_convert` functions.
+    * Added `boost::conversion::try_lexical_convert` functions.
 
 * [*boost 1.54.0 :]
 
