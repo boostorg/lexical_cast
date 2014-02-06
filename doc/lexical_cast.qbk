@@ -72,7 +72,7 @@ Library features defined in [@boost:boost/lexical_cast.hpp boost/lexical_cast.hp
         namespace conversion
         {
             template<typename Target, typename Source>
-                bool try_lexical_convert(Source&& arg, Target& result);
+                bool try_lexical_convert(const Source& arg, Target& result);
 
             template <typename AnyCharacterType, typename Target>
                 bool try_lexical_convert(const AnyCharacterType* chars, std::size_t count, Target& result);
@@ -134,11 +134,11 @@ Exception used to indicate runtime lexical_cast failure.
 
 [section try_lexical_convert]
 `boost::lexical_cast` remains the main interface for lexical conversions. It must be used by default in most cases. However
-some developers wish to make their own conversion functions, reusing all the optimizations of `boost::lexical_cast`. That's
-where the `boost::conversion::try_lexical_convert` function steps in.
+some developers wish to make their own conversion functions, reusing all the optimizations of the `boost::lexical_cast`.
+That's where the `boost::conversion::try_lexical_convert` function steps in.
 
-`try_lexical_convert` returns `true` if conversion succeeded, otherwise returns `false`. If conversion failed and `false` was returned,
-state of `result` output variable is undefined.
+`try_lexical_convert` returns `true` if conversion succeeded, otherwise returns `false`. If conversion
+failed and `false` was returned, state of `result` output variable is undefined.
 
 Actually, `boost::lexical_cast` is implemented using `try_lexical_convert`:
 ``
@@ -154,8 +154,7 @@ Actually, `boost::lexical_cast` is implemented using `try_lexical_convert`:
     }
 ``
 
-`try_lexical_convert` relaxes the requirements for `Target` type. `Target` must not be CopyConstructible or DefaultConstructible.
-
+`try_lexical_convert` relaxes the CopyConstructible and DefaultConstructible requirements for `Target` type.
 Following requirements for `Target` and `Source` remain:
 
 * Source must be OutputStreamable, meaning that an `operator<<` is defined that takes a `std::ostream` or `std::wostream` object on the left hand side and an instance of the argument type on the right.

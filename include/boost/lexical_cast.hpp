@@ -2077,9 +2077,6 @@ namespace boost {
                 i_interpreter_type i_interpreter;
 
                 // Disabling ADL, by directly specifying operators.
-                //
-                // For compilers with perfect forwarding `static_cast<forward_type>(arg)` is
-                // eqaul to `std::forward<T>(arg)`.
                 if (!(i_interpreter.operator <<(arg)))
                     return false;
 
@@ -2252,25 +2249,10 @@ namespace boost {
 
     namespace conversion { namespace detail {
 
-// MSVC fail to forward an array (DevDiv#555157 "SILENT BAD CODEGEN triggered by perfect forwarding",
-// fixed in 2013 RTM).
-#if !defined(BOOST_NO_CXX11_RVALUE_REFERENCES) && (!defined(BOOST_MSVC) || BOOST_MSVC >= 1800)
-        template <typename Target, typename Source>
-        inline bool try_lexical_convert(Source&& arg, Target& result)
-        {
-            typedef BOOST_DEDUCED_TYPENAME boost::remove_const<
-                BOOST_DEDUCED_TYPENAME boost::remove_reference<Source>::type
-            >::type no_cr_source_t;
-
-            typedef Source&& forward_type;
-#else
         template <typename Target, typename Source>
         inline bool try_lexical_convert(const Source& arg, Target& result)
         {
-            typedef Source no_cr_source_t;
-            typedef const Source& forward_type;
-#endif
-            typedef BOOST_DEDUCED_TYPENAME boost::detail::array_to_pointer_decay<no_cr_source_t>::type src;
+            typedef BOOST_DEDUCED_TYPENAME boost::detail::array_to_pointer_decay<Source>::type src;
 
             typedef BOOST_DEDUCED_TYPENAME boost::type_traits::ice_or<
                 boost::detail::is_xchar_to_xchar<Target, src >::value,
@@ -2302,7 +2284,7 @@ namespace boost {
 
             typedef BOOST_DEDUCED_TYPENAME caster_type_lazy::type caster_type;
 
-            return caster_type::try_convert(static_cast<forward_type>(arg), result);
+            return caster_type::try_convert(arg, result);
         }
 
         template <typename Target, typename CharacterT>
