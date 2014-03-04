@@ -3,7 +3,7 @@
     [version 1.0]
     [copyright 2000-2005 Kevlin Henney]
     [copyright 2006-2010 Alexander Nasonov]
-    [copyright 2011-2013 Antony Polukhin]
+    [copyright 2011-2014 Antony Polukhin]
     [category String and text processing]
     [category Miscellaneous]
     [license
@@ -68,7 +68,17 @@ Library features defined in [@boost:boost/lexical_cast.hpp boost/lexical_cast.hp
 
         template <typename Target>
           Target lexical_cast(const AnyCharacterType* chars, std::size_t count);
-    }
+
+        namespace conversion
+        {
+            template<typename Target, typename Source>
+                bool try_lexical_convert(const Source& arg, Target& result);
+
+            template <typename AnyCharacterType, typename Target>
+                bool try_lexical_convert(const AnyCharacterType* chars, std::size_t count, Target& result);
+
+        } // namespace conversion
+    } // namespace boost
 ``
 
 [section lexical_cast]
@@ -121,6 +131,37 @@ Where a higher degree of control is required over conversions, `std::stringstrea
 ``
 Exception used to indicate runtime lexical_cast failure.
 [endsect]
+
+[section try_lexical_convert]
+`boost::lexical_cast` remains the main interface for lexical conversions. It must be used by default in most cases. However
+some developers wish to make their own conversion functions, reusing all the optimizations of the `boost::lexical_cast`.
+That's where the `boost::conversion::try_lexical_convert` function steps in.
+
+`try_lexical_convert` returns `true` if conversion succeeded, otherwise returns `false`. If conversion
+failed and `false` was returned, state of `result` output variable is undefined.
+
+Actually, `boost::lexical_cast` is implemented using `try_lexical_convert`:
+``
+    template <typename Target, typename Source>
+    inline Target lexical_cast(const Source &arg)
+    {
+        Target result;
+
+        if (!conversion::try_lexical_convert(arg, result))
+            throw bad_lexical_cast();
+
+        return result;
+    }
+``
+
+`try_lexical_convert` relaxes the CopyConstructible and DefaultConstructible requirements for `Target` type.
+Following requirements for `Target` and `Source` remain:
+
+* Source must be OutputStreamable, meaning that an `operator<<` is defined that takes a `std::ostream` or `std::wostream` object on the left hand side and an instance of the argument type on the right.
+* Target must be InputStreamable, meaning that an `operator>>` is defined that takes a `std::istream` or `std::wistream` object on the left hand side and an instance of the result type on the right.
+
+[endsect]
+
 
 [endsect]
 
@@ -193,6 +234,10 @@ limitation of compiler options that you use.
 [endsect]
 
 [section Changes]
+
+* [*boost 1.56.0 :]
+
+    * Added `boost::conversion::try_lexical_convert` functions.
 
 * [*boost 1.54.0 :]
 
