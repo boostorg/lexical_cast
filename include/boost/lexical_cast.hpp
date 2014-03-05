@@ -1878,35 +1878,37 @@ namespace boost {
             }
 #endif
 
-            /*
-             * case "-0" || "0" || "+0" :   output = false; return true;
-             * case "1" || "+1":            output = true;  return true;
-             * default:                     return false;
-             */
             bool operator>>(bool& output) BOOST_NOEXCEPT {
+                output = false; // Suppress warning about uninitalized variable
+
+                if (start == finish) return false;
                 CharT const zero = lcast_char_constants<CharT>::zero;
                 CharT const plus = lcast_char_constants<CharT>::plus;
                 CharT const minus = lcast_char_constants<CharT>::minus;
 
-                output = false; // Suppress warning about uninitalized variable
-                switch (finish - start) {
-                    case 1:
-                        output = Traits::eq(start[0],  zero+1);
-                        return output || Traits::eq(start[0], zero );
-
-                    case 2:
-                        if (Traits::eq(plus, *start)) {
-                            ++start;
-                            output = Traits::eq(start[0], zero + 1);
-                            return output || Traits::eq(start[0], zero );
-                        } else {
-                            return Traits::eq( minus, *start)
-                                && Traits::eq( zero, start[1]);
-                        }
-
-                    default:
-                        return false;
+                const CharT* const dec_finish = finish - 1;
+                output = Traits::eq(*dec_finish, zero + 1);
+                if (!output && !Traits::eq(*dec_finish, zero)) {
+                    return false; // Does not ends on '0' or '1'
                 }
+
+                if (start == dec_finish) return true;
+
+                // We may have sign at the beginning
+                if (Traits::eq(plus, *start) || (Traits::eq(minus, *start) && !output)) {
+                    ++ start;
+                }
+
+                // Skipping zeros
+                while (start != dec_finish) {
+                    if (!Traits::eq(zero, *start)) {
+                        return false; // Not a zero => error
+                    }
+
+                    ++ start;
+                }
+
+                return true;
             }
 
             bool operator>>(float& output) { return lcast_ret_float<Traits>(output,start,finish); }
