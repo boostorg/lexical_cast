@@ -272,11 +272,32 @@ void test_conversion_to_bool()
     BOOST_CHECK_THROW(
         lexical_cast<bool>(std::string("Test")), bad_lexical_cast);
 
-    BOOST_CHECK(lexical_cast<bool>("+1") == true );
-    BOOST_CHECK(lexical_cast<bool>("+0") == false );
-    BOOST_CHECK(lexical_cast<bool>("-0") == false );
+    BOOST_CHECK(lexical_cast<bool>("+1") == true);
+    BOOST_CHECK(lexical_cast<bool>("+0") == false);
+    BOOST_CHECK(lexical_cast<bool>("-0") == false);
     BOOST_CHECK_THROW(lexical_cast<bool>("--0"), bad_lexical_cast);
     BOOST_CHECK_THROW(lexical_cast<bool>("-+-0"), bad_lexical_cast);
+
+    BOOST_CHECK(lexical_cast<bool>("0") == false);
+    BOOST_CHECK(lexical_cast<bool>("1") == true);
+    BOOST_CHECK(lexical_cast<bool>("00") == false);
+    BOOST_CHECK(lexical_cast<bool>("00000000000") == false);
+    BOOST_CHECK(lexical_cast<bool>("000000000001") == true);
+    BOOST_CHECK(lexical_cast<bool>("+00") == false );
+    BOOST_CHECK(lexical_cast<bool>("-00") == false );
+    BOOST_CHECK(lexical_cast<bool>("+00000000001") == true );
+
+    BOOST_CHECK_THROW(lexical_cast<bool>("020"), bad_lexical_cast);
+    BOOST_CHECK_THROW(lexical_cast<bool>("00200"), bad_lexical_cast);
+    BOOST_CHECK_THROW(lexical_cast<bool>("-00200"), bad_lexical_cast);
+    BOOST_CHECK_THROW(lexical_cast<bool>("+00200"), bad_lexical_cast);
+    BOOST_CHECK_THROW(lexical_cast<bool>("000000000002"), bad_lexical_cast);
+    BOOST_CHECK_THROW(lexical_cast<bool>("-1"), bad_lexical_cast);
+    BOOST_CHECK_THROW(lexical_cast<bool>("-0000000001"), bad_lexical_cast);
+    BOOST_CHECK_THROW(lexical_cast<bool>("00000000011"), bad_lexical_cast);
+    BOOST_CHECK_THROW(lexical_cast<bool>("001001"), bad_lexical_cast);
+    BOOST_CHECK_THROW(lexical_cast<bool>("-00000000010"), bad_lexical_cast);
+    BOOST_CHECK_THROW(lexical_cast<bool>("-000000000100"), bad_lexical_cast);
 }
 
 void test_conversion_to_string()
