@@ -1,5 +1,5 @@
 # Copyright (C) 2001-2003 Douglas Gregor
-# Copyright (C) 2011-2013 Antony Polukhin
+# Copyright (C) 2011-2014 Antony Polukhin
 #
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -28,11 +28,7 @@ feature.feature nowchar : on :
 feature.compose <nowchar>on : <cxxflags>/Zc:wchar_t- ;
 
 test-suite conversion
-  : [ run implicit_cast.cpp ]
-    [ compile-fail implicit_cast_fail.cpp ]
-    [ run cast_test.cpp ]
-    [ run numeric_cast_test.cpp ]
-    [ run lexical_cast_test.cpp ]
+  : [ run lexical_cast_test.cpp ]
     [ run lexical_cast_loopback_test.cpp ]
     [ run lexical_cast_abstract_test.cpp ]
     [ run lexical_cast_noncopyable_test.cpp ]
