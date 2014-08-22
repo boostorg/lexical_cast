@@ -130,7 +130,7 @@ namespace boost
                     }
 
                     --left;
-                } while (main_convert_itaration());
+                } while (main_convert_iteration());
 
                 return m_finish;
 #else
@@ -139,7 +139,7 @@ namespace boost
             }
 
         private:
-            inline bool main_convert_itaration() BOOST_NOEXCEPT {
+            inline bool main_convert_iteration() BOOST_NOEXCEPT {
                 --m_finish;
                 int_type const digit = static_cast<int_type>(m_value % 10U);
                 Traits::assign(*m_finish, Traits::to_char_type(m_zero + digit));
@@ -148,7 +148,7 @@ namespace boost
             }
 
             inline CharT* main_convert_loop() BOOST_NOEXCEPT {
-                while (main_convert_itaration());
+                while (main_convert_iteration());
                 return m_finish;
             }
         };
@@ -219,7 +219,7 @@ namespace boost
                 for (;m_end >= m_begin; --m_end)
                 {
                     if (remained) {
-                        if (!main_convert_itaration()) {
+                        if (!main_convert_iteration()) {
                             return false;
                         }
                         --remained;
@@ -253,7 +253,7 @@ namespace boost
         private:
             // Iteration that does not care about grouping/separators and assumes that all 
             // input characters are digits
-            inline bool main_convert_itaration() BOOST_NOEXCEPT {
+            inline bool main_convert_iteration() BOOST_NOEXCEPT {
                 CharT const czero = lcast_char_constants<CharT>::zero;
                 T const maxv = (std::numeric_limits<T>::max)();
 
@@ -280,7 +280,7 @@ namespace boost
 
             bool main_convert_loop() BOOST_NOEXCEPT {
                 for ( ; m_end >= m_begin; --m_end) {
-                    if (!main_convert_itaration()) {
+                    if (!main_convert_iteration()) {
                         return false;
                     }
                 }
