@@ -23,6 +23,8 @@
 #   pragma once
 #endif
 
+#include <boost/type_traits/is_same.hpp>
+
 #if defined(BOOST_NO_STRINGSTREAM) || defined(BOOST_NO_STD_WSTRING)
 #define BOOST_LCAST_NO_WCHAR_T
 #endif

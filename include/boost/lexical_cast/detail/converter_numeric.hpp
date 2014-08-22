@@ -175,7 +175,5 @@ struct dynamic_num_converter_impl
 
 }} // namespace boost::detail
 
-#undef BOOST_LCAST_NO_WCHAR_T
-
-#endif // BOOST_LEXICAL_CAST_TRY_LEXICAL_CONVERT_HPP
+#endif // BOOST_LEXICAL_CAST_DETAIL_CONVERTER_NUMERIC_HPP
 
