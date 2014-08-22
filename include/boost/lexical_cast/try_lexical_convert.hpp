@@ -26,6 +26,7 @@
 #include <string>
 #include <boost/mpl/if.hpp>
 #include <boost/type_traits/ice.hpp>
+#include <boost/type_traits/is_same.hpp>
 #include <boost/type_traits/is_arithmetic.hpp>
 
 #include <boost/lexical_cast/detail/is_character.hpp>

@@ -25,10 +25,6 @@
 
 #include <boost/type_traits/is_same.hpp>
 
-#if defined(BOOST_NO_STRINGSTREAM) || defined(BOOST_NO_STD_WSTRING)
-#define BOOST_LCAST_NO_WCHAR_T
-#endif
-
 namespace boost {
 
     namespace detail // is_character<...>
@@ -39,7 +35,7 @@ namespace boost {
         {
             typedef boost::type_traits::ice_or<
                     boost::is_same< T, char >::value,
-                    #ifndef BOOST_LCAST_NO_WCHAR_T
+                    #if !defined(BOOST_NO_STRINGSTREAM) && !defined(BOOST_NO_STD_WSTRING)
                         boost::is_same< T, wchar_t >::value,
                     #endif
                     #ifndef BOOST_NO_CXX11_CHAR16_T
@@ -56,8 +52,6 @@ namespace boost {
         };
     }
 }
-
-#undef BOOST_LCAST_NO_WCHAR_T
 
 #endif // BOOST_LEXICAL_CAST_DETAIL_IS_CHARACTER_HPP
 
