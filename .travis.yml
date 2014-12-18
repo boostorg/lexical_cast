@@ -21,7 +21,7 @@ before_install:
     - BRANCH_TO_TEST=$TRAVIS_BRANCH
 
     # Files, which coverage results must be ignored (files from other projects)
-    - IGNORE_COVERAGE='"*/boost/progress.hpp" "*/filesystem/src/path.cpp" "*/numeric/conversion/converter_policies.hpp"'
+    - IGNORE_COVERAGE='*/boost/progress.hpp */filesystem/src/path.cpp */numeric/conversion/converter_policies.hpp'
 
 
     # From this point and below code is same for all the Boost libs
