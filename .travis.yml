@@ -2,7 +2,12 @@
 # subject to the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 #
-# Copyright Antony Polukhin 2014. 
+# Copyright Antony Polukhin 2014.
+
+#
+# See https://svn.boost.org/trac/boost/wiki/TravisCoverals for description of this file
+# and how it can be used with Boost libraries.
+#
 
 os:
     - linux
@@ -20,7 +25,7 @@ before_install:
     # or by - BRANCH_TO_TEST=$TRAVIS_BRANCH or just directly specify it
     - BRANCH_TO_TEST=$TRAVIS_BRANCH
 
-    # Files, which coverage results must be ignored (files from other projects)
+    # Files, which coverage results must be ignored (files from other projects). Example: - IGNORE_COVERAGE='*/boost/progress.hpp */filesystem/src/path.cpp'
     - IGNORE_COVERAGE='*/boost/progress.hpp */filesystem/src/path.cpp */numeric/conversion/converter_policies.hpp'
 
 
