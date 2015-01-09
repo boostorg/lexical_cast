@@ -8,6 +8,10 @@
 #include <string>
 #include <cstdio>
 
+#ifdef BOOST_MSVC
+#  pragma warning(disable: 4996)
+#endif
+
 //[lexical_cast_log_errno
 //`The following example uses numeric data in a string expression: 
 
