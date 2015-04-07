@@ -19,6 +19,10 @@
 
 #include <string>
 
+#ifdef BOOST_MSVC
+# pragma warning(disable: 4127) // conditional expression is constant
+#endif
+
 using namespace boost;
 
 // See also test_conversion_from_string_to_integral(CharT)
