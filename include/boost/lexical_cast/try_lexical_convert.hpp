@@ -24,8 +24,13 @@
 #endif
 
 #include <string>
+#include <boost/mpl/and.hpp>
+#include <boost/mpl/equal_to.hpp>
+#include <boost/mpl/identity.hpp>
 #include <boost/mpl/if.hpp>
-#include <boost/type_traits/ice.hpp>
+#include <boost/mpl/not.hpp>
+#include <boost/mpl/or.hpp>
+#include <boost/mpl/size_t.hpp>
 #include <boost/type_traits/is_same.hpp>
 #include <boost/type_traits/is_arithmetic.hpp>
 
@@ -57,17 +62,20 @@ namespace boost {
         template<typename Target, typename Source>
         struct is_arithmetic_and_not_xchars
         {
+            typedef BOOST_DEDUCED_TYPENAME
+                boost::mpl::and_<
+                    boost::mpl::not_<
+                        boost::detail::is_character<Target>
+                    >,
+                    boost::mpl::not_<
+                        boost::detail::is_character<Source>
+                    >,
+                    boost::is_arithmetic<Source>,
+                    boost::is_arithmetic<Target>       
+                >::type type;
+        
             BOOST_STATIC_CONSTANT(bool, value = (
-                boost::type_traits::ice_and<
-                    boost::type_traits::ice_not<
-                        boost::detail::is_character<Target>::value
-                    >::value,
-                    boost::type_traits::ice_not<
-                        boost::detail::is_character<Source>::value
-                    >::value,
-                    boost::is_arithmetic<Source>::value,
-                    boost::is_arithmetic<Target>::value       
-                >::value
+                type::value
             ));
         };
 
@@ -78,13 +86,15 @@ namespace boost {
         template<typename Target, typename Source>
         struct is_xchar_to_xchar 
         {
+            typedef BOOST_DEDUCED_TYPENAME boost::mpl::and_<
+                     boost::mpl::equal_to<boost::mpl::size_t<sizeof(Source)>, boost::mpl::size_t<sizeof(Target)> >,
+                     boost::mpl::equal_to<boost::mpl::size_t<sizeof(Source)>, boost::mpl::size_t<sizeof(char)> >,
+                     boost::detail::is_character<Target>,
+                     boost::detail::is_character<Source>
+                >::type type;
+                
             BOOST_STATIC_CONSTANT(bool, value = (
-                boost::type_traits::ice_and<
-                     boost::type_traits::ice_eq<sizeof(Source), sizeof(Target)>::value,
-                     boost::type_traits::ice_eq<sizeof(Source), sizeof(char)>::value,
-                     boost::detail::is_character<Target>::value,
-                     boost::detail::is_character<Source>::value
-                >::value
+                type::value
             ));
         };
 
@@ -140,18 +150,18 @@ namespace boost {
         {
             typedef BOOST_DEDUCED_TYPENAME boost::detail::array_to_pointer_decay<Source>::type src;
 
-            typedef BOOST_DEDUCED_TYPENAME boost::type_traits::ice_or<
-                boost::detail::is_xchar_to_xchar<Target, src >::value,
-                boost::detail::is_char_array_to_stdstring<Target, src >::value,
-                boost::type_traits::ice_and<
-                     boost::is_same<Target, src >::value,
-                     boost::detail::is_stdstring<Target >::value
-                >::value,
-                boost::type_traits::ice_and<
-                     boost::is_same<Target, src >::value,
-                     boost::detail::is_character<Target >::value
-                >::value
-            > shall_we_copy_t;
+            typedef BOOST_DEDUCED_TYPENAME boost::mpl::or_<
+                boost::detail::is_xchar_to_xchar<Target, src >,
+                boost::detail::is_char_array_to_stdstring<Target, src >,
+                boost::mpl::and_<
+                     boost::is_same<Target, src >,
+                     boost::detail::is_stdstring<Target >
+                >,
+                boost::mpl::and_<
+                     boost::is_same<Target, src >,
+                     boost::detail::is_character<Target >
+                >
+            >::type shall_we_copy_t;
 
             typedef boost::detail::is_arithmetic_and_not_xchars<Target, src >
                 shall_we_copy_with_dynamic_check_t;

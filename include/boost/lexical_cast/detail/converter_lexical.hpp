@@ -30,8 +30,13 @@
 #include <cstddef>
 #include <string>
 #include <boost/limits.hpp>
+#include <boost/mpl/and.hpp>
+#include <boost/mpl/identity.hpp>
 #include <boost/mpl/if.hpp>
-#include <boost/type_traits/ice.hpp>
+#include <boost/mpl/not.hpp>
+#include <boost/mpl/not_equal_to.hpp>
+#include <boost/mpl/or.hpp>
+#include <boost/mpl/size_t.hpp>
 #include <boost/type_traits/is_integral.hpp>
 #include <boost/type_traits/is_float.hpp>
 #include <boost/type_traits/has_left_shift.hpp>
@@ -423,27 +428,29 @@ namespace boost {
                 BOOST_DEDUCED_TYPENAME boost::detail::extract_char_traits<char_type, no_cv_src>
             >::type::trait_t traits;
 
-            typedef boost::type_traits::ice_and<
-                boost::is_same<char, src_char_t>::value,                                  // source is not a wide character based type
-                boost::type_traits::ice_ne<sizeof(char), sizeof(target_char_t) >::value,  // target type is based on wide character
-                boost::type_traits::ice_not<
-                    boost::detail::is_character<no_cv_src>::value                     // single character widening is optimized
-                >::value                                                                  // and does not requires stringbuffer
-            >   is_string_widening_required_t;
+            typedef BOOST_DEDUCED_TYPENAME boost::mpl::and_<
+                boost::is_same<char, src_char_t>,                                  // source is not a wide character based type
+                boost::mpl::not_equal_to<boost::mpl::size_t<sizeof(char)>, boost::mpl::size_t<sizeof(target_char_t)> >,  // target type is based on wide character
+                boost::mpl::not_<
+                    boost::detail::is_character<no_cv_src>                     // single character widening is optimized
+                >                                                                  // and does not requires stringbuffer
+            >::type   is_string_widening_required_t;
 
-            typedef boost::type_traits::ice_not< boost::type_traits::ice_or<
-                boost::is_integral<no_cv_src>::value,
+            typedef BOOST_DEDUCED_TYPENAME boost::mpl::not_< boost::mpl::or_<
+                boost::is_integral<no_cv_src>,
                 boost::detail::is_character<
                     BOOST_DEDUCED_TYPENAME deduce_src_char_metafunc::stage1_type          // if we did not get character type at stage1
-                >::value                                                                  // then we have no optimization for that type
-            >::value >   is_source_input_not_optimized_t;
+                >                                                                  // then we have no optimization for that type
+            > >::type   is_source_input_not_optimized_t;
 
+            typedef BOOST_DEDUCED_TYPENAME boost::mpl::or_<
+                    is_string_widening_required_t, is_source_input_not_optimized_t
+                >::type type;
+            
             // If we have an optimized conversion for
             // Source, we do not need to construct stringbuf.
             BOOST_STATIC_CONSTANT(bool, requires_stringbuf = 
-                (boost::type_traits::ice_or<
-                    is_string_widening_required_t::value, is_source_input_not_optimized_t::value
-                >::value)
+                (type::value)
             );
             
             typedef boost::detail::lcast_src_length<no_cv_src> len_t;
