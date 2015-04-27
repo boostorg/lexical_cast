@@ -24,12 +24,9 @@
 #endif
 
 #include <boost/limits.hpp>
-#include <boost/mpl/and.hpp>
 #include <boost/mpl/eval_if.hpp>
 #include <boost/mpl/identity.hpp>
 #include <boost/mpl/if.hpp>
-#include <boost/mpl/not.hpp>
-#include <boost/mpl/or.hpp>
 #include <boost/type_traits/make_unsigned.hpp>
 #include <boost/type_traits/is_signed.hpp>
 #include <boost/type_traits/is_integral.hpp>
@@ -156,6 +153,17 @@ template <typename Target, typename Source>
 struct dynamic_num_converter_impl
 {
     static inline bool try_convert(const Source &arg, Target& result) BOOST_NOEXCEPT {
+        typedef BOOST_DEDUCED_TYPENAME boost::mpl::if_c<
+        	boost::is_unsigned<Target>::value &&
+        	(boost::is_signed<Source>::value || boost::is_float<Source>::value) &&
+        	!(boost::is_same<Source, bool>::value) &&
+        	!(boost::is_same<Target, bool>::value),
+            lexical_cast_dynamic_num_ignoring_minus<Target, Source>,
+            lexical_cast_dynamic_num_not_ignoring_minus<Target, Source>
+        >::type caster_type;
+        
+#if 0
+
         typedef BOOST_DEDUCED_TYPENAME boost::mpl::if_<
             BOOST_DEDUCED_TYPENAME boost::mpl::and_<
                 boost::is_unsigned<Target>,
@@ -173,6 +181,8 @@ struct dynamic_num_converter_impl
             lexical_cast_dynamic_num_ignoring_minus<Target, Source>,
             lexical_cast_dynamic_num_not_ignoring_minus<Target, Source>
         >::type caster_type;
+        
+#endif
 
         return caster_type::try_convert(arg, result);
     }
