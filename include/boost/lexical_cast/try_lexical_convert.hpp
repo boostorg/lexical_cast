@@ -1,6 +1,6 @@
 // Copyright Kevlin Henney, 2000-2005.
 // Copyright Alexander Nasonov, 2006-2010.
-// Copyright Antony Polukhin, 2011-2014.
+// Copyright Antony Polukhin, 2011-2016.
 //
 // Distributed under the Boost Software License, Version 1.0. (See
 // accompanying file LICENSE_1_0.txt or copy at
@@ -57,8 +57,15 @@ namespace boost {
             : boost::true_type
         {};
 
+        // Sun Studion has problem with partial specialization of templates differing only in namespace.
+        // We workaround that by making `is_booststring` trait, instead of specializing `is_stdstring` for `boost::container::basic_string`.
+        template<typename T>
+        struct is_booststring
+            : boost::false_type
+        {};
+
         template<typename CharT, typename Traits, typename Alloc>
-        struct is_stdstring< boost::container::basic_string<CharT, Traits, Alloc> >
+        struct is_booststring< boost::container::basic_string<CharT, Traits, Alloc> >
             : boost::true_type
         {};
 
@@ -153,7 +160,7 @@ namespace boost {
                 boost::detail::is_char_array_to_stdstring<Target, src >::value ||
                 (
                      boost::is_same<Target, src >::value &&
-                     boost::detail::is_stdstring<Target >::value
+                     (boost::detail::is_stdstring<Target >::value || boost::detail::is_booststring<Target >::value)
                 ) ||
                 (
                      boost::is_same<Target, src >::value &&
