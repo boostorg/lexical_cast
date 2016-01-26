@@ -57,7 +57,7 @@ namespace boost {
             : boost::true_type
         {};
 
-        // Sun Studion has problem with partial specialization of templates differing only in namespace.
+        // Sun Studio has problem with partial specialization of templates differing only in namespace.
         // We workaround that by making `is_booststring` trait, instead of specializing `is_stdstring` for `boost::container::basic_string`.
         template<typename T>
         struct is_booststring
@@ -118,13 +118,20 @@ namespace boost {
             : boost::true_type
         {};
 
+        // Sun Studio has problem with partial specialization of templates differing only in namespace.
+        // We workaround that by making `is_char_array_to_booststring` trait, instead of specializing `is_char_array_to_stdstring` for `boost::container::basic_string`.
+        template<typename Target, typename Source>
+        struct is_char_array_to_booststring
+            : boost::false_type
+        {};
+
         template<typename CharT, typename Traits, typename Alloc>
-        struct is_char_array_to_stdstring< boost::container::basic_string<CharT, Traits, Alloc>, CharT* >
+        struct is_char_array_to_booststring< boost::container::basic_string<CharT, Traits, Alloc>, CharT* >
             : boost::true_type
         {};
 
         template<typename CharT, typename Traits, typename Alloc>
-        struct is_char_array_to_stdstring< boost::container::basic_string<CharT, Traits, Alloc>, const CharT* >
+        struct is_char_array_to_booststring< boost::container::basic_string<CharT, Traits, Alloc>, const CharT* >
             : boost::true_type
         {};
 
@@ -158,6 +165,7 @@ namespace boost {
             typedef boost::mpl::bool_<
                 boost::detail::is_xchar_to_xchar<Target, src >::value ||
                 boost::detail::is_char_array_to_stdstring<Target, src >::value ||
+                boost::detail::is_char_array_to_booststring<Target, src >::value ||
                 (
                      boost::is_same<Target, src >::value &&
                      (boost::detail::is_stdstring<Target >::value || boost::detail::is_booststring<Target >::value)
