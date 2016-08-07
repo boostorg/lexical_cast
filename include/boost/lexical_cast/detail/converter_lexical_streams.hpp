@@ -200,18 +200,18 @@ namespace boost {
             }
 #endif
 
-            bool shl_char_array(CharT const* str) BOOST_NOEXCEPT {
-                start = str;
-                finish = start + Traits::length(str);
+            bool shl_char_array(CharT const* str_) BOOST_NOEXCEPT {
+                start = str_;
+                finish = start + Traits::length(str_);
                 return true;
             }
 
             template <class T>
-            bool shl_char_array(T const* str) {
+            bool shl_char_array(T const* str_) {
                 BOOST_STATIC_ASSERT_MSG(( sizeof(T) <= sizeof(CharT)),
                     "boost::lexical_cast does not support narrowing of char types."
                     "Use boost::locale instead" );
-                return shl_input_streamable(str);
+                return shl_input_streamable(str_);
             }
 
             bool shl_char_array_limited(CharT const* str, std::size_t max_size) BOOST_NOEXCEPT {
@@ -424,8 +424,8 @@ namespace boost {
             bool operator<<(unsigned char * ch)         { return ((*this) << reinterpret_cast<char *>(ch)); }
             bool operator<<(signed char const* ch)      { return ((*this) << reinterpret_cast<char const*>(ch)); }
             bool operator<<(signed char * ch)           { return ((*this) << reinterpret_cast<char *>(ch)); }
-            bool operator<<(char const* str)            { return shl_char_array(str); }
-            bool operator<<(char* str)                  { return shl_char_array(str); }
+            bool operator<<(char const* str_)           { return shl_char_array(str_); }
+            bool operator<<(char* str_)                 { return shl_char_array(str_); }
             bool operator<<(short n)                    { return shl_signed(n); }
             bool operator<<(int n)                      { return shl_signed(n); }
             bool operator<<(long n)                     { return shl_signed(n); }
