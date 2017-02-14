@@ -34,6 +34,7 @@ int main() {
 
     long double sum = to_long_double(v1) + to_long_double(v2) + to_long_double(v3);
     assert(sum > 11 && sum < 11.1);
+    (void)sum;
 }
 
 //] [/lexical_cast_variant_to_long_double]
