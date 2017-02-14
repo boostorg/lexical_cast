@@ -41,7 +41,7 @@ void test_too_long_number(CharT zero)
     s[s.size()-1] += static_cast<CharT>(9); // '0' -> '9'
     BOOST_CHECK_THROW(lexical_cast<T>(s), bad_lexical_cast);
 
-    if(limits::is_signed)
+    if (limits::is_signed)
     {
         std::basic_ostringstream<CharT> o;
         o << (limits::min)() << zero;

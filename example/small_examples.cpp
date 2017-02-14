@@ -1,4 +1,4 @@
-// Copyright 2013 Antony Polukhin
+// Copyright 2013-2017 Antony Polukhin
 
 // Distributed under the Boost Software License, Version 1.0.
 // (See the accompanying file LICENSE_1_0.txt
@@ -9,7 +9,7 @@
 #include <cstdio>
 
 #ifdef BOOST_MSVC
-#  pragma warning(disable: 4996)
+#  pragma warning(disable: 4996) // `strerror` is not safe
 #endif
 
 //[lexical_cast_log_errno
