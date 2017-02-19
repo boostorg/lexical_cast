@@ -4,6 +4,9 @@
 // (See the accompanying file LICENSE_1_0.txt
 // or a copy at <http://www.boost.org/LICENSE_1_0.txt>.)
 
+#ifdef BOOST_MSVC
+# pragma warning(disable: 4512) // generic_stringize.cpp(37) : warning C4512: 'stringize_functor' : assignment operator could not be generated
+#endif
 
 //[lexical_cast_stringize
 /*`
