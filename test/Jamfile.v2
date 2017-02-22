@@ -27,7 +27,6 @@ project
         # Not a lexical_cast related warning: boost/mpl/aux_/preprocessed/gcc/greater_equal.hpp:78:1: warning: empty macro arguments are a C99 feature [-Wc99-extensions]
         #                                     boost/mpl/iter_fold.hpp:45:1: warning: empty macro arguments are a C99 feature [-Wc99-extensions]
         <toolset>clang:<cxxflags>-Wno-c99-extensions
-        <toolset>gcc:<cxxflags>-Wno-c99-extensions
     ;
 
 # Thanks to Steven Watanabe for helping with <nowchar> feature
