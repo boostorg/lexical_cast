@@ -1,4 +1,4 @@
-#[Boost.LexicalCast](http://boost.org/libs/lexical_cast)
+# [Boost.LexicalCast](http://boost.org/libs/lexical_cast)
 Boost.LexicalCast is one of the [Boost C++ Libraries](http://github.com/boostorg). This library is meant for general literal text conversions, such as an int represented a string, or vice-versa.
 
 ### Test results
