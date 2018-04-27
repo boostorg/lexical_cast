@@ -50,7 +50,7 @@ public:
     charT* pbase() const { return base_type::pbase(); }
 #endif
 
-private:
+protected:
    // VC mistakenly assumes that `setbuf` and other functions are not referenced.
    // Marking those functions with `inline` suppresses the warnings.
    // There must be no harm from marking virtual functions as inline: inline virtual
@@ -59,6 +59,7 @@ private:
    inline typename this_type::pos_type seekpos(pos_type sp, ::std::ios_base::openmode which);
    inline typename this_type::pos_type seekoff(off_type off, ::std::ios_base::seekdir way, ::std::ios_base::openmode which);
 
+private:
    basic_pointerbuf& operator=(const basic_pointerbuf&);
    basic_pointerbuf(const basic_pointerbuf&);
 };
