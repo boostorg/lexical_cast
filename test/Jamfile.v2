@@ -32,7 +32,7 @@ project
 # Thanks to Steven Watanabe for helping with <nowchar> feature
 feature.feature nowchar : on :
  composite optional propagated link-incompatible ;
-feature.compose <nowchar>on : <cxxflags>/Zc:wchar_t- ;
+feature.compose <nowchar>on : <cxxflags>"/Zc:wchar_t-" ;
 
 test-suite conversion
   : [ run lexical_cast_test.cpp ]
