@@ -1,6 +1,6 @@
 // Copyright Kevlin Henney, 2000-2005.
 // Copyright Alexander Nasonov, 2006-2010.
-// Copyright Antony Polukhin, 2011-2014.
+// Copyright Antony Polukhin, 2011-2018.
 //
 // Distributed under the Boost Software License, Version 1.0. (See
 // accompanying file LICENSE_1_0.txt or copy at
@@ -72,8 +72,8 @@ namespace boost
         class lcast_put_unsigned: boost::noncopyable {
             typedef BOOST_DEDUCED_TYPENAME Traits::int_type int_type;
             BOOST_DEDUCED_TYPENAME boost::mpl::if_c<
-                    (sizeof(int_type) > sizeof(T))
-                    , int_type
+                    (sizeof(unsigned) > sizeof(T))
+                    , unsigned
                     , T
             >::type         m_value;
             CharT*          m_finish;
