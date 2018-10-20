@@ -29,7 +29,7 @@
 #include <cstring>
 #include <cstdio>
 #include <boost/limits.hpp>
-#include <boost/mpl/if.hpp>
+#include <boost/type_traits/conditional.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/detail/workaround.hpp>
 
@@ -71,7 +71,7 @@ namespace boost
         template <class Traits, class T, class CharT>
         class lcast_put_unsigned: boost::noncopyable {
             typedef BOOST_DEDUCED_TYPENAME Traits::int_type int_type;
-            BOOST_DEDUCED_TYPENAME boost::mpl::if_c<
+            BOOST_DEDUCED_TYPENAME boost::conditional<
                     (sizeof(unsigned) > sizeof(T))
                     , unsigned
                     , T
