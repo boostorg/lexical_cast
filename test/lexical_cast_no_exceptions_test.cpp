@@ -84,8 +84,8 @@ void test_exceptions_off() {
     BOOST_CHECK(false);
 }
 
-unit_test::test_suite *init_unit_test_suite(int, char *[]) {
-    unit_test::test_suite *suite =
+boost::unit_test::test_suite *init_unit_test_suite(int, char *[]) {
+    boost::unit_test::test_suite *suite =
         BOOST_TEST_SUITE("lexical_cast. Testing with BOOST_NO_EXCEPTIONS");
     suite->add(BOOST_TEST_CASE(&test_exceptions_off));
 
