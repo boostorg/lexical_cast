@@ -20,22 +20,11 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/range/iterator_range.hpp>
 
+#include <cstdlib>
+
 #ifndef BOOST_NO_EXCEPTIONS
 #error "This test must be compiled with -DBOOST_NO_EXCEPTIONS"
 #endif
-
-bool g_was_exception = false;
-
-namespace boost {
-
-void throw_exception(std::exception const & ) {
-    g_was_exception = true;
-}
-
-}
-
-using namespace boost;
-
 
 struct Escape
 {
@@ -57,18 +46,30 @@ inline std::istream& operator>> (std::istream& i, Escape& rhs)
     return i >> rhs.str_;
 }
 
-void test_exceptions_off()
-{
+namespace boost {
+
+BOOST_NORETURN void throw_exception(std::exception const & ) {
+    static int state = 0;
+    ++ state;
+
     Escape v("");
+    switch(state) {
+    case 1: 
+        lexical_cast<char>(v); // should call boost::throw_exception
+        std::exit(1);
+    case 2:    
+        lexical_cast<unsigned char>(v); // should call boost::throw_exception
+        std::exit(2);
+    }
+    std::exit(0);
+}
 
-    g_was_exception = false;
-    lexical_cast<char>(v);
-    BOOST_CHECK(g_was_exception);
+}
 
-    g_was_exception = false;
-    lexical_cast<unsigned char>(v);
-    BOOST_CHECK(g_was_exception);
-
+void test_exceptions_off() {
+    using namespace boost;
+    Escape v("");
+    
     v = lexical_cast<Escape>(100);
     BOOST_CHECK_EQUAL(lexical_cast<int>(v), 100);
     BOOST_CHECK_EQUAL(lexical_cast<unsigned int>(v), 100u);
@@ -79,13 +80,11 @@ void test_exceptions_off()
     BOOST_CHECK_EQUAL(lexical_cast<short>(100), 100);
     BOOST_CHECK_EQUAL(lexical_cast<float>(0.0), 0.0);
 
-    g_was_exception = false;
-    lexical_cast<short>(700000);
-    BOOST_CHECK(g_was_exception);
+    lexical_cast<short>(700000); // should call boost::throw_exception
+    BOOST_CHECK(false);
 }
 
-unit_test::test_suite *init_unit_test_suite(int, char *[])
-{
+unit_test::test_suite *init_unit_test_suite(int, char *[]) {
     unit_test::test_suite *suite =
         BOOST_TEST_SUITE("lexical_cast. Testing with BOOST_NO_EXCEPTIONS");
     suite->add(BOOST_TEST_CASE(&test_exceptions_off));
