@@ -17,7 +17,7 @@
 #endif
 
 #include <boost/lexical_cast.hpp>
-#include <boost/test/unit_test.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include <boost/range/iterator_range.hpp>
 
 #include <cstdlib>
@@ -61,7 +61,7 @@ BOOST_NORETURN void throw_exception(std::exception const & ) {
         lexical_cast<unsigned char>(v); // should call boost::throw_exception
         std::exit(2);
     }
-    std::exit(0);
+    std::exit(boost::report_errors());
 }
 
 }
@@ -71,24 +71,22 @@ void test_exceptions_off() {
     Escape v("");
     
     v = lexical_cast<Escape>(100);
-    BOOST_CHECK_EQUAL(lexical_cast<int>(v), 100);
-    BOOST_CHECK_EQUAL(lexical_cast<unsigned int>(v), 100u);
+    BOOST_TEST_EQ(lexical_cast<int>(v), 100);
+    BOOST_TEST_EQ(lexical_cast<unsigned int>(v), 100u);
 
     v = lexical_cast<Escape>(0.0);
-    BOOST_CHECK_EQUAL(lexical_cast<double>(v), 0.0);
+    BOOST_TEST_EQ(lexical_cast<double>(v), 0.0);
 
-    BOOST_CHECK_EQUAL(lexical_cast<short>(100), 100);
-    BOOST_CHECK_EQUAL(lexical_cast<float>(0.0), 0.0);
+    BOOST_TEST_EQ(lexical_cast<short>(100), 100);
+    BOOST_TEST_EQ(lexical_cast<float>(0.0), 0.0);
 
     lexical_cast<short>(700000); // should call boost::throw_exception
-    BOOST_CHECK(false);
+    BOOST_TEST(false);
 }
 
-boost::unit_test::test_suite *init_unit_test_suite(int, char *[]) {
-    boost::unit_test::test_suite *suite =
-        BOOST_TEST_SUITE("lexical_cast. Testing with BOOST_NO_EXCEPTIONS");
-    suite->add(BOOST_TEST_CASE(&test_exceptions_off));
+int main() {
+    test_exceptions_off();
 
-    return suite;
+    return boost::report_errors();
 }
 
