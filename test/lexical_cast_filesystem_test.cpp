@@ -49,10 +49,15 @@ void test_filesystem()
     const char quoted_path[] = "\"/home/my user\"";
     p = boost::lexical_cast<boost::filesystem::path>(quoted_path);
     BOOST_CHECK(!p.empty());
-    BOOST_CHECK_EQUAL(p, quoted_path);
+    const char unquoted_path[] = "/home/my user";
+    BOOST_CHECK_EQUAL(p, boost::filesystem::path(unquoted_path));
+
+    // Converting back to std::string gives the initial string
+    BOOST_CHECK_EQUAL(boost::lexical_cast<std::string>(p), quoted_path);
     
     try {
-        const char unquoted_path[] = "/home/my user";
+        // Without quotes the path will have only `/home/my` in it.
+        // `user` remains in the stream, so an exception must be thrown.
         p = boost::lexical_cast<boost::filesystem::path>(unquoted_path);
         BOOST_CHECK(false);
     } catch (const boost::bad_lexical_cast& ) {
