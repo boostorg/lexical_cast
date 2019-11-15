@@ -35,8 +35,8 @@ namespace boost {
         struct is_character
         {
             typedef BOOST_DEDUCED_TYPENAME boost::integral_constant<
-              bool,
-              boost::is_same< T, char >::value ||
+                bool,
+                boost::is_same< T, char >::value ||
                     #if !defined(BOOST_NO_STRINGSTREAM) && !defined(BOOST_NO_STD_WSTRING)
                         boost::is_same< T, wchar_t >::value ||
                     #endif
@@ -46,8 +46,8 @@ namespace boost {
                     #ifndef BOOST_NO_CXX11_CHAR32_T
                         boost::is_same< T, char32_t >::value ||
                     #endif
-                   	boost::is_same< T, unsigned char >::value ||
-                   	boost::is_same< T, signed char >::value
+                        boost::is_same< T, unsigned char >::value ||
+                        boost::is_same< T, signed char >::value
             > type;
 
             BOOST_STATIC_CONSTANT(bool, value = (type::value) );

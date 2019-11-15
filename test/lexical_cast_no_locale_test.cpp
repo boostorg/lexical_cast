@@ -126,7 +126,7 @@ inline std::ostream & operator<<(std::ostream & out, const std::vector<long> & v
 {
     std::ostream_iterator<long> it(out);
     std::copy(v.begin(), v.end(), it);
-    assert(out);
+    BOOST_CHECK(out);
     return out;
 }
 }

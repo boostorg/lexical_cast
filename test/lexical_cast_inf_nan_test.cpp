@@ -23,7 +23,7 @@
 #include <boost/math/special_functions/fpclassify.hpp>
 #include <boost/type_traits/is_same.hpp>
 #include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/tools/floating_point_comparison.hpp>
 
 #if defined(BOOST_NO_STRINGSTREAM) || defined(BOOST_NO_STD_WSTRING)
 #define BOOST_LCAST_NO_WCHAR_T

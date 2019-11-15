@@ -20,7 +20,7 @@
 
 #include <boost/cstdint.hpp>
 #include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/tools/floating_point_comparison.hpp>
 #include <boost/math/tools/precision.hpp>
 
 void test_conversion_from_to_float();

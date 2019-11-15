@@ -31,7 +31,7 @@
 
 #include <boost/cstdint.hpp>
 #include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/tools/floating_point_comparison.hpp>
 
 #include <boost/type_traits/integral_promotion.hpp>
 #include <boost/type_traits/make_unsigned.hpp>
