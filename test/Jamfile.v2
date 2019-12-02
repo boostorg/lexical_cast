@@ -49,14 +49,10 @@ test-suite conversion
     [ compile lexical_cast_typedefed_wchar_test.cpp : <toolset>msvc:<nowchar>on ]
     [ run lexical_cast_typedefed_wchar_test_runtime.cpp : : : <toolset>msvc:<nowchar>on <toolset>msvc,<stdlib>stlport:<build>no ]
     [ run lexical_cast_no_locale_test.cpp : : : <define>BOOST_NO_STD_LOCALE <define>BOOST_LEXICAL_CAST_ASSUME_C_LOCALE ]
-    [ run lexical_cast_no_exceptions_test.cpp : : : <define>BOOST_NO_EXCEPTIONS
-      <toolset>gcc-4.3:<cxxflags>-fno-exceptions
-      <toolset>gcc-4.4:<cxxflags>-fno-exceptions
-      <toolset>gcc-4.5:<cxxflags>-fno-exceptions
-      <toolset>gcc-4.6:<cxxflags>-fno-exceptions
-      <toolset>gcc-4.7:<cxxflags>-fno-exceptions
-      <toolset>gcc-4.8:<cxxflags>-fno-exceptions
-      <toolset>clang:<cxxflags>-fno-exceptions
+    [ run lexical_cast_no_exceptions_test.cpp : : : <exception-handling>off
+        <define>_HAS_EXCEPTIONS=0 # MSVC stdlib
+        <define>_STLP_NO_EXCEPTIONS # STLPort
+        -<library>/boost/test//boost_unit_test_framework # uses lightweight_test
     ]
     [ run lexical_cast_iterator_range_test.cpp ]
     [ run lexical_cast_arrays_test.cpp : : :
