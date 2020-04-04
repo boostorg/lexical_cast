@@ -94,30 +94,30 @@ struct Escape
     std::string str_;
 };
 
-inline std::ostream& operator<< (std::ostream& o, const Escape& rhs)
+inline std::ostream& operator<< (std::ostream& o, const struct Escape& rhs)
 {
     return o << rhs.str_;
 }
 
-inline std::istream& operator>> (std::istream& i, Escape& rhs)
+inline std::istream& operator>> (std::istream& i, struct Escape& rhs)
 {
     return i >> rhs.str_;
 }
 
 void test_empty_3()
 {
-    Escape v("");
+    struct Escape v("");
     do_test_on_empty_input(v);
 
     BOOST_CHECK_THROW(lexical_cast<char>(v), bad_lexical_cast);
     BOOST_CHECK_THROW(lexical_cast<unsigned char>(v), bad_lexical_cast);
     BOOST_CHECK_THROW(lexical_cast<signed char>(v), bad_lexical_cast);
 
-    v = lexical_cast<Escape>(100);
+    v = lexical_cast<struct Escape>(100);
     BOOST_CHECK_EQUAL(lexical_cast<int>(v), 100);
     BOOST_CHECK_EQUAL(lexical_cast<unsigned int>(v), 100u);
 
-    v = lexical_cast<Escape>(0.0);
+    v = lexical_cast<struct Escape>(0.0);
     BOOST_CHECK_EQUAL(lexical_cast<double>(v), 0.0);
 }
 
