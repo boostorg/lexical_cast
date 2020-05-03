@@ -51,12 +51,12 @@ namespace boost
 #endif
         {}
 
-        virtual const char *what() const BOOST_NOEXCEPT_OR_NOTHROW {
+        const char *what() const BOOST_NOEXCEPT_OR_NOTHROW BOOST_OVERRIDE {
             return "bad lexical cast: "
                    "source type value could not be interpreted as target";
         }
 
-        virtual ~bad_lexical_cast() BOOST_NOEXCEPT_OR_NOTHROW
+        ~bad_lexical_cast() BOOST_NOEXCEPT_OR_NOTHROW
         {}
 
 #ifndef BOOST_NO_TYPEID
