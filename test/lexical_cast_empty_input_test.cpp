@@ -107,14 +107,14 @@ struct Escape
     std::string str_;
 };
 
-inline std::ostream& operator<< (std::ostream& o, const Escape& rhs)
+inline std::ostream& operator<< (std::ostream& o, const struct Escape& rhs)
 {
     return o << rhs.str_;
 }
 
 void test_empty_user_class()
 {
-    Escape v("");
+    struct Escape v("");
     do_test_on_empty_input(v);
     BOOST_CHECK_THROW(lexical_cast<char>(v), bad_lexical_cast);
     BOOST_CHECK_THROW(lexical_cast<unsigned char>(v), bad_lexical_cast);

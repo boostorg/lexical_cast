@@ -38,7 +38,7 @@ namespace boost
         public std::bad_cast 
 #endif 
 
-#if defined(__BORLANDC__) && BOOST_WORKAROUND( __BORLANDC__, < 0x560 )
+#if defined(BOOST_BORLANDC) && BOOST_WORKAROUND( BOOST_BORLANDC, < 0x560 )
         // under bcc32 5.5.1 bad_cast doesn't derive from exception
         , public std::exception
 #endif

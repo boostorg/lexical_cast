@@ -28,7 +28,7 @@ void log_errno(int yoko)
 //[lexical_cast_fixed_buffer
 //`The following example converts some number and puts it to file:
 
-void number_to_file(int number, FILE* file)
+void number_to_file(int number, std::FILE* file)
 {
     typedef boost::array<char, 50> buf_t; // You can use std::array if your compiler supports it
     buf_t buffer = boost::lexical_cast<buf_t>(number); // No dynamic memory allocation
