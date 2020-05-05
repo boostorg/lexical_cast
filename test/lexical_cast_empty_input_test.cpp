@@ -20,6 +20,8 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/range/iterator_range.hpp>
 
+#include "escape_struct.hpp"
+
 using namespace boost;
 
 #if defined(BOOST_NO_STRINGSTREAM) || defined(BOOST_NO_STD_WSTRING)
@@ -98,23 +100,9 @@ void test_empty_string()
 //#endif
 }
 
-struct Escape
-{
-    Escape(const std::string& s)
-        : str_(s)
-    {}
-
-    std::string str_;
-};
-
-inline std::ostream& operator<< (std::ostream& o, const struct Escape& rhs)
-{
-    return o << rhs.str_;
-}
-
 void test_empty_user_class()
 {
-    struct Escape v("");
+    EscapeStruct v("");
     do_test_on_empty_input(v);
     BOOST_CHECK_THROW(lexical_cast<char>(v), bad_lexical_cast);
     BOOST_CHECK_THROW(lexical_cast<unsigned char>(v), bad_lexical_cast);

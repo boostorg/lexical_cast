@@ -22,29 +22,11 @@
 
 #include <cstdlib>
 
+#include "escape_struct.hpp"
+
 #ifndef BOOST_NO_EXCEPTIONS
 #error "This test must be compiled with -DBOOST_NO_EXCEPTIONS"
 #endif
-
-struct Escape
-{
-    Escape(){}
-    Escape(const std::string& s)
-        : str_(s)
-    {}
-
-    std::string str_;
-};
-
-inline std::ostream& operator<< (std::ostream& o, const struct Escape& rhs)
-{
-    return o << rhs.str_;
-}
-
-inline std::istream& operator>> (std::istream& i, struct Escape& rhs)
-{
-    return i >> rhs.str_;
-}
 
 namespace boost {
 
@@ -52,7 +34,7 @@ BOOST_NORETURN void throw_exception(std::exception const & ) {
     static int state = 0;
     ++ state;
 
-    struct Escape v("");
+    EscapeStruct v("");
     switch(state) {
     case 1: 
         lexical_cast<char>(v); // should call boost::throw_exception
@@ -68,13 +50,13 @@ BOOST_NORETURN void throw_exception(std::exception const & ) {
 
 void test_exceptions_off() {
     using namespace boost;
-    struct Escape v("");
+    EscapeStruct v("");
     
-    v = lexical_cast<struct Escape>(100);
+    v = lexical_cast<EscapeStruct>(100);
     BOOST_TEST_EQ(lexical_cast<int>(v), 100);
     BOOST_TEST_EQ(lexical_cast<unsigned int>(v), 100u);
 
-    v = lexical_cast<struct Escape>(0.0);
+    v = lexical_cast<EscapeStruct>(0.0);
     BOOST_TEST_EQ(lexical_cast<double>(v), 0.0);
 
     BOOST_TEST_EQ(lexical_cast<short>(100), 100);
