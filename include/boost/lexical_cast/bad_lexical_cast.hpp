@@ -23,8 +23,8 @@
 #   pragma once
 #endif
 
-#include <typeinfo>
 #include <exception>
+#include <typeinfo>
 #include <boost/throw_exception.hpp>
 
 namespace boost
@@ -56,7 +56,7 @@ namespace boost
                    "source type value could not be interpreted as target";
         }
 
-        ~bad_lexical_cast() BOOST_NOEXCEPT_OR_NOTHROW
+        ~bad_lexical_cast() BOOST_NOEXCEPT_OR_NOTHROW BOOST_OVERRIDE
         {}
 
 #ifndef BOOST_NO_TYPEID
@@ -101,8 +101,6 @@ namespace boost
 #endif
     }} // namespace conversion::detail
 
-
 } // namespace boost
 
 #endif // BOOST_LEXICAL_CAST_BAD_LEXICAL_CAST_HPP
-
