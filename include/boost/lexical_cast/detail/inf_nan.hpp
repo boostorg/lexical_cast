@@ -31,8 +31,7 @@
 #include <cstring>
 #include <boost/limits.hpp>
 #include <boost/detail/workaround.hpp>
-#include <boost/math/special_functions/sign.hpp>
-#include <boost/math/special_functions/fpclassify.hpp>
+#include <math.h>
 
 #include <boost/lexical_cast/detail/lcast_char_constants.hpp>
 
@@ -79,7 +78,7 @@ namespace boost {
                 }
 
                 if( !has_minus ) value = std::numeric_limits<T>::quiet_NaN();
-                else value = (boost::math::changesign) (std::numeric_limits<T>::quiet_NaN());
+                else value = copysign(std::numeric_limits<T>::quiet_NaN(), static_cast<T>(-1));
                 return true;
             } else if (
                 ( /* 'INF' or 'inf' */
@@ -94,7 +93,7 @@ namespace boost {
              )
             {
                 if( !has_minus ) value = std::numeric_limits<T>::infinity();
-                else value = (boost::math::changesign) (std::numeric_limits<T>::infinity());
+                else value = -std::numeric_limits<T>::infinity();
                 return true;
             }
 
@@ -108,8 +107,8 @@ namespace boost {
         {
             using namespace std;
             const CharT minus = lcast_char_constants<CharT>::minus;
-            if ((boost::math::isnan)(value)) {
-                if ((boost::math::signbit)(value)) {
+            if (isnan(value)) {
+                if (signbit(value)) {
                     *begin = minus;
                     ++ begin;
                 }
@@ -117,8 +116,8 @@ namespace boost {
                 memcpy(begin, lc_nan, 3 * sizeof(CharT));
                 end = begin + 3;
                 return true;
-            } else if ((boost::math::isinf)(value)) {
-                if ((boost::math::signbit)(value)) {
+            } else if (isinf(value)) {
+                if (signbit(value)) {
                     *begin = minus;
                     ++ begin;
                 }
