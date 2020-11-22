@@ -32,6 +32,9 @@
 #include <boost/limits.hpp>
 #include <boost/detail/workaround.hpp>
 #include <math.h>
+#if defined(_MSC_VER) && _MSC_VER < 1800
+# include <float.h>
+#endif
 
 #include <boost/lexical_cast/detail/lcast_char_constants.hpp>
 
@@ -46,6 +49,30 @@ namespace boost {
 
             return true;
         }
+
+#if defined(_MSC_VER) && _MSC_VER < 1800
+
+        template<class T> T copysign( T x, T y )
+        {
+            return static_cast<T>( _copysign( static_cast<double>( x ), static_cast<double>( y ) ) );
+        }
+
+        template<class T> bool isnan( T x )
+        {
+            return _isnan( static_cast<double>( x ) ) != 0;
+        }
+
+        template<class T> bool isinf( T x )
+        {
+            return ( _fpclass( static_cast<double>( x ) ) & ( _FPCLASS_PINF | _FPCLASS_NINF ) ) != 0;
+        }
+
+        template<class T> bool signbit( T x )
+        {
+            return _copysign( 1.0, static_cast<double>( x ) ) < 0.0;
+        }
+
+#endif
 
         /* Returns true and sets the correct value if found NaN or Inf. */
         template <class CharT, class T>
