@@ -27,10 +27,10 @@
 #define BOOST_LCAST_NO_WCHAR_T
 #endif
 
-#include <cstddef>
-#include <cstring>
 #include <boost/limits.hpp>
 #include <boost/detail/workaround.hpp>
+#include <cstddef>
+#include <cstring>
 #include <math.h>
 #if defined(_MSC_VER) && _MSC_VER < 1800
 # include <float.h>
@@ -81,7 +81,6 @@ namespace boost {
             , const CharT* lc_INFINITY, const CharT* lc_infinity
             , const CharT opening_brace, const CharT closing_brace) BOOST_NOEXCEPT
         {
-            using namespace std;
             if (begin == end) return false;
             const CharT minus = lcast_char_constants<CharT>::minus;
             const CharT plus = lcast_char_constants<CharT>::plus;
@@ -132,7 +131,6 @@ namespace boost {
                          , const CharT* lc_nan
                          , const CharT* lc_infinity) BOOST_NOEXCEPT
         {
-            using namespace std;
             const CharT minus = lcast_char_constants<CharT>::minus;
             if (isnan(value)) {
                 if (signbit(value)) {
@@ -140,7 +138,7 @@ namespace boost {
                     ++ begin;
                 }
 
-                memcpy(begin, lc_nan, 3 * sizeof(CharT));
+                std::memcpy(begin, lc_nan, 3 * sizeof(CharT));
                 end = begin + 3;
                 return true;
             } else if (isinf(value)) {
@@ -149,7 +147,7 @@ namespace boost {
                     ++ begin;
                 }
 
-                memcpy(begin, lc_infinity, 3 * sizeof(CharT));
+                std::memcpy(begin, lc_infinity, 3 * sizeof(CharT));
                 end = begin + 3;
                 return true;
             }
