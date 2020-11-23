@@ -31,6 +31,7 @@
 #include <boost/detail/workaround.hpp>
 #include <cstddef>
 #include <cstring>
+#include <cmath>
 #include <math.h>
 #if defined(_MSC_VER) && _MSC_VER < 1800
 # include <float.h>
@@ -131,6 +132,9 @@ namespace boost {
                          , const CharT* lc_nan
                          , const CharT* lc_infinity) BOOST_NOEXCEPT
         {
+#if defined(__GNUC__)
+            using std::signbit;
+#endif
             const CharT minus = lcast_char_constants<CharT>::minus;
             if (isnan(value)) {
                 if (signbit(value)) {
