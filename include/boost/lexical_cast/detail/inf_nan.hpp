@@ -29,12 +29,9 @@
 
 #include <boost/limits.hpp>
 #include <boost/detail/workaround.hpp>
+#include <boost/core/cmath.hpp>
 #include <cstddef>
 #include <cstring>
-#include <cmath>
-#if defined(_MSC_VER) && _MSC_VER < 1800
-# include <float.h>
-#endif
 
 #include <boost/lexical_cast/detail/lcast_char_constants.hpp>
 
@@ -49,40 +46,6 @@ namespace boost {
 
             return true;
         }
-
-        namespace lcast_math
-        {
-#if defined(_MSC_VER) && _MSC_VER < 1800
-
-            template<class T> T copysign( T x, T y )
-            {
-                return static_cast<T>( _copysign( static_cast<double>( x ), static_cast<double>( y ) ) );
-            }
-
-            template<class T> bool isnan( T x )
-            {
-                return _isnan( static_cast<double>( x ) ) != 0;
-            }
-
-            template<class T> bool isinf( T x )
-            {
-                return ( _fpclass( static_cast<double>( x ) ) & ( _FPCLASS_PINF | _FPCLASS_NINF ) ) != 0;
-            }
-
-            template<class T> bool signbit( T x )
-            {
-                return _copysign( 1.0, static_cast<double>( x ) ) < 0.0;
-            }
-
-#else
-
-            using ::copysign; // it is what it is
-            using std::isnan;
-            using std::isinf;
-            using std::signbit;
-
-#endif
-        } // namespace lcast_math
 
         /* Returns true and sets the correct value if found NaN or Inf. */
         template <class CharT, class T>
@@ -114,7 +77,7 @@ namespace boost {
                 }
 
                 if( !has_minus ) value = std::numeric_limits<T>::quiet_NaN();
-                else value = lcast_math::copysign(std::numeric_limits<T>::quiet_NaN(), static_cast<T>(-1));
+                else value = boost::core::copysign(std::numeric_limits<T>::quiet_NaN(), static_cast<T>(-1));
                 return true;
             } else if (
                 ( /* 'INF' or 'inf' */
@@ -142,8 +105,8 @@ namespace boost {
                          , const CharT* lc_infinity) BOOST_NOEXCEPT
         {
             const CharT minus = lcast_char_constants<CharT>::minus;
-            if (lcast_math::isnan(value)) {
-                if (lcast_math::signbit(value)) {
+            if (boost::core::isnan(value)) {
+                if (boost::core::signbit(value)) {
                     *begin = minus;
                     ++ begin;
                 }
@@ -151,8 +114,8 @@ namespace boost {
                 std::memcpy(begin, lc_nan, 3 * sizeof(CharT));
                 end = begin + 3;
                 return true;
-            } else if (lcast_math::isinf(value)) {
-                if (lcast_math::signbit(value)) {
+            } else if (boost::core::isinf(value)) {
+                if (boost::core::signbit(value)) {
                     *begin = minus;
                     ++ begin;
                 }
