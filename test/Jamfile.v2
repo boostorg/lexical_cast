@@ -1,5 +1,5 @@
 # Copyright (C) 2001-2003 Douglas Gregor
-# Copyright (C) 2011-2017 Antony Polukhin
+# Copyright (C) 2011-2021 Antony Polukhin
 #
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -46,8 +46,8 @@ test-suite conversion
     [ run lexical_cast_containers_test.cpp : : : <toolset>gcc:<cxxflags>-Wno-long-long <toolset>clang:<cxxflags>-Wno-long-long ]
     [ run lexical_cast_empty_input_test.cpp ]
     [ run lexical_cast_pointers_test.cpp ]
-    [ compile lexical_cast_typedefed_wchar_test.cpp : <toolset>msvc:<nowchar>on ]
-    [ run lexical_cast_typedefed_wchar_test_runtime.cpp : : : <toolset>msvc:<nowchar>on <toolset>msvc,<stdlib>stlport:<build>no ]
+    [ compile typedefed_wchar_test.cpp : <toolset>msvc:<nowchar>on ]
+    [ run typedefed_wchar_test_runtime.cpp : : : <toolset>msvc:<nowchar>on <toolset>msvc,<stdlib>stlport:<build>no ]
     [ run lexical_cast_no_locale_test.cpp : : : <define>BOOST_NO_STD_LOCALE <define>BOOST_LEXICAL_CAST_ASSUME_C_LOCALE ]
     [ run lexical_cast_no_exceptions_test.cpp : : : <exception-handling>off
         <define>_HAS_EXCEPTIONS=0 # MSVC stdlib
