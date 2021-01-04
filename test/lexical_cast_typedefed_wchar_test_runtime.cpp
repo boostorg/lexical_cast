@@ -21,21 +21,26 @@
 #include <boost/test/unit_test.hpp>
 using namespace boost;
 
-void test_typedefed_wchar_t_runtime()
+void test_typedefed_wchar_t(unsigned short)  // wchar_t is a typedef for unsigned short
 {
-#ifndef BOOST_LCAST_NO_WCHAR_T
-#ifdef BOOST_MSVC
-    BOOST_STATIC_ASSERT((boost::is_same<wchar_t, unsigned short>::value));
-
-
     BOOST_CHECK_EQUAL(boost::lexical_cast<int>(L'A'), 65);
     BOOST_CHECK_EQUAL(boost::lexical_cast<int>(L'B'), 66);
 
     BOOST_CHECK_EQUAL(boost::lexical_cast<wchar_t>(L"65"), 65);
     BOOST_CHECK_EQUAL(boost::lexical_cast<wchar_t>(L"66"), 66);
-#endif
-#endif
+}
+
+template <class T>
+void test_typedefed_wchar_t(T)
+{
     BOOST_CHECK(1);
+}
+
+
+
+void test_typedefed_wchar_t_runtime()
+{
+    test_typedefed_wchar_t(L'0');
 }
 
 unit_test::test_suite *init_unit_test_suite(int, char *[])

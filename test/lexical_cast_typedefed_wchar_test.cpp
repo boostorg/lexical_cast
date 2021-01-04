@@ -29,10 +29,6 @@ void parseDate()
 
 int main()
 {
-#ifdef BOOST_MSVC
-    BOOST_STATIC_ASSERT((boost::is_same<wchar_t, unsigned short>::value));
-#endif
-
     parseDate();
     return ::boost::lexical_cast<int>(L"1000") == 1000;
 }
