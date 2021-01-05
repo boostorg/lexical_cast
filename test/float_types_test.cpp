@@ -266,7 +266,7 @@ void test_converion_to_float_types()
 
     BOOST_CHECK_THROW(lexical_cast<test_t>("-B"), bad_lexical_cast);
 
-    // Following two tests are not valid for C++11 compilers    
+    // Following two tests are not valid for C++11 compilers
     //BOOST_CHECK_THROW(lexical_cast<test_t>("0xB"), bad_lexical_cast);
     //BOOST_CHECK_THROW(lexical_cast<test_t>("0x0"), bad_lexical_cast);
 
@@ -299,7 +299,7 @@ void test_float_typess_for_overflows()
     BOOST_CHECK_CLOSE_FRACTION(maxvalue, lexical_cast<test_t>(s_max_value), (boost::math::tools::epsilon<test_t>()));
 
 #ifndef _LIBCPP_VERSION
-    // libc++ had a bug in implementation of stream conversions for values that must be represented as infinity. 
+    // libc++ had a bug in implementation of stream conversions for values that must be represented as infinity.
     // http://llvm.org/bugs/show_bug.cgi?id=15723#c4
     BOOST_CHECK_THROW(lexical_cast<test_t>(s_max_value+"1"), bad_lexical_cast);
     BOOST_CHECK_THROW(lexical_cast<test_t>(s_max_value+"9"), bad_lexical_cast);

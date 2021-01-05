@@ -69,7 +69,7 @@ test-suite conversion
     ]
   ;
 
-# Assuring that examples compile and run. Adding sources from `example` directory to the `conversion` test suite. 
+# Assuring that examples compile and run. Adding sources from `example` directory to the `conversion` test suite.
 for local p in [ glob ../example/*.cpp ]
 {
     conversion += [ run $(p) ] ;

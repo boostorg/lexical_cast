@@ -11,7 +11,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include <boost/test/unit_test.hpp>
-    
+
 #include <boost/array.hpp>
 
 void testing_boost_array_output_conversion();
@@ -44,7 +44,7 @@ boost::unit_test::test_suite *init_unit_test_suite(int, char *[])
 }
 
 template <template <class, std::size_t> class ArrayT, class T>
-static void testing_template_array_output_on_spec_value(T val) 
+static void testing_template_array_output_on_spec_value(T val)
 {
     typedef ArrayT<char, 300>             arr_type;
     typedef ArrayT<char, 1>               short_arr_type;
@@ -63,7 +63,7 @@ static void testing_template_array_output_on_spec_value(T val)
         BOOST_CHECK_EQUAL(&res2[0], ethalon);
         BOOST_CHECK_THROW(lexical_cast<short_arr_type>(val), boost::bad_lexical_cast);
     }
-    
+
     {
         uarr_type res1 = lexical_cast<uarr_type>(val);
         BOOST_CHECK_EQUAL(reinterpret_cast<char*>(&res1[0]), ethalon);
@@ -71,7 +71,7 @@ static void testing_template_array_output_on_spec_value(T val)
         BOOST_CHECK_EQUAL(reinterpret_cast<const char*>(&res2[0]), ethalon);
         BOOST_CHECK_THROW(lexical_cast<ushort_arr_type>(val), boost::bad_lexical_cast);
     }
-    
+
     {
         sarr_type res1 = lexical_cast<sarr_type>(val);
         BOOST_CHECK_EQUAL(reinterpret_cast<char*>(&res1[0]), ethalon);
@@ -94,7 +94,7 @@ static void testing_template_array_output_on_spec_value(T val)
         const warr_type res = lexical_cast<warr_type>(val);
         BOOST_CHECK(&res[0] == wethalon);
     }
-    
+
     BOOST_CHECK_THROW(lexical_cast<wshort_arr_type>(val), boost::bad_lexical_cast);
 
 #endif
@@ -113,7 +113,7 @@ static void testing_template_array_output_on_spec_value(T val)
         const u16arr_type res = lexical_cast<u16arr_type>(val);
         BOOST_CHECK(&res[0] == u16ethalon);
     }
-    
+
     BOOST_CHECK_THROW(lexical_cast<u16short_arr_type>(val), boost::bad_lexical_cast);
 #endif
 
@@ -131,14 +131,14 @@ static void testing_template_array_output_on_spec_value(T val)
         const u32arr_type res = lexical_cast<u32arr_type>(val);
         BOOST_CHECK(&res[0] == u32ethalon);
     }
-    
+
     BOOST_CHECK_THROW(lexical_cast<u32short_arr_type>(val), boost::bad_lexical_cast);
 #endif
 }
 
 
 template <template <class, std::size_t> class ArrayT>
-static void testing_template_array_output_on_char_value() 
+static void testing_template_array_output_on_char_value()
 {
     typedef ArrayT<char, 300>             arr_type;
     typedef ArrayT<char, 1>               short_arr_type;
@@ -158,7 +158,7 @@ static void testing_template_array_output_on_char_value()
         BOOST_CHECK_EQUAL(&res2[0], ethalon);
         BOOST_CHECK_THROW(lexical_cast<short_arr_type>(val), boost::bad_lexical_cast);
     }
-    
+
     {
         uarr_type res1 = lexical_cast<uarr_type>(val);
         BOOST_CHECK_EQUAL(reinterpret_cast<char*>(&res1[0]), ethalon);
@@ -166,7 +166,7 @@ static void testing_template_array_output_on_char_value()
         BOOST_CHECK_EQUAL(reinterpret_cast<const char*>(&res2[0]), ethalon);
         BOOST_CHECK_THROW(lexical_cast<ushort_arr_type>(val), boost::bad_lexical_cast);
     }
-    
+
     {
         sarr_type res1 = lexical_cast<sarr_type>(val);
         BOOST_CHECK_EQUAL(reinterpret_cast<char*>(&res1[0]), ethalon);
@@ -193,7 +193,7 @@ static void testing_template_array_output_on_char_value()
         const warr_type res3 = lexical_cast<warr_type>(wethalon);
         BOOST_CHECK(&res3[0] == wethalon);
     }
-    
+
     BOOST_CHECK_THROW(lexical_cast<wshort_arr_type>(val), boost::bad_lexical_cast);
 
 #endif
@@ -206,7 +206,7 @@ static void testing_template_array_output_on_char_value()
     {
 #ifdef BOOST_STL_SUPPORTS_NEW_UNICODE_LOCALES
         u16arr_type res = lexical_cast<u16arr_type>(val);
-        BOOST_CHECK(&res[0] == u16ethalon);  
+        BOOST_CHECK(&res[0] == u16ethalon);
 #endif
 
         u16arr_type res3 = lexical_cast<u16arr_type>(u16ethalon);
@@ -221,9 +221,9 @@ static void testing_template_array_output_on_char_value()
         const u16arr_type res3 = lexical_cast<u16arr_type>(u16ethalon);
         BOOST_CHECK(&res3[0] == u16ethalon);
     }
-    
+
     // Some compillers may throw std::bad_alloc here
-    BOOST_CHECK_THROW(lexical_cast<u16short_arr_type>(val), std::exception); 
+    BOOST_CHECK_THROW(lexical_cast<u16short_arr_type>(val), std::exception);
 #endif
 
 #ifdef BOOST_LC_RUNU32
@@ -248,7 +248,7 @@ static void testing_template_array_output_on_char_value()
         const u32arr_type res3 = lexical_cast<u32arr_type>(u32ethalon);
         BOOST_CHECK(&res3[0] == u32ethalon);
     }
-    
+
     // Some compillers may throw std::bad_alloc here
     BOOST_CHECK_THROW(lexical_cast<u32short_arr_type>(val), std::exception);
 #endif
@@ -256,7 +256,7 @@ static void testing_template_array_output_on_char_value()
 
 
 void testing_boost_array_output_conversion()
-{   
+{
     testing_template_array_output_on_char_value<boost::array>();
     testing_template_array_output_on_spec_value<boost::array>(100);
     testing_template_array_output_on_spec_value<boost::array>(static_cast<short>(100));
@@ -281,47 +281,47 @@ template <template <class, std::size_t> class ArrayT>
 static void testing_generic_array_input_conversion()
 {
     {
-        ArrayT<char, 4> var_zero_terminated = {{ '1', '0', '0', '\0'}}; 
+        ArrayT<char, 4> var_zero_terminated = {{ '1', '0', '0', '\0'}};
         BOOST_CHECK_EQUAL(lexical_cast<std::string>(var_zero_terminated), "100");
         BOOST_CHECK_EQUAL(lexical_cast<int>(var_zero_terminated), 100);
 
-        ArrayT<char, 3> var_none_terminated = {{ '1', '0', '0'}}; 
+        ArrayT<char, 3> var_none_terminated = {{ '1', '0', '0'}};
         BOOST_CHECK_EQUAL(lexical_cast<std::string>(var_none_terminated), "100");
         BOOST_CHECK_EQUAL(lexical_cast<short>(var_none_terminated), static_cast<short>(100));
 
-        ArrayT<const char, 4> var_zero_terminated_const_char = {{ '1', '0', '0', '\0'}}; 
+        ArrayT<const char, 4> var_zero_terminated_const_char = {{ '1', '0', '0', '\0'}};
         BOOST_CHECK_EQUAL(lexical_cast<std::string>(var_zero_terminated_const_char), "100");
 
-        ArrayT<const char, 3> var_none_terminated_const_char = {{ '1', '0', '0'}}; 
+        ArrayT<const char, 3> var_none_terminated_const_char = {{ '1', '0', '0'}};
         BOOST_CHECK_EQUAL(lexical_cast<std::string>(var_none_terminated_const_char), "100");
 
-        const ArrayT<char, 4> var_zero_terminated_const_var = {{ '1', '0', '0', '\0'}}; 
+        const ArrayT<char, 4> var_zero_terminated_const_var = {{ '1', '0', '0', '\0'}};
         BOOST_CHECK_EQUAL(lexical_cast<std::string>(var_zero_terminated_const_var), "100");
 
-        const ArrayT<char, 3> var_none_terminated_const_var = {{ '1', '0', '0'}}; 
+        const ArrayT<char, 3> var_none_terminated_const_var = {{ '1', '0', '0'}};
         BOOST_CHECK_EQUAL(lexical_cast<std::string>(var_none_terminated_const_var), "100");
 
-        const ArrayT<const char, 4> var_zero_terminated_const_var_const_char = {{ '1', '0', '0', '\0'}}; 
+        const ArrayT<const char, 4> var_zero_terminated_const_var_const_char = {{ '1', '0', '0', '\0'}};
         BOOST_CHECK_EQUAL(lexical_cast<std::string>(var_zero_terminated_const_var_const_char), "100");
 
-        const ArrayT<const char, 3> var_none_terminated_const_var_const_char = {{ '1', '0', '0'}}; 
+        const ArrayT<const char, 3> var_none_terminated_const_var_const_char = {{ '1', '0', '0'}};
         BOOST_CHECK_EQUAL(lexical_cast<std::string>(var_none_terminated_const_var_const_char), "100");
         BOOST_CHECK_EQUAL(lexical_cast<int>(var_none_terminated_const_var_const_char), 100);
     }
 
     {
-        const ArrayT<const unsigned char, 4> var_zero_terminated_const_var_const_char = {{ '1', '0', '0', '\0'}}; 
+        const ArrayT<const unsigned char, 4> var_zero_terminated_const_var_const_char = {{ '1', '0', '0', '\0'}};
         BOOST_CHECK_EQUAL(lexical_cast<std::string>(var_zero_terminated_const_var_const_char), "100");
 
-        const ArrayT<const unsigned char, 3> var_none_terminated_const_var_const_char = {{ '1', '0', '0'}}; 
+        const ArrayT<const unsigned char, 3> var_none_terminated_const_var_const_char = {{ '1', '0', '0'}};
         BOOST_CHECK_EQUAL(lexical_cast<std::string>(var_none_terminated_const_var_const_char), "100");
     }
 
     {
-        const ArrayT<const signed char, 4> var_zero_terminated_const_var_const_char = {{ '1', '0', '0', '\0'}}; 
+        const ArrayT<const signed char, 4> var_zero_terminated_const_var_const_char = {{ '1', '0', '0', '\0'}};
         BOOST_CHECK_EQUAL(lexical_cast<std::string>(var_zero_terminated_const_var_const_char), "100");
 
-        const ArrayT<const signed char, 3> var_none_terminated_const_var_const_char = {{ '1', '0', '0'}}; 
+        const ArrayT<const signed char, 3> var_none_terminated_const_var_const_char = {{ '1', '0', '0'}};
         BOOST_CHECK_EQUAL(lexical_cast<std::string>(var_none_terminated_const_var_const_char), "100");
         BOOST_CHECK_EQUAL(lexical_cast<unsigned int>(var_none_terminated_const_var_const_char), 100u);
     }
@@ -329,10 +329,10 @@ static void testing_generic_array_input_conversion()
 
 #if !defined(BOOST_NO_STRINGSTREAM) && !defined(BOOST_NO_STD_WSTRING)
     {
-        const ArrayT<const wchar_t, 4> var_zero_terminated_const_var_const_char = {{ L'1', L'0', L'0', L'\0'}}; 
+        const ArrayT<const wchar_t, 4> var_zero_terminated_const_var_const_char = {{ L'1', L'0', L'0', L'\0'}};
         BOOST_CHECK(lexical_cast<std::wstring>(var_zero_terminated_const_var_const_char) == L"100");
 
-        const ArrayT<const wchar_t, 3> var_none_terminated_const_var_const_char = {{ L'1', L'0', L'0'}}; 
+        const ArrayT<const wchar_t, 3> var_none_terminated_const_var_const_char = {{ L'1', L'0', L'0'}};
         BOOST_CHECK(lexical_cast<std::wstring>(var_none_terminated_const_var_const_char) == L"100");
         BOOST_CHECK_EQUAL(lexical_cast<int>(var_none_terminated_const_var_const_char), 100);
     }
@@ -340,21 +340,21 @@ static void testing_generic_array_input_conversion()
 
 #ifdef BOOST_LC_RUNU16
     {
-        const ArrayT<const char16_t, 4> var_zero_terminated_const_var_const_char = {{ u'1', u'0', u'0', u'\0'}}; 
+        const ArrayT<const char16_t, 4> var_zero_terminated_const_var_const_char = {{ u'1', u'0', u'0', u'\0'}};
         BOOST_CHECK(lexical_cast<std::u16string>(var_zero_terminated_const_var_const_char) == u"100");
         BOOST_CHECK_EQUAL(lexical_cast<unsigned short>(var_zero_terminated_const_var_const_char), static_cast<unsigned short>(100));
 
-        const ArrayT<const char16_t, 3> var_none_terminated_const_var_const_char = {{ u'1', u'0', u'0'}}; 
+        const ArrayT<const char16_t, 3> var_none_terminated_const_var_const_char = {{ u'1', u'0', u'0'}};
         BOOST_CHECK(lexical_cast<std::u16string>(var_none_terminated_const_var_const_char) == u"100");
     }
 #endif
 
 #ifdef BOOST_LC_RUNU32
     {
-        const ArrayT<const char32_t, 4> var_zero_terminated_const_var_const_char = {{ U'1', U'0', U'0', U'\0'}}; 
+        const ArrayT<const char32_t, 4> var_zero_terminated_const_var_const_char = {{ U'1', U'0', U'0', U'\0'}};
         BOOST_CHECK(lexical_cast<std::u32string>(var_zero_terminated_const_var_const_char) == U"100");
 
-        const ArrayT<const char32_t, 3> var_none_terminated_const_var_const_char = {{ U'1', U'0', U'0'}}; 
+        const ArrayT<const char32_t, 3> var_none_terminated_const_var_const_char = {{ U'1', U'0', U'0'}};
         BOOST_CHECK(lexical_cast<std::u32string>(var_none_terminated_const_var_const_char) == U"100");
         BOOST_CHECK_EQUAL(lexical_cast<int>(var_none_terminated_const_var_const_char), 100);
     }

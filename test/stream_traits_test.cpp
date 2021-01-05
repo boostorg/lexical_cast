@@ -25,7 +25,7 @@ static void test_optimized_types_to_string_const()
     BOOST_CHECK((boost::is_same<BOOST_DEDUCED_TYPENAME trait_1::char_type, char>::value));
     BOOST_CHECK(!trait_1::is_string_widening_required_t::value);
     BOOST_CHECK(!trait_1::is_source_input_not_optimized_t::value);
-        
+
     typedef de::lexical_cast_stream_traits<const T, std::string> trait_2;
     BOOST_CHECK(!trait_2::is_source_input_not_optimized_t::value);
     BOOST_CHECK((boost::is_same<BOOST_DEDUCED_TYPENAME trait_2::src_char_t, char>::value));
@@ -43,7 +43,7 @@ static void test_optimized_types_to_string_const()
     BOOST_CHECK((boost::detail::is_character<BOOST_DEDUCED_TYPENAME trait_3::no_cv_src>::value != trait_3::is_string_widening_required_t::value));
 
     BOOST_CHECK(!trait_3::is_source_input_not_optimized_t::value);
-}    
+}
 
 
 template <class T>
@@ -59,7 +59,7 @@ static void test_optimized_types_to_string()
     BOOST_CHECK((boost::is_same<BOOST_DEDUCED_TYPENAME trait_4::char_type, char>::value));
     BOOST_CHECK(!trait_4::is_string_widening_required_t::value);
     BOOST_CHECK(!trait_4::is_source_input_not_optimized_t::value);
-        
+
     typedef de::lexical_cast_stream_traits<const std::string, T> trait_5;
     BOOST_CHECK(!trait_5::is_source_input_not_optimized_t::value);
     BOOST_CHECK((boost::is_same<BOOST_DEDUCED_TYPENAME trait_5::src_char_t, char>::value));
@@ -96,7 +96,7 @@ void test_metafunctions()
     test_optimized_types_to_string<unsigned __int64>();
     test_optimized_types_to_string<__int64>();
 #endif
-    
+
     test_optimized_types_to_string<std::string>();
     test_optimized_types_to_string<char*>();
     //test_optimized_types_to_string<char[5]>();
@@ -134,7 +134,7 @@ void test_metafunctions()
     test_optimized_types_to_string<std::array<unsigned char, 5> >();
     test_optimized_types_to_string<std::array<signed char, 1> >();
     test_optimized_types_to_string<std::array<signed char, 5> >();
-    
+
     test_optimized_types_to_string_const<std::array<const char, 1> >();
     test_optimized_types_to_string_const<std::array<const char, 5> >();
     test_optimized_types_to_string_const<std::array<const unsigned char, 1> >();

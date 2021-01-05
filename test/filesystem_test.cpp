@@ -42,7 +42,7 @@ void test_filesystem()
     p = boost::lexical_cast<boost::filesystem::path>(ab);
     BOOST_CHECK(!p.empty());
     BOOST_CHECK_EQUAL(p, ab);
-    
+
     // Tests for
     // https://github.com/boostorg/lexical_cast/issues/25
 
@@ -54,7 +54,7 @@ void test_filesystem()
 
     // Converting back to std::string gives the initial string
     BOOST_CHECK_EQUAL(boost::lexical_cast<std::string>(p), quoted_path);
-    
+
     try {
         // Without quotes the path will have only `/home/my` in it.
         // `user` remains in the stream, so an exception must be thrown.

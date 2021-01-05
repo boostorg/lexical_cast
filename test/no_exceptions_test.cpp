@@ -36,10 +36,10 @@ BOOST_NORETURN void throw_exception(std::exception const & ) {
 
     EscapeStruct v("");
     switch(state) {
-    case 1: 
+    case 1:
         lexical_cast<char>(v); // should call boost::throw_exception
         std::exit(1);
-    case 2:    
+    case 2:
         lexical_cast<unsigned char>(v); // should call boost::throw_exception
         std::exit(2);
     }
@@ -51,7 +51,7 @@ BOOST_NORETURN void throw_exception(std::exception const & ) {
 void test_exceptions_off() {
     using namespace boost;
     EscapeStruct v("");
-    
+
     v = lexical_cast<EscapeStruct>(100);
     BOOST_TEST_EQ(lexical_cast<int>(v), 100);
     BOOST_TEST_EQ(lexical_cast<unsigned int>(v), 100u);

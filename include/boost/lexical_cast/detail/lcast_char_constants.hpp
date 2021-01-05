@@ -23,7 +23,7 @@
 #   pragma once
 #endif
 
-namespace boost 
+namespace boost
 {
     namespace detail // '0', '-', '+', 'e', 'E' and '.' constants
     {

@@ -16,8 +16,8 @@
 struct to_long_double_functor: boost::static_visitor<long double> {
     template <class T>
     long double operator()(const T& v) const {
-        // Lexical cast has many optimizations including optimizations for situations that usually 
-        // occur in generic programming, like std::string to std::string or arithmetic type to arithmetic type conversion. 
+        // Lexical cast has many optimizations including optimizations for situations that usually
+        // occur in generic programming, like std::string to std::string or arithmetic type to arithmetic type conversion.
         return boost::lexical_cast<long double>(v);
     }
 };

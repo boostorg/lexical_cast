@@ -13,7 +13,7 @@
 #endif
 
 //[lexical_cast_log_errno
-//`The following example uses numeric data in a string expression: 
+//`The following example uses numeric data in a string expression:
 
 void log_message(const std::string &);
 

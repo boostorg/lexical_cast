@@ -371,8 +371,8 @@ void test_conversion_from_to_integral_for_locale()
     test_conversion_from_integral_to_integral<T>();
 
     // This is a part of test_conversion_from_integral_to_string<T>('0') method,
-    // but with BOOST_CHECK_EQUAL instead of BOOST_CHECK. It is required to see 
-    // what is produced by the to_str<char>(t) method in situations when result 
+    // but with BOOST_CHECK_EQUAL instead of BOOST_CHECK. It is required to see
+    // what is produced by the to_str<char>(t) method in situations when result
     // is different. BOOST_CHECK does not work with wchar_t.
     typedef std::numeric_limits<T> limits;
     T t = (limits::min)();
@@ -382,7 +382,7 @@ void test_conversion_from_to_integral_for_locale()
     test_conversion_from_string_to_integral<T>('0');
 #if !defined(BOOST_LCAST_NO_WCHAR_T)
     if (lexical_cast<std::wstring>(t) != to_str<wchar_t>(t)) {
-        // Something went wrong, and now we are attempting to find and print the 
+        // Something went wrong, and now we are attempting to find and print the
         // difference.
         std::wstring wstr = to_str<wchar_t>(t);
         std::string lcast_str = lexical_cast<std::string>(t);
@@ -391,7 +391,7 @@ void test_conversion_from_to_integral_for_locale()
         for (std::size_t i = 0; i < wstr.size(); ++i) {
             str.push_back(static_cast<char>(wstr[i]));
         }
-        
+
         BOOST_CHECK_EQUAL(lcast_str.length(), lexical_cast<std::wstring>(t).length());
         BOOST_CHECK_EQUAL(to_str<char>(t), str);
         BOOST_CHECK_EQUAL(lcast_str, str);
@@ -596,7 +596,7 @@ struct test_if_specialized<true, T> {
 void test_conversion_from_to_int128()
 {
     test_if_specialized<
-        std::numeric_limits<boost::int128_type>::is_specialized, 
+        std::numeric_limits<boost::int128_type>::is_specialized,
         boost::int128_type
     >::test();
 }
@@ -604,7 +604,7 @@ void test_conversion_from_to_int128()
 void test_conversion_from_to_uint128()
 {
     test_if_specialized<
-        std::numeric_limits<boost::int128_type>::is_specialized, 
+        std::numeric_limits<boost::int128_type>::is_specialized,
         boost::uint128_type
     >::test();
 }
@@ -615,7 +615,7 @@ void test_integral_conversions_on_min_max_impl()
 {
     typedef SignedT signed_t;
     typedef BOOST_DEDUCED_TYPENAME boost::make_unsigned<signed_t>::type unsigned_t;
-    
+
     typedef std::numeric_limits<signed_t> s_limits;
     typedef std::numeric_limits<unsigned_t> uns_limits;
 
