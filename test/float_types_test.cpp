@@ -21,6 +21,7 @@
 #include <boost/cstdint.hpp>
 #include <boost/test/unit_test.hpp>
 #include <boost/test/tools/floating_point_comparison.hpp>
+#include <boost/math/tools/config.hpp>  // BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
 #include <boost/math/tools/precision.hpp>
 
 void test_conversion_from_to_float();
@@ -519,10 +520,4 @@ void test_conversion_from_to_long_double()
 #endif
     BOOST_CHECK(true);
 }
-
-
-
-
-
-
 
