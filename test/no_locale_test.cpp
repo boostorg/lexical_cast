@@ -25,7 +25,7 @@
 using namespace boost;
 
 // Testing compilation and some basic usage with BOOST_NO_STD_LOCALE
-// Tests are mainly copyied from lexical_cast_empty_input_test.cpp (something
+// Tests are mainly copyied from empty_input_test.cpp (something
 // new added to test_empty_3)
 
 #ifndef BOOST_NO_STD_LOCALE

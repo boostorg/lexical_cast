@@ -36,35 +36,35 @@ feature.compose <nowchar>on : <cxxflags>"/Zc:wchar_t-" ;
 
 test-suite conversion
   : [ run lexical_cast_test.cpp ]
-    [ run lexical_cast_loopback_test.cpp ]
-    [ run lexical_cast_abstract_test.cpp ]
-    [ run lexical_cast_noncopyable_test.cpp ]
-    [ run lexical_cast_vc8_bug_test.cpp ]
-    [ run lexical_cast_wchars_test.cpp ]
-    [ run lexical_cast_float_types_test.cpp ]
-    [ run lexical_cast_inf_nan_test.cpp ]
-    [ run lexical_cast_containers_test.cpp : : : <toolset>gcc:<cxxflags>-Wno-long-long <toolset>clang:<cxxflags>-Wno-long-long ]
-    [ run lexical_cast_empty_input_test.cpp ]
-    [ run lexical_cast_pointers_test.cpp ]
+    [ run loopback_test.cpp ]
+    [ run abstract_test.cpp ]
+    [ run noncopyable_test.cpp ]
+    [ run vc8_bug_test.cpp ]
+    [ run wchars_test.cpp ]
+    [ run float_types_test.cpp ]
+    [ run inf_nan_test.cpp ]
+    [ run containers_test.cpp : : : <toolset>gcc:<cxxflags>-Wno-long-long <toolset>clang:<cxxflags>-Wno-long-long ]
+    [ run empty_input_test.cpp ]
+    [ run pointers_test.cpp ]
     [ compile typedefed_wchar_test.cpp : <toolset>msvc:<nowchar>on ]
     [ run typedefed_wchar_test_runtime.cpp : : : <toolset>msvc:<nowchar>on <toolset>msvc,<stdlib>stlport:<build>no ]
-    [ run lexical_cast_no_locale_test.cpp : : : <define>BOOST_NO_STD_LOCALE <define>BOOST_LEXICAL_CAST_ASSUME_C_LOCALE ]
-    [ run lexical_cast_no_exceptions_test.cpp : : : <exception-handling>off
+    [ run no_locale_test.cpp : : : <define>BOOST_NO_STD_LOCALE <define>BOOST_LEXICAL_CAST_ASSUME_C_LOCALE ]
+    [ run no_exceptions_test.cpp : : : <exception-handling>off
         <define>_HAS_EXCEPTIONS=0 # MSVC stdlib
         <define>_STLP_NO_EXCEPTIONS # STLPort
         -<library>/boost/test//boost_unit_test_framework # uses lightweight_test
     ]
-    [ run lexical_cast_iterator_range_test.cpp ]
-    [ run lexical_cast_arrays_test.cpp : : :
+    [ run iterator_range_test.cpp ]
+    [ run arrays_test.cpp : : :
         <toolset>msvc:<cxxflags>/wd4512 # assignment operator could not be generated
     ]
-    [ run lexical_cast_integral_types_test.cpp ]
-    [ run lexical_cast_stream_detection_test.cpp ]
-    [ run lexical_cast_stream_traits_test.cpp ]
-    [ compile-fail lexical_cast_to_pointer_test.cpp ]
-    [ run lexical_cast_filesystem_test.cpp ../../filesystem/build//boost_filesystem/<link>static ]
-    [ run lexical_cast_try_lexical_convert.cpp ]
-    [ run lexical_cast_no_comp_time_prcision.cpp : : :
+    [ run integral_types_test.cpp ]
+    [ run stream_detection_test.cpp ]
+    [ run stream_traits_test.cpp ]
+    [ compile-fail to_pointer_test.cpp ]
+    [ run filesystem_test.cpp ../../filesystem/build//boost_filesystem/<link>static ]
+    [ run try_lexical_convert.cpp ]
+    [ run no_comp_time_prcision.cpp : : :
         <toolset>msvc:<cxxflags>/wd4127 # conditional expression is constant
     ]
   ;
