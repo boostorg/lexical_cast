@@ -515,7 +515,7 @@ void test_conversion_from_to_double()
 void test_conversion_from_to_long_double()
 {
 // We do not run tests on compilers and Standard Libraries with poor support of long double
-#if !defined(BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS) && !defined(__MINGW32__)
+#if !defined(BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS) && !defined(__MINGW64__)
     test_conversion_from_to_float<long double>();
 #endif
     BOOST_CHECK(true);

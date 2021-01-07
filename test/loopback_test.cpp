@@ -20,6 +20,7 @@
 #endif
 
 #include <boost/lexical_cast.hpp>
+#include <boost/math/tools/config.hpp>  // BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
 #include <boost/test/unit_test.hpp>
 
 using namespace boost;
@@ -86,8 +87,8 @@ void test_round_conversion_double()
 
 void test_round_conversion_long_double()
 {
-// We do not run tests on compilers with bugs
-#ifndef BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
+// We do not run tests on compilers and Standard Libraries with poor support of long double
+#if !defined(BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS) && !defined(__MINGW64__)
     test_round_conversion<long double>();
     test_msvc_magic_values<long double>();
 #endif
