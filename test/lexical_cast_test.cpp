@@ -373,23 +373,23 @@ void test_conversion_from_wchar_t()
 void test_conversion_to_wchar_t()
 {
 #if !defined(BOOST_LCAST_NO_WCHAR_T) && !defined(BOOST_NO_INTRINSIC_WCHAR_T)
-    BOOST_CHECK_EQUAL(L'1', lexical_cast<wchar_t>(1));
-    BOOST_CHECK_EQUAL(L'0', lexical_cast<wchar_t>(0));
-    BOOST_CHECK_EQUAL(L'1', lexical_cast<wchar_t>('1'));
-    BOOST_CHECK_EQUAL(L'0', lexical_cast<wchar_t>('0'));
+    BOOST_CHECK(L'1' == lexical_cast<wchar_t>(1));
+    BOOST_CHECK(L'0' == lexical_cast<wchar_t>(0));
+    BOOST_CHECK(L'1' == lexical_cast<wchar_t>('1'));
+    BOOST_CHECK(L'0' == lexical_cast<wchar_t>('0'));
     BOOST_CHECK_THROW(lexical_cast<wchar_t>(123), bad_lexical_cast);
-    BOOST_CHECK_EQUAL(L'1', lexical_cast<wchar_t>(1.0));
-    BOOST_CHECK_EQUAL(L'0', lexical_cast<wchar_t>(0.0));
-    BOOST_CHECK_EQUAL(L'1', lexical_cast<wchar_t>(true));
-    BOOST_CHECK_EQUAL(L'0', lexical_cast<wchar_t>(false));
-    BOOST_CHECK_EQUAL(L'A', lexical_cast<wchar_t>(L'A'));
-    BOOST_CHECK_EQUAL(L' ', lexical_cast<wchar_t>(L' '));
-    BOOST_CHECK_EQUAL(L'A', lexical_cast<wchar_t>(L"A"));
-    BOOST_CHECK_EQUAL(L' ', lexical_cast<wchar_t>(L" "));
+    BOOST_CHECK(L'1' == lexical_cast<wchar_t>(1.0));
+    BOOST_CHECK(L'0' == lexical_cast<wchar_t>(0.0));
+    BOOST_CHECK(L'1' == lexical_cast<wchar_t>(true));
+    BOOST_CHECK(L'0' == lexical_cast<wchar_t>(false));
+    BOOST_CHECK(L'A' == lexical_cast<wchar_t>(L'A'));
+    BOOST_CHECK(L' ' == lexical_cast<wchar_t>(L' '));
+    BOOST_CHECK(L'A' == lexical_cast<wchar_t>(L"A"));
+    BOOST_CHECK(L' ' == lexical_cast<wchar_t>(L" "));
     BOOST_CHECK_THROW(lexical_cast<wchar_t>(L""), bad_lexical_cast);
     BOOST_CHECK_THROW(lexical_cast<wchar_t>(L"Test"), bad_lexical_cast);
-    BOOST_CHECK_EQUAL(L'A', lexical_cast<wchar_t>(std::wstring(L"A")));
-    BOOST_CHECK_EQUAL(L' ', lexical_cast<wchar_t>(std::wstring(L" ")));
+    BOOST_CHECK(L'A' == lexical_cast<wchar_t>(std::wstring(L"A")));
+    BOOST_CHECK(L' ' == lexical_cast<wchar_t>(std::wstring(L" ")));
     BOOST_CHECK_THROW(
         lexical_cast<wchar_t>(std::wstring(L"")), bad_lexical_cast);
     BOOST_CHECK_THROW(
