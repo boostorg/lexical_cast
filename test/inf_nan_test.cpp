@@ -19,8 +19,7 @@
 #include <boost/lexical_cast.hpp>
 
 
-#include <boost/math/special_functions/sign.hpp>
-#include <boost/math/special_functions/fpclassify.hpp>
+#include <boost/core/cmath.hpp>
 #include <boost/type_traits/is_same.hpp>
 #include <boost/test/unit_test.hpp>
 #include <boost/test/tools/floating_point_comparison.hpp>
@@ -34,19 +33,19 @@ using namespace boost;
 template <class T>
 bool is_pos_inf(T value)
 {
-    return (boost::math::isinf)(value) && !(boost::math::signbit)(value);
+    return (boost::core::isinf)(value) && !(boost::core::signbit)(value);
 }
 
 template <class T>
 bool is_neg_inf(T value)
 {
-    return (boost::math::isinf)(value) && (boost::math::signbit)(value);
+    return (boost::core::isinf)(value) && (boost::core::signbit)(value);
 }
 
 template <class T>
 bool is_pos_nan(T value)
 {
-    return (boost::math::isnan)(value) && !(boost::math::signbit)(value);
+    return (boost::core::isnan)(value) && !(boost::core::signbit)(value);
 }
 
 template <class T>
@@ -55,10 +54,10 @@ bool is_neg_nan(T value)
     /* There is some strange behaviour on Itanium platform with -nan nuber for long double.
     * It is a IA64 feature, or it is a boost::math feature, not a lexical_cast bug */
 #if defined(__ia64__) || defined(_M_IA64)
-    return (boost::math::isnan)(value)
-            && ( boost::is_same<T, long double >::value || (boost::math::signbit)(value) );
+    return (boost::core::isnan)(value)
+            && ( boost::is_same<T, long double >::value || (boost::core::signbit)(value) );
 #else
-    return (boost::math::isnan)(value) && (boost::math::signbit)(value);
+    return (boost::core::isnan)(value) && (boost::core::signbit)(value);
 #endif
 }
 
@@ -113,13 +112,13 @@ void test_inf_nan_templated()
     BOOST_CHECK( is_pos_nan( lexical_cast<test_t>("NAN(some string)") ) );
     BOOST_CHECK_THROW( lexical_cast<test_t>("NAN(some string"), bad_lexical_cast );
 
-    BOOST_CHECK(lexical_cast<std::string>( (boost::math::changesign)(std::numeric_limits<test_t >::infinity()))
+    BOOST_CHECK(lexical_cast<std::string>( (boost::core::copysign)(std::numeric_limits<test_t >::infinity(), static_cast<test_t>(-1.0)))
                 == "-inf" );
     BOOST_CHECK(lexical_cast<std::string>( std::numeric_limits<test_t >::infinity()) == "inf" );
     BOOST_CHECK(lexical_cast<std::string>( std::numeric_limits<test_t >::quiet_NaN()) == "nan" );
 #if !defined(__ia64__) && !defined(_M_IA64)
     BOOST_CHECK(lexical_cast<std::string>(
-                (boost::math::changesign)(std::numeric_limits<test_t >::quiet_NaN()))
+                (boost::core::copysign)(std::numeric_limits<test_t >::quiet_NaN(), static_cast<test_t>(-1.0)))
                 == "-nan" );
 #endif
 
@@ -161,13 +160,13 @@ void test_inf_nan_templated()
     BOOST_CHECK( is_pos_nan( lexical_cast<test_t>(L"NAN(some string)") ) );
     BOOST_CHECK_THROW( lexical_cast<test_t>(L"NAN(some string"), bad_lexical_cast );
 
-    BOOST_CHECK(lexical_cast<std::wstring>( (boost::math::changesign)(std::numeric_limits<test_t >::infinity()))
+    BOOST_CHECK(lexical_cast<std::wstring>( (boost::core::copysign)(std::numeric_limits<test_t >::infinity(), static_cast<test_t>(-1.0)))
                 == L"-inf" );
     BOOST_CHECK(lexical_cast<std::wstring>( std::numeric_limits<test_t >::infinity()) == L"inf" );
     BOOST_CHECK(lexical_cast<std::wstring>( std::numeric_limits<test_t >::quiet_NaN()) == L"nan" );
 #if !defined(__ia64__) && !defined(_M_IA64)
     BOOST_CHECK(lexical_cast<std::wstring>(
-                (boost::math::changesign)(std::numeric_limits<test_t >::quiet_NaN()))
+                (boost::core::copysign)(std::numeric_limits<test_t >::quiet_NaN(), static_cast<test_t>(-1.0)))
                 == L"-nan" );
 #endif
 
