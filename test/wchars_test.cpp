@@ -42,8 +42,8 @@ void test_impl(const CharT* wc_arr)
     BOOST_CHECK(boost::lexical_cast<wide_string>(sc_arr) == wide_string(wc_arr) );
     BOOST_CHECK(boost::lexical_cast<wide_string>(uc_arr) == wide_string(wc_arr) );
 
-    BOOST_CHECK_EQUAL(boost::lexical_cast<wide_char>(uc_arr[0]), wc_arr[0]);
-    BOOST_CHECK_EQUAL(boost::lexical_cast<wide_char>(sc_arr[0]), wc_arr[0]);
+    BOOST_CHECK(boost::lexical_cast<wide_char>(uc_arr[0]) == wc_arr[0]);
+    BOOST_CHECK(boost::lexical_cast<wide_char>(sc_arr[0]) == wc_arr[0]);
 }
 
 
