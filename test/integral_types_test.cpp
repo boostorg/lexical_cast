@@ -48,7 +48,7 @@
 #define BOOST_LCAST_NO_WCHAR_T
 #endif
 
-#if defined(BOOST_HAS_INT128) && defined(BOOST_LEXICAL_CAST_TEST_NO_128_INTS)
+#if defined(BOOST_HAS_INT128) && !defined(BOOST_LEXICAL_CAST_TEST_NO_128_INTS)
 # define BOOST_LCAST_TEST_128 1
 #endif
 
