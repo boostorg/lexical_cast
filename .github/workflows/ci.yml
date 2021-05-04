@@ -30,10 +30,8 @@ jobs:
           - toolset: gcc-10
             cxxstd: "03,11,14,17,2a"
             os: ubuntu-18.04
-            locale: "ru_RU.UTF-8"
-            cxxflags: "cxxflags=--coverage -fsanitize=address,leak,undefined -fno-sanitize-recover=undefined"
-            linkflags: "linkflags=--coverage -lasan -lubsan"
-            gcov_tool: "gcov-10"
+            cxxflags: "cxxflags=-fsanitize=address,leak,undefined -fno-sanitize-recover=undefined"
+            linkflags: "linkflags=-lasan -lubsan"
             launcher: "testing.launcher=LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libasan.so.6"
           - toolset: clang
             compiler: clang++-3.7
@@ -44,10 +42,6 @@ jobs:
             compiler: clang++-9
             cxxstd: "03,11,14,17,2a"
             os: ubuntu-20.04
-            locale: "ru_RU.UTF-8"
-            cxxflags: "cxxflags=--coverage"
-            linkflags: "linkflags=--coverage"
-            gcov_tool: "llvm-cov-9 gcov"
           - toolset: clang
             compiler: clang++-10
             cxxstd: "03,11,14,17,2a"
@@ -71,13 +65,6 @@ jobs:
       - name: Install packages
         if: matrix.install
         run: sudo apt install ${{matrix.install}}
-
-      - name: Set locale
-        if: matrix.locale
-        run: |
-          sudo apt install locales
-          sudo locale-gen ${{matrix.locale}}
-          sudo update-locale LANG=${{matrix.locale}}
 
       - name: Setup Boost
         run: |
@@ -195,6 +182,7 @@ jobs:
           b2 -j3 libs/%LIBRARY%/test toolset=${{matrix.toolset}} cxxstd=${{matrix.cxxstd}} address-model=${{matrix.addrmd}} variant=debug,release
 
   finish:
+    if: false
     needs: posix
     runs-on: ubuntu-latest
     steps:
