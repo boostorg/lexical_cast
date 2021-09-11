@@ -17,31 +17,22 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - toolset: gcc-4.8
-            cxxstd: "03,11"
-            os: ubuntu-16.04
-            install: g++-4.8
           - toolset: gcc-7
             cxxstd: "03,11,14,17"
             os: ubuntu-18.04
           - toolset: gcc-9
             cxxstd: "03,11,14,17,2a"
             os: ubuntu-18.04
+            cxxflags: "cxxflags=--coverage -fsanitize=address,leak"
+            linkflags: "linkflags=--coverage -lasan"
+            launcher: "testing.launcher=LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libasan.so.5"
+            gcov_tool: "gcov-9"
           - toolset: gcc-10
             cxxstd: "03,11,14,17,2a"
             os: ubuntu-18.04
             cxxflags: "cxxflags=-fsanitize=address,leak,undefined -fno-sanitize-recover=undefined"
             linkflags: "linkflags=-lasan -lubsan"
             launcher: "testing.launcher=LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libasan.so.6"
-          - toolset: clang
-            compiler: clang++-3.7
-            cxxstd: "03,11,14"
-            os: ubuntu-16.04
-            install: clang-3.7
-          - toolset: clang
-            compiler: clang++-9
-            cxxstd: "03,11,14,17,2a"
-            os: ubuntu-20.04
           - toolset: clang
             compiler: clang++-10
             cxxstd: "03,11,14,17,2a"
@@ -90,11 +81,6 @@ jobs:
           ./bootstrap.sh
           ./b2 -d0 headers
           ./b2 -j4 variant=debug tools/inspect/build
-
-      - name: Create user-config.jam
-        if: matrix.compiler
-        run: |
-          echo "using ${{matrix.toolset}} : : ${{matrix.compiler}} ;" > ~/user-config.jam
 
       - name: Run tests
         run: |
@@ -167,7 +153,7 @@ jobs:
           for /f %%i in ("%GITHUB_BASE_REF%") do if "%%~nxi" == "master" set BOOST_BRANCH=master
           echo BOOST_BRANCH: %BOOST_BRANCH%
           cd ..
-          git clone -b %BOOST_BRANCH% --depth 1 https://github.com/boostorg/boost.git boost-root
+          git clone -b %BOOST_BRANCH% --depth 10 https://github.com/boostorg/boost.git boost-root
           cd boost-root
           xcopy /s /e /q %GITHUB_WORKSPACE% libs\%LIBRARY%\
           git submodule update --init tools/boostdep
