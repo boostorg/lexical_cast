@@ -56,8 +56,7 @@ namespace boost
                    "source type value could not be interpreted as target";
         }
 
-        ~bad_lexical_cast() BOOST_NOEXCEPT_OR_NOTHROW BOOST_OVERRIDE
-        {}
+        BOOST_DEFAULTED_FUNCTION(~bad_lexical_cast() BOOST_NOEXCEPT_OR_NOTHROW BOOST_OVERRIDE, {})
 
 #ifndef BOOST_NO_TYPEID
     private:
