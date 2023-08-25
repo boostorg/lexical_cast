@@ -56,10 +56,17 @@ namespace boost
                    "source type value could not be interpreted as target";
         }
 
+#if BOOST_WORKAROUND(BOOST_GCC, < 40700)
+        // gcc 4.6 doesn't support explicit exception specifications in defaulted functions.
+        // It also doesn't emit warnings about deprecated implicit copy constructor and assignment,
+        // so we don't need to define those as defaulted.
+        ~bad_lexical_cast() BOOST_NOEXCEPT_OR_NOTHROW BOOST_OVERRIDE {}
+#else
         ~bad_lexical_cast() BOOST_NOEXCEPT_OR_NOTHROW BOOST_OVERRIDE = default;
 
         bad_lexical_cast(const bad_lexical_cast&) BOOST_NOEXCEPT_OR_NOTHROW = default;
         bad_lexical_cast& operator=(const bad_lexical_cast&) BOOST_NOEXCEPT_OR_NOTHROW = default;
+#endif
 
 #ifndef BOOST_NO_TYPEID
     private:
