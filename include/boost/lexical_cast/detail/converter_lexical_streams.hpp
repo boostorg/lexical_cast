@@ -65,11 +65,8 @@
 
 #include <istream>
 
-#ifndef BOOST_NO_CXX11_HDR_ARRAY
 #include <array>
-#endif
 
-#include <boost/array.hpp>
 #include <boost/type_traits/make_unsigned.hpp>
 #include <boost/type_traits/is_integral.hpp>
 #include <boost/type_traits/is_float.hpp>
@@ -83,6 +80,10 @@
 #endif
 
 namespace boost {
+
+    // Forward declaration
+    template<class T, std::size_t N>
+    class array;
 
     namespace detail // basic_unlockedbuf
     {
@@ -667,30 +668,28 @@ namespace boost {
             }
 
             template <std::size_t N>
-            bool operator>>(boost::array<CharT, N>& output) BOOST_NOEXCEPT {
+            bool operator>>(std::array<CharT, N>& output) BOOST_NOEXCEPT {
                 return shr_std_array<N>(output);
             }
 
             template <std::size_t N>
-            bool operator>>(boost::array<unsigned char, N>& output) BOOST_NOEXCEPT {
-                return ((*this) >> reinterpret_cast<boost::array<char, N>& >(output));
+            bool operator>>(std::array<unsigned char, N>& output) BOOST_NOEXCEPT {
+                return ((*this) >> reinterpret_cast<std::array<char, N>& >(output));
             }
 
             template <std::size_t N>
-            bool operator>>(boost::array<signed char, N>& output) BOOST_NOEXCEPT {
-                return ((*this) >> reinterpret_cast<boost::array<char, N>& >(output));
+            bool operator>>(std::array<signed char, N>& output) BOOST_NOEXCEPT {
+                return ((*this) >> reinterpret_cast<std::array<char, N>& >(output));
             }
 
-#ifndef BOOST_NO_CXX11_HDR_ARRAY
             template <class C, std::size_t N>
-            bool operator>>(std::array<C, N>& output) BOOST_NOEXCEPT {
+            bool operator>>(boost::array<C, N>& output) BOOST_NOEXCEPT {
                 BOOST_STATIC_ASSERT_MSG(
                     (sizeof(std::array<C, N>) == sizeof(boost::array<C, N>)),
                     "std::array<C, N> and boost::array<C, N> must have exactly the same layout."
                 );
-                return ((*this) >> reinterpret_cast<boost::array<C, N>& >(output));
+                return ((*this) >> reinterpret_cast<std::array<C, N>& >(output));
             }
-#endif
 
             bool operator>>(bool& output) BOOST_NOEXCEPT {
                 output = false; // Suppress warning about uninitalized variable

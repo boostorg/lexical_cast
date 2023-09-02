@@ -47,11 +47,11 @@ std::string stringize(const Sequence& seq) {
 }
 
 //` Step 3: Using the `stringize` with different types:
-#include <boost/fusion/adapted/boost_tuple.hpp>
+#include <boost/fusion/adapted/std_tuple.hpp>
 #include <boost/fusion/adapted/std_pair.hpp>
 
 int main() {
-    boost::tuple<char, int, char, int> decim('-', 10, 'e', 5);
+    std::tuple<char, int, char, int> decim('-', 10, 'e', 5);
     if (stringize(decim) != "-10e5") {
         return 1;
     }

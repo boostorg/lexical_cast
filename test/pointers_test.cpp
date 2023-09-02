@@ -8,18 +8,9 @@
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt).
 
-#include <boost/config.hpp>
-
-#if defined(__INTEL_COMPILER)
-#pragma warning(disable: 193 383 488 981 1418 1419)
-#elif defined(BOOST_MSVC)
-#pragma warning(disable: 4097 4100 4121 4127 4146 4244 4245 4511 4512 4701 4800)
-#endif
-
 #include <boost/lexical_cast.hpp>
-#include <boost/test/unit_test.hpp>
 
-using namespace boost;
+#include <boost/core/lightweight_test.hpp>
 
 #if defined(BOOST_NO_STRINGSTREAM)
             typedef std::strstream ss_t;
@@ -36,15 +27,15 @@ void test_void_pointers_conversions()
     ss_t ss;
 
     ss << p_to_null;
-    BOOST_CHECK_EQUAL(boost::lexical_cast<std::string>(p_to_null), ss.str());
+    BOOST_TEST_EQ(boost::lexical_cast<std::string>(p_to_null), ss.str());
     ss.str(std::string());
 
     ss << cp_to_data;
-    BOOST_CHECK_EQUAL(boost::lexical_cast<std::string>(cp_to_data), ss.str());
+    BOOST_TEST_EQ(boost::lexical_cast<std::string>(cp_to_data), ss.str());
     ss.str(std::string());
 
     ss << p_to_data;
-    BOOST_CHECK_EQUAL(boost::lexical_cast<std::string>(p_to_data), ss.str());
+    BOOST_TEST_EQ(boost::lexical_cast<std::string>(p_to_data), ss.str());
     ss.str(std::string());
 }
 
@@ -59,15 +50,15 @@ void test_incomplete_type_pointers_conversions()
     ss_t ss;
 
     ss << p_to_null;
-    BOOST_CHECK_EQUAL(boost::lexical_cast<std::string>(p_to_null), ss.str());
+    BOOST_TEST_EQ(boost::lexical_cast<std::string>(p_to_null), ss.str());
     ss.str(std::string());
 
     ss << cp_to_data;
-    BOOST_CHECK_EQUAL(boost::lexical_cast<std::string>(cp_to_data), ss.str());
+    BOOST_TEST_EQ(boost::lexical_cast<std::string>(cp_to_data), ss.str());
     ss.str(std::string());
 
     ss << p_to_data;
-    BOOST_CHECK_EQUAL(boost::lexical_cast<std::string>(p_to_data), ss.str());
+    BOOST_TEST_EQ(boost::lexical_cast<std::string>(p_to_data), ss.str());
     ss.str(std::string());
 }
 
@@ -82,15 +73,14 @@ void test_inomplete_type_with_overloaded_ostream_op() {
     meh heh = NULL;
     ss_t ss;
     ss << heh;
-    BOOST_CHECK_EQUAL(boost::lexical_cast<std::string>(heh), ss.str());
+    BOOST_TEST_EQ(boost::lexical_cast<std::string>(heh), ss.str());
 }
 
-unit_test::test_suite *init_unit_test_suite(int, char *[])
+int main()
 {
-    unit_test::test_suite *suite =
-        BOOST_TEST_SUITE("lexical_cast pinters test");
-    suite->add(BOOST_TEST_CASE(&test_void_pointers_conversions));
-    suite->add(BOOST_TEST_CASE(&test_incomplete_type_pointers_conversions));
-    suite->add(BOOST_TEST_CASE(&test_inomplete_type_with_overloaded_ostream_op));
-    return suite;
+    test_void_pointers_conversions();
+    test_incomplete_type_pointers_conversions();
+    test_inomplete_type_with_overloaded_ostream_op();
+
+    return boost::report_errors();
 }

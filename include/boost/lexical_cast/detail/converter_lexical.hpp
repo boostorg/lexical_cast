@@ -43,17 +43,18 @@
 #include <boost/lexical_cast/detail/widest_char.hpp>
 #include <boost/lexical_cast/detail/is_character.hpp>
 
-#ifndef BOOST_NO_CXX11_HDR_ARRAY
 #include <array>
-#endif
 
-#include <boost/array.hpp>
 #include <boost/range/iterator_range_core.hpp>
 #include <boost/container/container_fwd.hpp>
 
 #include <boost/lexical_cast/detail/converter_lexical_streams.hpp>
 
 namespace boost {
+
+    // Forward declaration
+    template<class T, std::size_t N>
+    class array;
 
     namespace detail // normalize_single_byte_char<Char>
     {

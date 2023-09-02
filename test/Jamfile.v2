@@ -8,9 +8,11 @@
 import testing ;
 import feature ;
 
+import ../../config/checks/config : requires ;
+
 project
     : requirements
-        <library>/boost/test//boost_unit_test_framework
+        [ requires cxx11_rvalue_references ]
         <link>static
         <toolset>gcc-4.7:<cxxflags>-ftrapv
         <toolset>gcc-4.6:<cxxflags>-ftrapv
@@ -64,9 +66,6 @@ test-suite conversion
     [ compile-fail to_pointer_test.cpp ]
     [ run filesystem_test.cpp ../../filesystem/build//boost_filesystem/<link>static ]
     [ run try_lexical_convert.cpp ]
-    [ run no_comp_time_prcision.cpp : : :
-        <toolset>msvc:<cxxflags>/wd4127 # conditional expression is constant
-    ]
   ;
 
 # Assuring that examples compile and run. Adding sources from `example` directory to the `conversion` test suite.
