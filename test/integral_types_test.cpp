@@ -19,19 +19,11 @@
 //
 #define _SCL_SECURE_NO_WARNINGS
 
-#include <boost/config.hpp>
-
-#if defined(__INTEL_COMPILER)
-#pragma warning(disable: 193 383 488 981 1418 1419)
-#elif defined(BOOST_MSVC)
-#pragma warning(disable: 4097 4100 4121 4127 4146 4244 4245 4511 4512 4701 4800)
-#endif
-
 #include <boost/lexical_cast.hpp>
 
 #include <boost/cstdint.hpp>
-#include <boost/test/unit_test.hpp>
-#include <boost/test/tools/floating_point_comparison.hpp>
+
+#include <boost/core/lightweight_test.hpp>
 
 #include <boost/type_traits/integral_promotion.hpp>
 #include <boost/type_traits/make_unsigned.hpp>
@@ -61,113 +53,65 @@ int const lcast_integral_test_counter=500;
 
 using namespace boost;
 
-
-
-void test_conversion_from_to_short();
-void test_conversion_from_to_ushort();
-void test_conversion_from_to_int();
-void test_conversion_from_to_uint();
-void test_conversion_from_to_long();
-void test_conversion_from_to_ulong();
-void test_conversion_from_to_intmax_t();
-void test_conversion_from_to_uintmax_t();
-#ifdef LCAST_TEST_LONGLONG
-void test_conversion_from_to_longlong();
-void test_conversion_from_to_ulonglong();
-#endif
-#ifdef BOOST_LCAST_TEST_128
-void test_conversion_from_to_int128();
-void test_conversion_from_to_uint128();
-#endif
-void test_integral_conversions_on_min_max();
-void test_volatile_integers();
-
-unit_test::test_suite *init_unit_test_suite(int, char *[])
-{
-    unit_test::test_suite *suite =
-        BOOST_TEST_SUITE("lexical_cast unit test on integral types");
-
-    suite->add(BOOST_TEST_CASE(&test_conversion_from_to_short));
-    suite->add(BOOST_TEST_CASE(&test_conversion_from_to_ushort));
-    suite->add(BOOST_TEST_CASE(&test_conversion_from_to_int));
-    suite->add(BOOST_TEST_CASE(&test_conversion_from_to_uint));
-    suite->add(BOOST_TEST_CASE(&test_conversion_from_to_long));
-    suite->add(BOOST_TEST_CASE(&test_conversion_from_to_ulong));
-    suite->add(BOOST_TEST_CASE(&test_conversion_from_to_intmax_t));
-    suite->add(BOOST_TEST_CASE(&test_conversion_from_to_uintmax_t));
-#ifdef LCAST_TEST_LONGLONG
-    suite->add(BOOST_TEST_CASE(&test_conversion_from_to_longlong));
-    suite->add(BOOST_TEST_CASE(&test_conversion_from_to_ulonglong));
-#endif
-#ifdef BOOST_LCAST_TEST_128
-    suite->add(BOOST_TEST_CASE(&test_conversion_from_to_int128));
-    suite->add(BOOST_TEST_CASE(&test_conversion_from_to_uint128));
-#endif
-    suite->add(BOOST_TEST_CASE(&test_integral_conversions_on_min_max));
-    suite->add(BOOST_TEST_CASE(&test_volatile_integers));
-
-    return suite;
-}
-
 template<class T, class CharT>
 void test_conversion_from_integral_to_char(CharT zero)
 {
-    BOOST_CHECK(lexical_cast<CharT>(static_cast<T>(0)) == zero + 0);
-    BOOST_CHECK(lexical_cast<CharT>(static_cast<T>(1)) == zero + 1);
-    BOOST_CHECK(lexical_cast<CharT>(static_cast<T>(2)) == zero + 2);
-    BOOST_CHECK(lexical_cast<CharT>(static_cast<T>(3)) == zero + 3);
-    BOOST_CHECK(lexical_cast<CharT>(static_cast<T>(4)) == zero + 4);
-    BOOST_CHECK(lexical_cast<CharT>(static_cast<T>(5)) == zero + 5);
-    BOOST_CHECK(lexical_cast<CharT>(static_cast<T>(6)) == zero + 6);
-    BOOST_CHECK(lexical_cast<CharT>(static_cast<T>(7)) == zero + 7);
-    BOOST_CHECK(lexical_cast<CharT>(static_cast<T>(8)) == zero + 8);
-    BOOST_CHECK(lexical_cast<CharT>(static_cast<T>(9)) == zero + 9);
+    BOOST_TEST(lexical_cast<CharT>(static_cast<T>(0)) == zero + 0);
+    BOOST_TEST(lexical_cast<CharT>(static_cast<T>(1)) == zero + 1);
+    BOOST_TEST(lexical_cast<CharT>(static_cast<T>(2)) == zero + 2);
+    BOOST_TEST(lexical_cast<CharT>(static_cast<T>(3)) == zero + 3);
+    BOOST_TEST(lexical_cast<CharT>(static_cast<T>(4)) == zero + 4);
+    BOOST_TEST(lexical_cast<CharT>(static_cast<T>(5)) == zero + 5);
+    BOOST_TEST(lexical_cast<CharT>(static_cast<T>(6)) == zero + 6);
+    BOOST_TEST(lexical_cast<CharT>(static_cast<T>(7)) == zero + 7);
+    BOOST_TEST(lexical_cast<CharT>(static_cast<T>(8)) == zero + 8);
+    BOOST_TEST(lexical_cast<CharT>(static_cast<T>(9)) == zero + 9);
 
-    BOOST_CHECK_THROW(lexical_cast<CharT>(static_cast<T>(10)), bad_lexical_cast);
+    BOOST_TEST_THROWS(lexical_cast<CharT>(static_cast<T>(10)), bad_lexical_cast);
 
     T t = (std::numeric_limits<T>::max)();
-    BOOST_CHECK_THROW(lexical_cast<CharT>(t), bad_lexical_cast);
+    BOOST_TEST_THROWS(lexical_cast<CharT>(t), bad_lexical_cast);
 }
 
 template<class T, class CharT>
 void test_conversion_from_char_to_integral(CharT zero)
 {
-    BOOST_CHECK(lexical_cast<T>( static_cast<CharT>(zero + 0)) == static_cast<T>(0) );
-    BOOST_CHECK(lexical_cast<T>( static_cast<CharT>(zero + 1)) == static_cast<T>(1) );
-    BOOST_CHECK(lexical_cast<T>( static_cast<CharT>(zero + 2)) == static_cast<T>(2) );
-    BOOST_CHECK(lexical_cast<T>( static_cast<CharT>(zero + 3)) == static_cast<T>(3) );
-    BOOST_CHECK(lexical_cast<T>( static_cast<CharT>(zero + 4)) == static_cast<T>(4) );
-    BOOST_CHECK(lexical_cast<T>( static_cast<CharT>(zero + 5)) == static_cast<T>(5) );
-    BOOST_CHECK(lexical_cast<T>( static_cast<CharT>(zero + 6)) == static_cast<T>(6) );
-    BOOST_CHECK(lexical_cast<T>( static_cast<CharT>(zero + 7)) == static_cast<T>(7) );
-    BOOST_CHECK(lexical_cast<T>( static_cast<CharT>(zero + 8)) == static_cast<T>(8) );
-    BOOST_CHECK(lexical_cast<T>( static_cast<CharT>(zero + 9)) == static_cast<T>(9) );
+    BOOST_TEST(lexical_cast<T>( static_cast<CharT>(zero + 0)) == static_cast<T>(0) );
+    BOOST_TEST(lexical_cast<T>( static_cast<CharT>(zero + 1)) == static_cast<T>(1) );
+    BOOST_TEST(lexical_cast<T>( static_cast<CharT>(zero + 2)) == static_cast<T>(2) );
+    BOOST_TEST(lexical_cast<T>( static_cast<CharT>(zero + 3)) == static_cast<T>(3) );
+    BOOST_TEST(lexical_cast<T>( static_cast<CharT>(zero + 4)) == static_cast<T>(4) );
+    BOOST_TEST(lexical_cast<T>( static_cast<CharT>(zero + 5)) == static_cast<T>(5) );
+    BOOST_TEST(lexical_cast<T>( static_cast<CharT>(zero + 6)) == static_cast<T>(6) );
+    BOOST_TEST(lexical_cast<T>( static_cast<CharT>(zero + 7)) == static_cast<T>(7) );
+    BOOST_TEST(lexical_cast<T>( static_cast<CharT>(zero + 8)) == static_cast<T>(8) );
+    BOOST_TEST(lexical_cast<T>( static_cast<CharT>(zero + 9)) == static_cast<T>(9) );
 
-    BOOST_CHECK_THROW(lexical_cast<T>( static_cast<CharT>(zero + 10)), bad_lexical_cast);
-    BOOST_CHECK_THROW(lexical_cast<T>( static_cast<CharT>(zero - 1)), bad_lexical_cast);
+    BOOST_TEST_THROWS(lexical_cast<T>( static_cast<CharT>(zero + 10)), bad_lexical_cast);
+    BOOST_TEST_THROWS(lexical_cast<T>( static_cast<CharT>(zero - 1)), bad_lexical_cast);
 }
 
 template<class T>
 void test_conversion_from_integral_to_integral()
 {
     T t = 0;
-    BOOST_CHECK(lexical_cast<T>(t) == t);
+    BOOST_TEST(lexical_cast<T>(t) == t);
 
     // Next two variables are used to suppress warnings.
     int st = 32767; unsigned int ut = st;
     t = st;
-    BOOST_CHECK(lexical_cast<short>(t) == st);
-    BOOST_CHECK(lexical_cast<unsigned short>(t) == ut);
-    BOOST_CHECK(lexical_cast<int>(t) == st);
-    BOOST_CHECK(lexical_cast<unsigned int>(t) == ut);
-    BOOST_CHECK(lexical_cast<long>(t) == st);
-    BOOST_CHECK(lexical_cast<unsigned long>(t) == ut);
+    BOOST_TEST(lexical_cast<short>(t) == st);
+    BOOST_TEST(lexical_cast<unsigned short>(t) == ut);
+    BOOST_TEST(lexical_cast<int>(t) == st);
+    BOOST_TEST(lexical_cast<unsigned int>(t) == ut);
+    BOOST_TEST(lexical_cast<long>(t) == st);
+    BOOST_TEST(lexical_cast<unsigned long>(t) == ut);
 
     t = (std::numeric_limits<T>::max)();
-    BOOST_CHECK(lexical_cast<T>(t) == t);
+    BOOST_TEST(lexical_cast<T>(t) == t);
 
     t = (std::numeric_limits<T>::min)();
-    BOOST_CHECK(lexical_cast<T>(t) == t);
+    BOOST_TEST(lexical_cast<T>(t) == t);
 }
 
 
@@ -212,15 +156,15 @@ void test_conversion_from_integral_to_string(CharT)
     T t;
 
     t = (limits::min)();
-    BOOST_CHECK(lexical_cast<string_type>(t) == to_str<CharT>(t));
+    BOOST_TEST(lexical_cast<string_type>(t) == to_str<CharT>(t));
 
     t = (limits::max)();
-    BOOST_CHECK(lexical_cast<string_type>(t) == to_str<CharT>(t));
+    BOOST_TEST(lexical_cast<string_type>(t) == to_str<CharT>(t));
 
     if(limits::digits <= 16 && lcast_test_small_integral_types_completely)
         // min and max have already been tested.
         for(t = 1 + (limits::min)(); t != (limits::max)(); ++t)
-            BOOST_CHECK(lexical_cast<string_type>(t) == to_str<CharT>(t));
+            BOOST_TEST(lexical_cast<string_type>(t) == to_str<CharT>(t));
     else
     {
         T const min_val = (limits::min)();
@@ -234,17 +178,17 @@ void test_conversion_from_integral_to_string(CharT)
         // Test values around min:
         t = min_val;
         for(i = 0; i < counter; ++i, ++t)
-            BOOST_CHECK(lexical_cast<string_type>(t) == to_str<CharT>(t));
+            BOOST_TEST(lexical_cast<string_type>(t) == to_str<CharT>(t));
 
         // Test values around max:
         t = max_val;
         for(i = 0; i < counter; ++i, --t)
-            BOOST_CHECK(lexical_cast<string_type>(t) == to_str<CharT>(t));
+            BOOST_TEST(lexical_cast<string_type>(t) == to_str<CharT>(t));
 
         // Test values around zero:
         if(limits::is_signed)
             for(t = static_cast<T>(-counter); t < static_cast<T>(counter); ++t)
-                BOOST_CHECK(lexical_cast<string_type>(t) == to_str<CharT>(t));
+                BOOST_TEST(lexical_cast<string_type>(t) == to_str<CharT>(t));
 
         // Test values around 100, 1000, 10000, ...
         T ten_power = 100;
@@ -252,7 +196,7 @@ void test_conversion_from_integral_to_string(CharT)
         {
             // ten_power + 100 probably never overflows
             for(t = ten_power - 100; t != ten_power + 100; ++t)
-                BOOST_CHECK(lexical_cast<string_type>(t) == to_str<CharT>(t));
+                BOOST_TEST(lexical_cast<string_type>(t) == to_str<CharT>(t));
         }
     }
 }
@@ -270,23 +214,23 @@ void test_conversion_from_string_to_integral(CharT)
     T const max_val = (limits::max)();
 
     s = to_str<CharT>(min_val);
-    BOOST_CHECK_EQUAL(lexical_cast<T>(s), min_val);
+    BOOST_TEST_EQ(lexical_cast<T>(s), min_val);
     if(limits::is_signed)
     {
-        BOOST_CHECK_THROW(lexical_cast<T>(s + zero), bad_lexical_cast);
-        BOOST_CHECK_THROW(lexical_cast<T>(s + nine), bad_lexical_cast);
+        BOOST_TEST_THROWS(lexical_cast<T>(s + zero), bad_lexical_cast);
+        BOOST_TEST_THROWS(lexical_cast<T>(s + nine), bad_lexical_cast);
     }
 
     s = to_str<CharT>(max_val);
-    BOOST_CHECK_EQUAL(lexical_cast<T>(s), max_val);
+    BOOST_TEST_EQ(lexical_cast<T>(s), max_val);
     {
-        BOOST_CHECK_THROW(lexical_cast<T>(s + zero), bad_lexical_cast);
-        BOOST_CHECK_THROW(lexical_cast<T>(s + nine), bad_lexical_cast);
+        BOOST_TEST_THROWS(lexical_cast<T>(s + zero), bad_lexical_cast);
+        BOOST_TEST_THROWS(lexical_cast<T>(s + nine), bad_lexical_cast);
 
         s = to_str<CharT>(max_val);
         for (int i =1; i <=10; ++i) {
             s[s.size()-1] += 1;
-            BOOST_CHECK_THROW(lexical_cast<T>( s ), bad_lexical_cast);
+            BOOST_TEST_THROWS(lexical_cast<T>( s ), bad_lexical_cast);
         }
 
         s = to_str<CharT>(max_val);
@@ -294,23 +238,23 @@ void test_conversion_from_string_to_integral(CharT)
         typedef std::numpunct<char> numpunct;
         if ( BOOST_USE_FACET(numpunct, loc).grouping().empty() ) {
             // Following tests work well for locale C
-            BOOST_CHECK_EQUAL(lexical_cast<T>(to_str<CharT>(0)+s), max_val);
-            BOOST_CHECK_EQUAL(lexical_cast<T>(to_str<CharT>(0)+to_str<CharT>(0)+s), max_val);
-            BOOST_CHECK_EQUAL(lexical_cast<T>(to_str<CharT>(0)+to_str<CharT>(0)+to_str<CharT>(0)+s), max_val);
+            BOOST_TEST_EQ(lexical_cast<T>(to_str<CharT>(0)+s), max_val);
+            BOOST_TEST_EQ(lexical_cast<T>(to_str<CharT>(0)+to_str<CharT>(0)+s), max_val);
+            BOOST_TEST_EQ(lexical_cast<T>(to_str<CharT>(0)+to_str<CharT>(0)+to_str<CharT>(0)+s), max_val);
         }
 
         for (int i =1; i <=256; ++i) {
-            BOOST_CHECK_THROW(lexical_cast<T>( to_str<CharT>(i)+s ), bad_lexical_cast);
+            BOOST_TEST_THROWS(lexical_cast<T>( to_str<CharT>(i)+s ), bad_lexical_cast);
         }
 
-        typedef BOOST_DEDUCED_TYPENAME boost::integral_promotion<T>::type promoted;
+        typedef typename boost::integral_promotion<T>::type promoted;
         if ( !(boost::is_same<T, promoted>::value) )
         {
             promoted prom = max_val;
             s = to_str<CharT>(max_val);
             for (int i =1; i <=256; ++i) {
-                BOOST_CHECK_THROW(lexical_cast<T>( to_str<CharT>(prom+i) ), bad_lexical_cast);
-                BOOST_CHECK_THROW(lexical_cast<T>( to_str<CharT>(i)+s ), bad_lexical_cast);
+                BOOST_TEST_THROWS(lexical_cast<T>( to_str<CharT>(prom+i) ), bad_lexical_cast);
+                BOOST_TEST_THROWS(lexical_cast<T>( to_str<CharT>(i)+s ), bad_lexical_cast);
             }
         }
     }
@@ -318,7 +262,7 @@ void test_conversion_from_string_to_integral(CharT)
     if(limits::digits <= 16 && lcast_test_small_integral_types_completely)
         // min and max have already been tested.
         for(T t = 1 + min_val; t != max_val; ++t)
-            BOOST_CHECK(lexical_cast<T>(to_str<CharT>(t)) == t);
+            BOOST_TEST(lexical_cast<T>(to_str<CharT>(t)) == t);
     else
     {
         T const half_max_val = max_val / 2;
@@ -331,17 +275,17 @@ void test_conversion_from_string_to_integral(CharT)
         // Test values around min:
         t = min_val;
         for(i = 0; i < counter; ++i, ++t)
-            BOOST_CHECK(lexical_cast<T>(to_str<CharT>(t)) == t);
+            BOOST_TEST(lexical_cast<T>(to_str<CharT>(t)) == t);
 
         // Test values around max:
         t = max_val;
         for(i = 0; i < counter; ++i, --t)
-            BOOST_CHECK(lexical_cast<T>(to_str<CharT>(t)) == t);
+            BOOST_TEST(lexical_cast<T>(to_str<CharT>(t)) == t);
 
         // Test values around zero:
         if(limits::is_signed)
             for(t = static_cast<T>(-counter); t < static_cast<T>(counter); ++t)
-                BOOST_CHECK(lexical_cast<T>(to_str<CharT>(t)) == t);
+                BOOST_TEST(lexical_cast<T>(to_str<CharT>(t)) == t);
 
         // Test values around 100, 1000, 10000, ...
         T ten_power = 100;
@@ -349,7 +293,7 @@ void test_conversion_from_string_to_integral(CharT)
         {
             // ten_power + 100 probably never overflows
             for(t = ten_power - 100; t != ten_power + 100; ++t)
-                BOOST_CHECK(lexical_cast<T>(to_str<CharT>(t)) == t);
+                BOOST_TEST(lexical_cast<T>(to_str<CharT>(t)) == t);
         }
     }
 }
@@ -362,26 +306,26 @@ void test_conversion_from_to_integral_for_locale()
     numpunct const& np = BOOST_USE_FACET(numpunct, current_locale);
     if ( !np.grouping().empty() )
     {
-        BOOST_CHECK_THROW(
+        BOOST_TEST_THROWS(
                 lexical_cast<T>( std::string("100") + np.thousands_sep() + np.thousands_sep() + "0" )
                 , bad_lexical_cast);
-        BOOST_CHECK_THROW(lexical_cast<T>( std::string("100") + np.thousands_sep() ), bad_lexical_cast);
-        BOOST_CHECK_THROW(lexical_cast<T>( np.thousands_sep() + std::string("100") ), bad_lexical_cast);
+        BOOST_TEST_THROWS(lexical_cast<T>( std::string("100") + np.thousands_sep() ), bad_lexical_cast);
+        BOOST_TEST_THROWS(lexical_cast<T>( np.thousands_sep() + std::string("100") ), bad_lexical_cast);
 
         // Exception must not be thrown, when we are using no separators at all
-        BOOST_CHECK( lexical_cast<T>("30000") == static_cast<T>(30000) );
+        BOOST_TEST( lexical_cast<T>("30000") == static_cast<T>(30000) );
     }
 
 
     test_conversion_from_integral_to_integral<T>();
 
     // This is a part of test_conversion_from_integral_to_string<T>('0') method,
-    // but with BOOST_CHECK_EQUAL instead of BOOST_CHECK. It is required to see
+    // but with BOOST_TEST_EQ instead of BOOST_TEST. It is required to see
     // what is produced by the to_str<char>(t) method in situations when result
-    // is different. BOOST_CHECK does not work with wchar_t.
+    // is different. BOOST_TEST does not work with wchar_t.
     typedef std::numeric_limits<T> limits;
     T t = (limits::min)();
-    BOOST_CHECK_EQUAL(lexical_cast<std::string>(t), to_str<char>(t));
+    BOOST_TEST_EQ(lexical_cast<std::string>(t), to_str<char>(t));
 
     test_conversion_from_integral_to_string<T>('0');
     test_conversion_from_string_to_integral<T>('0');
@@ -397,9 +341,9 @@ void test_conversion_from_to_integral_for_locale()
             str.push_back(static_cast<char>(wstr[i]));
         }
 
-        BOOST_CHECK_EQUAL(lcast_str.length(), lexical_cast<std::wstring>(t).length());
-        BOOST_CHECK_EQUAL(to_str<char>(t), str);
-        BOOST_CHECK_EQUAL(lcast_str, str);
+        BOOST_TEST_EQ(lcast_str.length(), lexical_cast<std::wstring>(t).length());
+        BOOST_TEST_EQ(to_str<char>(t), str);
+        BOOST_TEST_EQ(lcast_str, str);
     }
 
     test_conversion_from_integral_to_string<T>(L'0');
@@ -441,41 +385,41 @@ void test_conversion_from_to_integral_minimal()
     test_conversion_from_char_to_integral<T>(u32zero);
 #endif
 
-    BOOST_CHECK(lexical_cast<T>("-1") == static_cast<T>(-1));
-    BOOST_CHECK(lexical_cast<T>("-9") == static_cast<T>(-9));
-    BOOST_CHECK(lexical_cast<T>(-1) == static_cast<T>(-1));
-    BOOST_CHECK(lexical_cast<T>(-9) == static_cast<T>(-9));
+    BOOST_TEST(lexical_cast<T>("-1") == static_cast<T>(-1));
+    BOOST_TEST(lexical_cast<T>("-9") == static_cast<T>(-9));
+    BOOST_TEST(lexical_cast<T>(-1) == static_cast<T>(-1));
+    BOOST_TEST(lexical_cast<T>(-9) == static_cast<T>(-9));
 
-    BOOST_CHECK_THROW(lexical_cast<T>("-1.0"), bad_lexical_cast);
-    BOOST_CHECK_THROW(lexical_cast<T>("-9.0"), bad_lexical_cast);
-    BOOST_CHECK(lexical_cast<T>(-1.0) == static_cast<T>(-1));
-    BOOST_CHECK(lexical_cast<T>(-9.0) == static_cast<T>(-9));
+    BOOST_TEST_THROWS(lexical_cast<T>("-1.0"), bad_lexical_cast);
+    BOOST_TEST_THROWS(lexical_cast<T>("-9.0"), bad_lexical_cast);
+    BOOST_TEST(lexical_cast<T>(-1.0) == static_cast<T>(-1));
+    BOOST_TEST(lexical_cast<T>(-9.0) == static_cast<T>(-9));
 
-    BOOST_CHECK(lexical_cast<T>(static_cast<T>(1)) == static_cast<T>(1));
-    BOOST_CHECK(lexical_cast<T>(static_cast<T>(9)) == static_cast<T>(9));
-    BOOST_CHECK_THROW(lexical_cast<T>(1.1f), bad_lexical_cast);
-    BOOST_CHECK_THROW(lexical_cast<T>(1.1), bad_lexical_cast);
-    BOOST_CHECK_THROW(lexical_cast<T>(1.1L), bad_lexical_cast);
-    BOOST_CHECK_THROW(lexical_cast<T>(1.0001f), bad_lexical_cast);
-    BOOST_CHECK_THROW(lexical_cast<T>(1.0001), bad_lexical_cast);
-    BOOST_CHECK_THROW(lexical_cast<T>(1.0001L), bad_lexical_cast);
+    BOOST_TEST(lexical_cast<T>(static_cast<T>(1)) == static_cast<T>(1));
+    BOOST_TEST(lexical_cast<T>(static_cast<T>(9)) == static_cast<T>(9));
+    BOOST_TEST_THROWS(lexical_cast<T>(1.1f), bad_lexical_cast);
+    BOOST_TEST_THROWS(lexical_cast<T>(1.1), bad_lexical_cast);
+    BOOST_TEST_THROWS(lexical_cast<T>(1.1L), bad_lexical_cast);
+    BOOST_TEST_THROWS(lexical_cast<T>(1.0001f), bad_lexical_cast);
+    BOOST_TEST_THROWS(lexical_cast<T>(1.0001), bad_lexical_cast);
+    BOOST_TEST_THROWS(lexical_cast<T>(1.0001L), bad_lexical_cast);
 
-    BOOST_CHECK(lexical_cast<T>("+1") == static_cast<T>(1) );
-    BOOST_CHECK(lexical_cast<T>("+9") == static_cast<T>(9) );
-    BOOST_CHECK(lexical_cast<T>("+10") == static_cast<T>(10) );
-    BOOST_CHECK(lexical_cast<T>("+90") == static_cast<T>(90) );
-    BOOST_CHECK_THROW(lexical_cast<T>("++1"), bad_lexical_cast);
-    BOOST_CHECK_THROW(lexical_cast<T>("-+9"), bad_lexical_cast);
-    BOOST_CHECK_THROW(lexical_cast<T>("--1"), bad_lexical_cast);
-    BOOST_CHECK_THROW(lexical_cast<T>("+-9"), bad_lexical_cast);
+    BOOST_TEST(lexical_cast<T>("+1") == static_cast<T>(1) );
+    BOOST_TEST(lexical_cast<T>("+9") == static_cast<T>(9) );
+    BOOST_TEST(lexical_cast<T>("+10") == static_cast<T>(10) );
+    BOOST_TEST(lexical_cast<T>("+90") == static_cast<T>(90) );
+    BOOST_TEST_THROWS(lexical_cast<T>("++1"), bad_lexical_cast);
+    BOOST_TEST_THROWS(lexical_cast<T>("-+9"), bad_lexical_cast);
+    BOOST_TEST_THROWS(lexical_cast<T>("--1"), bad_lexical_cast);
+    BOOST_TEST_THROWS(lexical_cast<T>("+-9"), bad_lexical_cast);
     // test_conversion_from_to_integral_for_locale
 
     // Overflow test case from David W. Birdsall
     std::string must_owerflow_str =             (sizeof(T) < 16 ?  "160000000000000000000" :  "1600000000000000000000000000000000000000");
     std::string must_owerflow_negative_str =    (sizeof(T) < 16 ? "-160000000000000000000" : "-1600000000000000000000000000000000000000");
     for (int i = 0; i < 15; ++i) {
-        BOOST_CHECK_THROW(lexical_cast<T>(must_owerflow_str), bad_lexical_cast);
-        BOOST_CHECK_THROW(lexical_cast<T>(must_owerflow_negative_str), bad_lexical_cast);
+        BOOST_TEST_THROWS(lexical_cast<T>(must_owerflow_str), bad_lexical_cast);
+        BOOST_TEST_THROWS(lexical_cast<T>(must_owerflow_negative_str), bad_lexical_cast);
 
         must_owerflow_str += '0';
         must_owerflow_negative_str += '0';
@@ -507,14 +451,14 @@ void test_conversion_from_to_integral()
     {
         std::string msg("Failed to set system locale: ");
         msg += ex.what();
-        BOOST_TEST_MESSAGE(msg);
+        std::cerr << msg;
     }
 
     if(grouping1 != grouping2)
         test_conversion_from_to_integral_for_locale<T>();
 
     if(grouping1.empty() && grouping2.empty())
-        BOOST_TEST_MESSAGE("Formatting with thousands_sep has not been tested");
+        std::cerr << "Formatting with thousands_sep has not been tested";
 }
 
 void test_conversion_from_to_short()
@@ -619,19 +563,19 @@ template <typename SignedT>
 void test_integral_conversions_on_min_max_impl()
 {
     typedef SignedT signed_t;
-    typedef BOOST_DEDUCED_TYPENAME boost::make_unsigned<signed_t>::type unsigned_t;
+    typedef typename boost::make_unsigned<signed_t>::type unsigned_t;
 
     typedef std::numeric_limits<signed_t> s_limits;
     typedef std::numeric_limits<unsigned_t> uns_limits;
 
-    BOOST_CHECK_EQUAL(lexical_cast<unsigned_t>((uns_limits::max)()), (uns_limits::max)());
-    BOOST_CHECK_EQUAL(lexical_cast<unsigned_t>((uns_limits::min)()), (uns_limits::min)());
+    BOOST_TEST_EQ(lexical_cast<unsigned_t>((uns_limits::max)()), (uns_limits::max)());
+    BOOST_TEST_EQ(lexical_cast<unsigned_t>((uns_limits::min)()), (uns_limits::min)());
 
-    BOOST_CHECK_EQUAL(lexical_cast<signed_t>((s_limits::max)()), (s_limits::max)());
-    BOOST_CHECK_EQUAL(lexical_cast<signed_t>((uns_limits::min)()), static_cast<signed_t>((uns_limits::min)()));
+    BOOST_TEST_EQ(lexical_cast<signed_t>((s_limits::max)()), (s_limits::max)());
+    BOOST_TEST_EQ(lexical_cast<signed_t>((uns_limits::min)()), static_cast<signed_t>((uns_limits::min)()));
 
-    BOOST_CHECK_EQUAL(lexical_cast<unsigned_t>((s_limits::max)()), static_cast<unsigned_t>((s_limits::max)()));
-    BOOST_CHECK_EQUAL(lexical_cast<unsigned_t>((s_limits::min)()), static_cast<unsigned_t>((s_limits::min)()));
+    BOOST_TEST_EQ(lexical_cast<unsigned_t>((s_limits::max)()), static_cast<unsigned_t>((s_limits::max)()));
+    BOOST_TEST_EQ(lexical_cast<unsigned_t>((s_limits::min)()), static_cast<unsigned_t>((s_limits::min)()));
 }
 
 void test_integral_conversions_on_min_max()
@@ -664,27 +608,51 @@ int make_volatile_int_roundtrip() {
 void test_volatile_integers()
 {
     // Inspired by test case from https://github.com/boostorg/lexical_cast/issues/50
-    BOOST_CHECK_EQUAL(make_volatile_int_roundtrip<signed char>(), 42);
-    BOOST_CHECK_EQUAL(make_volatile_int_roundtrip<signed short>(), 42);
-    BOOST_CHECK_EQUAL(make_volatile_int_roundtrip<signed int>(), 42);
-    BOOST_CHECK_EQUAL(make_volatile_int_roundtrip<signed long>(), 42);
-    BOOST_CHECK_EQUAL(make_volatile_int_roundtrip<signed long long>(), 42);
+    BOOST_TEST_EQ(make_volatile_int_roundtrip<signed char>(), 42);
+    BOOST_TEST_EQ(make_volatile_int_roundtrip<signed short>(), 42);
+    BOOST_TEST_EQ(make_volatile_int_roundtrip<signed int>(), 42);
+    BOOST_TEST_EQ(make_volatile_int_roundtrip<signed long>(), 42);
+    BOOST_TEST_EQ(make_volatile_int_roundtrip<signed long long>(), 42);
 
-    BOOST_CHECK_EQUAL(make_volatile_int_roundtrip<unsigned char>(), 42);
-    BOOST_CHECK_EQUAL(make_volatile_int_roundtrip<unsigned short>(), 42);
-    BOOST_CHECK_EQUAL(make_volatile_int_roundtrip<unsigned int>(), 42);
-    BOOST_CHECK_EQUAL(make_volatile_int_roundtrip<unsigned long>(), 42);
-    BOOST_CHECK_EQUAL(make_volatile_int_roundtrip<unsigned long long>(), 42);
+    BOOST_TEST_EQ(make_volatile_int_roundtrip<unsigned char>(), 42);
+    BOOST_TEST_EQ(make_volatile_int_roundtrip<unsigned short>(), 42);
+    BOOST_TEST_EQ(make_volatile_int_roundtrip<unsigned int>(), 42);
+    BOOST_TEST_EQ(make_volatile_int_roundtrip<unsigned long>(), 42);
+    BOOST_TEST_EQ(make_volatile_int_roundtrip<unsigned long long>(), 42);
 
     volatile int v = 42;
-    BOOST_CHECK_EQUAL(boost::lexical_cast<signed short>(v), 42);
-    BOOST_CHECK_EQUAL(boost::lexical_cast<signed int>(v), 42);
-    BOOST_CHECK_EQUAL(boost::lexical_cast<signed long>(v), 42);
-    BOOST_CHECK_EQUAL(boost::lexical_cast<signed long long>(v), 42);
+    BOOST_TEST_EQ(boost::lexical_cast<signed short>(v), 42);
+    BOOST_TEST_EQ(boost::lexical_cast<signed int>(v), 42);
+    BOOST_TEST_EQ(boost::lexical_cast<signed long>(v), 42);
+    BOOST_TEST_EQ(boost::lexical_cast<signed long long>(v), 42);
 
-    BOOST_CHECK_EQUAL(boost::lexical_cast<unsigned short>(v), 42u);
-    BOOST_CHECK_EQUAL(boost::lexical_cast<unsigned int>(v), 42u);
-    BOOST_CHECK_EQUAL(boost::lexical_cast<unsigned long>(v), 42u);
-    BOOST_CHECK_EQUAL(boost::lexical_cast<unsigned long long>(v), 42u);
+    BOOST_TEST_EQ(boost::lexical_cast<unsigned short>(v), 42u);
+    BOOST_TEST_EQ(boost::lexical_cast<unsigned int>(v), 42u);
+    BOOST_TEST_EQ(boost::lexical_cast<unsigned long>(v), 42u);
+    BOOST_TEST_EQ(boost::lexical_cast<unsigned long long>(v), 42u);
+}
+
+int main()
+{
+    test_conversion_from_to_short();
+    test_conversion_from_to_ushort();
+    test_conversion_from_to_int();
+    test_conversion_from_to_uint();
+    test_conversion_from_to_long();
+    test_conversion_from_to_ulong();
+    test_conversion_from_to_intmax_t();
+    test_conversion_from_to_uintmax_t();
+#ifdef LCAST_TEST_LONGLONG
+    test_conversion_from_to_longlong();
+    test_conversion_from_to_ulonglong();
+#endif
+#ifdef BOOST_LCAST_TEST_128
+    test_conversion_from_to_int128();
+    test_conversion_from_to_uint128();
+#endif
+    test_integral_conversions_on_min_max();
+    test_volatile_integers();
+
+    return boost::report_errors();
 }
 

@@ -8,18 +8,9 @@
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt).
 
-#include <boost/config.hpp>
-
-#if defined(__INTEL_COMPILER)
-#pragma warning(disable: 193 383 488 981 1418 1419)
-#elif defined(BOOST_MSVC)
-#pragma warning(disable: 4097 4100 4121 4127 4146 4244 4245 4511 4512 4701 4800)
-#endif
-
 #include <boost/lexical_cast.hpp>
-#include <boost/test/unit_test.hpp>
 
-using namespace boost;
+#include <boost/core/lightweight_test.hpp>
 
 #if defined(BOOST_NO_STRINGSTREAM) || defined(BOOST_NO_STD_WSTRING)
 #define BOOST_LCAST_NO_WCHAR_T
@@ -36,14 +27,14 @@ void test_impl(const CharT* wc_arr)
 
     // Following tests depend on realization of std::locale
     // and pass for popular compilers and STL realizations
-    BOOST_CHECK(boost::lexical_cast<wide_char>(c_arr[0]) == wc_arr[0]);
-    BOOST_CHECK(boost::lexical_cast<wide_string>(c_arr) == wide_string(wc_arr));
+    BOOST_TEST(boost::lexical_cast<wide_char>(c_arr[0]) == wc_arr[0]);
+    BOOST_TEST(boost::lexical_cast<wide_string>(c_arr) == wide_string(wc_arr));
 
-    BOOST_CHECK(boost::lexical_cast<wide_string>(sc_arr) == wide_string(wc_arr) );
-    BOOST_CHECK(boost::lexical_cast<wide_string>(uc_arr) == wide_string(wc_arr) );
+    BOOST_TEST(boost::lexical_cast<wide_string>(sc_arr) == wide_string(wc_arr) );
+    BOOST_TEST(boost::lexical_cast<wide_string>(uc_arr) == wide_string(wc_arr) );
 
-    BOOST_CHECK(boost::lexical_cast<wide_char>(uc_arr[0]) == wc_arr[0]);
-    BOOST_CHECK(boost::lexical_cast<wide_char>(sc_arr[0]) == wc_arr[0]);
+    BOOST_TEST(boost::lexical_cast<wide_char>(uc_arr[0]) == wc_arr[0]);
+    BOOST_TEST(boost::lexical_cast<wide_char>(sc_arr[0]) == wc_arr[0]);
 }
 
 
@@ -52,25 +43,25 @@ void test_char_types_conversions_wchar_t()
 #ifndef BOOST_LCAST_NO_WCHAR_T
     test_impl(L"Test array of chars");
     wchar_t c = boost::detail::lcast_char_constants<wchar_t>::zero;
-    BOOST_CHECK(L'0' == c);
+    BOOST_TEST(L'0' == c);
 
     c = boost::detail::lcast_char_constants<wchar_t>::minus;
-    BOOST_CHECK(L'-' == c);
+    BOOST_TEST(L'-' == c);
 
     c = boost::detail::lcast_char_constants<wchar_t>::plus;
-    BOOST_CHECK(L'+' == c);
+    BOOST_TEST(L'+' == c);
 
     c = boost::detail::lcast_char_constants<wchar_t>::lowercase_e;
-    BOOST_CHECK(L'e' == c);
+    BOOST_TEST(L'e' == c);
 
     c = boost::detail::lcast_char_constants<wchar_t>::capital_e;
-    BOOST_CHECK(L'E' == c);
+    BOOST_TEST(L'E' == c);
 
     c = boost::detail::lcast_char_constants<wchar_t>::c_decimal_separator;
-    BOOST_CHECK(L'.' == c);
+    BOOST_TEST(L'.' == c);
 #endif
 
-    BOOST_CHECK(true);
+    BOOST_TEST(true);
 }
 
 void test_char_types_conversions_char16_t()
@@ -78,25 +69,25 @@ void test_char_types_conversions_char16_t()
 #if !defined(BOOST_NO_CXX11_CHAR16_T) && !defined(BOOST_NO_CXX11_UNICODE_LITERALS) && defined(BOOST_STL_SUPPORTS_NEW_UNICODE_LOCALES)
     test_impl(u"Test array of chars");
     char16_t c = boost::detail::lcast_char_constants<char16_t>::zero;
-    BOOST_CHECK(u'0' == c);
+    BOOST_TEST(u'0' == c);
 
     c = boost::detail::lcast_char_constants<char16_t>::minus;
-    BOOST_CHECK(u'-' == c);
+    BOOST_TEST(u'-' == c);
 
     c = boost::detail::lcast_char_constants<char16_t>::plus;
-    BOOST_CHECK(u'+' == c);
+    BOOST_TEST(u'+' == c);
 
     c = boost::detail::lcast_char_constants<char16_t>::lowercase_e;
-    BOOST_CHECK(u'e' == c);
+    BOOST_TEST(u'e' == c);
 
     c = boost::detail::lcast_char_constants<char16_t>::capital_e;
-    BOOST_CHECK(u'E' == c);
+    BOOST_TEST(u'E' == c);
 
     c = boost::detail::lcast_char_constants<char16_t>::c_decimal_separator;
-    BOOST_CHECK(u'.' == c);
+    BOOST_TEST(u'.' == c);
 #endif
 
-    BOOST_CHECK(true);
+    BOOST_TEST(true);
 }
 
 void test_char_types_conversions_char32_t()
@@ -104,34 +95,32 @@ void test_char_types_conversions_char32_t()
 #if !defined(BOOST_NO_CXX11_CHAR32_T) && !defined(BOOST_NO_CXX11_UNICODE_LITERALS) && defined(BOOST_STL_SUPPORTS_NEW_UNICODE_LOCALES)
     test_impl(U"Test array of chars");
     char32_t c = boost::detail::lcast_char_constants<char32_t>::zero;
-    BOOST_CHECK(U'0' == c);
+    BOOST_TEST(U'0' == c);
 
     c = boost::detail::lcast_char_constants<char32_t>::minus;
-    BOOST_CHECK(U'-' == c);
+    BOOST_TEST(U'-' == c);
 
     c = boost::detail::lcast_char_constants<char32_t>::plus;
-    BOOST_CHECK(U'+' == c);
+    BOOST_TEST(U'+' == c);
 
     c = boost::detail::lcast_char_constants<char32_t>::lowercase_e;
-    BOOST_CHECK(U'e' == c);
+    BOOST_TEST(U'e' == c);
 
     c = boost::detail::lcast_char_constants<char32_t>::capital_e;
-    BOOST_CHECK(U'E', == c);
+    BOOST_TEST(U'E', == c);
 
     c = boost::detail::lcast_char_constants<char32_t>::c_decimal_separator;
-    BOOST_CHECK(U'.' == c);
+    BOOST_TEST(U'.' == c);
 #endif
 
-    BOOST_CHECK(true);
+    BOOST_TEST(true);
 }
 
-unit_test::test_suite *init_unit_test_suite(int, char *[])
+int main()
 {
-    unit_test::test_suite *suite =
-        BOOST_TEST_SUITE("lexical_cast char => wide characters unit test (widening test)");
-    suite->add(BOOST_TEST_CASE(&test_char_types_conversions_wchar_t));
-    suite->add(BOOST_TEST_CASE(&test_char_types_conversions_char16_t));
-    suite->add(BOOST_TEST_CASE(&test_char_types_conversions_char32_t));
+    test_char_types_conversions_wchar_t();
+    test_char_types_conversions_char16_t();
+    test_char_types_conversions_char32_t();
 
-    return suite;
+    return boost::report_errors();
 }

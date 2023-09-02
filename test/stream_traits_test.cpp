@@ -8,41 +8,39 @@
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt).
 
-#include <boost/config.hpp>
-
 #include <boost/lexical_cast/detail/converter_lexical.hpp>
 
-#include <boost/test/unit_test.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 template <class T>
 static void test_optimized_types_to_string_const()
 {
     namespace de = boost::detail;
     typedef de::lexical_cast_stream_traits<T, std::string> trait_1;
-    BOOST_CHECK(!trait_1::is_source_input_not_optimized_t::value);
-    BOOST_CHECK((boost::is_same<BOOST_DEDUCED_TYPENAME trait_1::src_char_t, char>::value));
-    BOOST_CHECK((boost::is_same<BOOST_DEDUCED_TYPENAME trait_1::target_char_t, char>::value));
-    BOOST_CHECK((boost::is_same<BOOST_DEDUCED_TYPENAME trait_1::char_type, char>::value));
-    BOOST_CHECK(!trait_1::is_string_widening_required_t::value);
-    BOOST_CHECK(!trait_1::is_source_input_not_optimized_t::value);
+    BOOST_TEST(!trait_1::is_source_input_not_optimized_t::value);
+    BOOST_TEST((boost::is_same<typename trait_1::src_char_t, char>::value));
+    BOOST_TEST((boost::is_same<typename trait_1::target_char_t, char>::value));
+    BOOST_TEST((boost::is_same<typename trait_1::char_type, char>::value));
+    BOOST_TEST(!trait_1::is_string_widening_required_t::value);
+    BOOST_TEST(!trait_1::is_source_input_not_optimized_t::value);
 
     typedef de::lexical_cast_stream_traits<const T, std::string> trait_2;
-    BOOST_CHECK(!trait_2::is_source_input_not_optimized_t::value);
-    BOOST_CHECK((boost::is_same<BOOST_DEDUCED_TYPENAME trait_2::src_char_t, char>::value));
-    BOOST_CHECK((boost::is_same<BOOST_DEDUCED_TYPENAME trait_2::target_char_t, char>::value));
-    BOOST_CHECK((boost::is_same<BOOST_DEDUCED_TYPENAME trait_2::char_type, char>::value));
-    BOOST_CHECK(!trait_2::is_string_widening_required_t::value);
-    BOOST_CHECK(!trait_2::is_source_input_not_optimized_t::value);
+    BOOST_TEST(!trait_2::is_source_input_not_optimized_t::value);
+    BOOST_TEST((boost::is_same<typename trait_2::src_char_t, char>::value));
+    BOOST_TEST((boost::is_same<typename trait_2::target_char_t, char>::value));
+    BOOST_TEST((boost::is_same<typename trait_2::char_type, char>::value));
+    BOOST_TEST(!trait_2::is_string_widening_required_t::value);
+    BOOST_TEST(!trait_2::is_source_input_not_optimized_t::value);
 
     typedef de::lexical_cast_stream_traits<T, std::wstring> trait_3;
-    BOOST_CHECK(!trait_3::is_source_input_not_optimized_t::value);
-    BOOST_CHECK((boost::is_same<BOOST_DEDUCED_TYPENAME trait_3::src_char_t, char>::value));
-    BOOST_CHECK((boost::is_same<BOOST_DEDUCED_TYPENAME trait_3::target_char_t, wchar_t>::value));
-    BOOST_CHECK((boost::is_same<BOOST_DEDUCED_TYPENAME trait_3::char_type, wchar_t>::value));
+    BOOST_TEST(!trait_3::is_source_input_not_optimized_t::value);
+    BOOST_TEST((boost::is_same<typename trait_3::src_char_t, char>::value));
+    BOOST_TEST((boost::is_same<typename trait_3::target_char_t, wchar_t>::value));
+    BOOST_TEST((boost::is_same<typename trait_3::char_type, wchar_t>::value));
 
-    BOOST_CHECK((boost::detail::is_character<BOOST_DEDUCED_TYPENAME trait_3::no_cv_src>::value != trait_3::is_string_widening_required_t::value));
+    BOOST_TEST((boost::detail::is_character<typename trait_3::no_cv_src>::value != trait_3::is_string_widening_required_t::value));
 
-    BOOST_CHECK(!trait_3::is_source_input_not_optimized_t::value);
+    BOOST_TEST(!trait_3::is_source_input_not_optimized_t::value);
 }
 
 
@@ -53,27 +51,27 @@ static void test_optimized_types_to_string()
 
     namespace de = boost::detail;
     typedef de::lexical_cast_stream_traits<std::string, T> trait_4;
-    BOOST_CHECK(!trait_4::is_source_input_not_optimized_t::value);
-    BOOST_CHECK((boost::is_same<BOOST_DEDUCED_TYPENAME trait_4::src_char_t, char>::value));
-    BOOST_CHECK((boost::is_same<BOOST_DEDUCED_TYPENAME trait_4::target_char_t, char>::value));
-    BOOST_CHECK((boost::is_same<BOOST_DEDUCED_TYPENAME trait_4::char_type, char>::value));
-    BOOST_CHECK(!trait_4::is_string_widening_required_t::value);
-    BOOST_CHECK(!trait_4::is_source_input_not_optimized_t::value);
+    BOOST_TEST(!trait_4::is_source_input_not_optimized_t::value);
+    BOOST_TEST((boost::is_same<typename trait_4::src_char_t, char>::value));
+    BOOST_TEST((boost::is_same<typename trait_4::target_char_t, char>::value));
+    BOOST_TEST((boost::is_same<typename trait_4::char_type, char>::value));
+    BOOST_TEST(!trait_4::is_string_widening_required_t::value);
+    BOOST_TEST(!trait_4::is_source_input_not_optimized_t::value);
 
     typedef de::lexical_cast_stream_traits<const std::string, T> trait_5;
-    BOOST_CHECK(!trait_5::is_source_input_not_optimized_t::value);
-    BOOST_CHECK((boost::is_same<BOOST_DEDUCED_TYPENAME trait_5::src_char_t, char>::value));
-    BOOST_CHECK((boost::is_same<BOOST_DEDUCED_TYPENAME trait_5::target_char_t, char>::value));
-    BOOST_CHECK((boost::is_same<BOOST_DEDUCED_TYPENAME trait_5::char_type, char>::value));
-    BOOST_CHECK(!trait_5::is_string_widening_required_t::value);
-    BOOST_CHECK(!trait_5::is_source_input_not_optimized_t::value);
+    BOOST_TEST(!trait_5::is_source_input_not_optimized_t::value);
+    BOOST_TEST((boost::is_same<typename trait_5::src_char_t, char>::value));
+    BOOST_TEST((boost::is_same<typename trait_5::target_char_t, char>::value));
+    BOOST_TEST((boost::is_same<typename trait_5::char_type, char>::value));
+    BOOST_TEST(!trait_5::is_string_widening_required_t::value);
+    BOOST_TEST(!trait_5::is_source_input_not_optimized_t::value);
 
     typedef de::lexical_cast_stream_traits<const std::wstring, T> trait_6;
-    BOOST_CHECK(!trait_6::is_source_input_not_optimized_t::value);
-    BOOST_CHECK((boost::is_same<BOOST_DEDUCED_TYPENAME trait_6::src_char_t, wchar_t>::value));
-    BOOST_CHECK((boost::is_same<BOOST_DEDUCED_TYPENAME trait_6::target_char_t, char>::value));
-    BOOST_CHECK((boost::is_same<BOOST_DEDUCED_TYPENAME trait_6::char_type, wchar_t>::value));
-    BOOST_CHECK(!trait_6::is_string_widening_required_t::value);
+    BOOST_TEST(!trait_6::is_source_input_not_optimized_t::value);
+    BOOST_TEST((boost::is_same<typename trait_6::src_char_t, wchar_t>::value));
+    BOOST_TEST((boost::is_same<typename trait_6::target_char_t, char>::value));
+    BOOST_TEST((boost::is_same<typename trait_6::char_type, wchar_t>::value));
+    BOOST_TEST(!trait_6::is_string_widening_required_t::value);
 }
 
 void test_metafunctions()
@@ -144,11 +142,11 @@ void test_metafunctions()
 #endif
 }
 
-boost::unit_test::test_suite *init_unit_test_suite(int, char *[])
+
+int main()
 {
-    boost::unit_test::test_suite *suite =
-        BOOST_TEST_SUITE("lexical_cast traits tests");
-    suite->add(BOOST_TEST_CASE(&test_metafunctions));
-    return suite;
+    test_metafunctions();
+
+    return boost::report_errors();
 }
 
