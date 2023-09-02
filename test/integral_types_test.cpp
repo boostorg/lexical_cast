@@ -247,7 +247,7 @@ void test_conversion_from_string_to_integral(CharT)
             BOOST_TEST_THROWS(lexical_cast<T>( to_str<CharT>(i)+s ), bad_lexical_cast);
         }
 
-        typedef BOOST_DEDUCED_TYPENAME boost::integral_promotion<T>::type promoted;
+        typedef typename boost::integral_promotion<T>::type promoted;
         if ( !(boost::is_same<T, promoted>::value) )
         {
             promoted prom = max_val;
@@ -563,7 +563,7 @@ template <typename SignedT>
 void test_integral_conversions_on_min_max_impl()
 {
     typedef SignedT signed_t;
-    typedef BOOST_DEDUCED_TYPENAME boost::make_unsigned<signed_t>::type unsigned_t;
+    typedef typename boost::make_unsigned<signed_t>::type unsigned_t;
 
     typedef std::numeric_limits<signed_t> s_limits;
     typedef std::numeric_limits<unsigned_t> uns_limits;

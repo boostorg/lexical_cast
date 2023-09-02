@@ -153,8 +153,8 @@ namespace boost {
     Target lexical_cast(Source arg)
     {
         typedef typename detail::widest_char<
-            BOOST_DEDUCED_TYPENAME detail::stream_char<Target>::type
-          , BOOST_DEDUCED_TYPENAME detail::stream_char<Source>::type
+            typename detail::stream_char<Target>::type
+          , typename detail::stream_char<Source>::type
         >::type char_type;
 
         typedef std::char_traits<char_type> traits;

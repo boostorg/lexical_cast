@@ -190,7 +190,7 @@ namespace boost {
         template < class Char >
         struct deduce_source_char_impl
         {
-            typedef BOOST_DEDUCED_TYPENAME boost::detail::normalize_single_byte_char< Char >::type type;
+            typedef typename boost::detail::normalize_single_byte_char< Char >::type type;
         };
 
         template < class T >
@@ -203,7 +203,7 @@ namespace boost {
                 "Source type is not std::ostream`able and std::wostream`s are not supported by your STL implementation");
             typedef char type;
 #else
-            typedef BOOST_DEDUCED_TYPENAME boost::conditional<
+            typedef typename boost::conditional<
                 result_t::value, char, wchar_t
             >::type type;
 
@@ -223,7 +223,7 @@ namespace boost {
         template < class Char >
         struct deduce_target_char_impl
         {
-            typedef BOOST_DEDUCED_TYPENAME normalize_single_byte_char< Char >::type type;
+            typedef typename normalize_single_byte_char< Char >::type type;
         };
 
         template < class T >
@@ -236,7 +236,7 @@ namespace boost {
                 "Target type is not std::istream`able and std::wistream`s are not supported by your STL implementation");
             typedef char type;
 #else
-            typedef BOOST_DEDUCED_TYPENAME boost::conditional<
+            typedef typename boost::conditional<
                 result_t::value, char, wchar_t
             >::type type;
 
@@ -266,8 +266,8 @@ namespace boost {
         template < class T >
         struct deduce_target_char
         {
-            typedef BOOST_DEDUCED_TYPENAME stream_char_common< T >::type stage1_type;
-            typedef BOOST_DEDUCED_TYPENAME deduce_target_char_impl< stage1_type >::type stage2_type;
+            typedef typename stream_char_common< T >::type stage1_type;
+            typedef typename deduce_target_char_impl< stage1_type >::type stage2_type;
 
             typedef stage2_type type;
         };
@@ -275,8 +275,8 @@ namespace boost {
         template < class T >
         struct deduce_source_char
         {
-            typedef BOOST_DEDUCED_TYPENAME stream_char_common< T >::type stage1_type;
-            typedef BOOST_DEDUCED_TYPENAME deduce_source_char_impl< stage1_type >::type stage2_type;
+            typedef typename stream_char_common< T >::type stage1_type;
+            typedef typename deduce_source_char_impl< stage1_type >::type stage2_type;
 
             typedef stage2_type type;
         };
@@ -349,7 +349,7 @@ namespace boost {
         // When is_specialized is false, the whole expression is 0.
         template <class Source>
         struct lcast_src_length<
-                    Source, BOOST_DEDUCED_TYPENAME boost::enable_if<boost::is_integral<Source> >::type
+                    Source, typename boost::enable_if<boost::is_integral<Source> >::type
                 >
         {
 #ifndef BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS
@@ -376,7 +376,7 @@ namespace boost {
         // sign + leading digit + decimal point + "e" + exponent sign == 5
         template<class Source>
         struct lcast_src_length<
-                Source, BOOST_DEDUCED_TYPENAME boost::enable_if<boost::is_float<Source> >::type
+                Source, typename boost::enable_if<boost::is_float<Source> >::type
             >
         {
 
@@ -399,14 +399,14 @@ namespace boost {
     {
         template <class Source, class Target>
         struct lexical_cast_stream_traits {
-            typedef BOOST_DEDUCED_TYPENAME boost::detail::array_to_pointer_decay<Source>::type src;
-            typedef BOOST_DEDUCED_TYPENAME boost::remove_cv<src>::type            no_cv_src;
+            typedef typename boost::detail::array_to_pointer_decay<Source>::type src;
+            typedef typename boost::remove_cv<src>::type            no_cv_src;
 
             typedef boost::detail::deduce_source_char<no_cv_src>                           deduce_src_char_metafunc;
-            typedef BOOST_DEDUCED_TYPENAME deduce_src_char_metafunc::type           src_char_t;
-            typedef BOOST_DEDUCED_TYPENAME boost::detail::deduce_target_char<Target>::type target_char_t;
+            typedef typename deduce_src_char_metafunc::type           src_char_t;
+            typedef typename boost::detail::deduce_target_char<Target>::type target_char_t;
 
-            typedef BOOST_DEDUCED_TYPENAME boost::detail::widest_char<
+            typedef typename boost::detail::widest_char<
                 target_char_t, src_char_t
             >::type char_type;
 
@@ -421,10 +421,10 @@ namespace boost {
                 "Your compiler does not have full support for char32_t" );
 #endif
 
-            typedef BOOST_DEDUCED_TYPENAME boost::conditional<
+            typedef typename boost::conditional<
                 boost::detail::extract_char_traits<char_type, Target>::value,
-                BOOST_DEDUCED_TYPENAME boost::detail::extract_char_traits<char_type, Target>,
-                BOOST_DEDUCED_TYPENAME boost::detail::extract_char_traits<char_type, no_cv_src>
+                typename boost::detail::extract_char_traits<char_type, Target>,
+                typename boost::detail::extract_char_traits<char_type, no_cv_src>
             >::type::trait_t traits;
 
             typedef boost::integral_constant<
@@ -438,7 +438,7 @@ namespace boost {
               bool,
                 !(boost::is_integral<no_cv_src>::value ||
                   boost::detail::is_character<
-                    BOOST_DEDUCED_TYPENAME deduce_src_char_metafunc::stage1_type          // if we did not get character type at stage1
+                    typename deduce_src_char_metafunc::stage1_type          // if we did not get character type at stage1
                   >::value                                                           // then we have no optimization for that type
                  )
                 > is_source_input_not_optimized_t;
@@ -461,15 +461,15 @@ namespace boost {
             typedef lexical_cast_stream_traits<Source, Target>  stream_trait;
 
             typedef detail::lexical_istream_limited_src<
-                BOOST_DEDUCED_TYPENAME stream_trait::char_type,
-                BOOST_DEDUCED_TYPENAME stream_trait::traits,
+                typename stream_trait::char_type,
+                typename stream_trait::traits,
                 stream_trait::requires_stringbuf,
                 stream_trait::len_t::value + 1
             > i_interpreter_type;
 
             typedef detail::lexical_ostream_limited_src<
-                BOOST_DEDUCED_TYPENAME stream_trait::char_type,
-                BOOST_DEDUCED_TYPENAME stream_trait::traits
+                typename stream_trait::char_type,
+                typename stream_trait::traits
             > o_interpreter_type;
 
             static inline bool try_convert(const Source& arg, Target& result) {

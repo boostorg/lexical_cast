@@ -57,8 +57,8 @@ namespace boost
     {
         template<class T>
         inline
-        BOOST_DEDUCED_TYPENAME boost::make_unsigned<T>::type lcast_to_unsigned(const T value) BOOST_NOEXCEPT {
-            typedef BOOST_DEDUCED_TYPENAME boost::make_unsigned<T>::type result_type;
+        typename boost::make_unsigned<T>::type lcast_to_unsigned(const T value) noexcept {
+            typedef typename boost::make_unsigned<T>::type result_type;
             return value < 0
                 ? static_cast<result_type>(0u - static_cast<result_type>(value))
                 : static_cast<result_type>(value);
@@ -69,8 +69,8 @@ namespace boost
     {
         template <class Traits, class T, class CharT>
         class lcast_put_unsigned: boost::noncopyable {
-            typedef BOOST_DEDUCED_TYPENAME Traits::int_type int_type;
-            BOOST_DEDUCED_TYPENAME boost::conditional<
+            typedef typename Traits::int_type int_type;
+            typename boost::conditional<
                     (sizeof(unsigned) > sizeof(T))
                     , unsigned
                     , T
@@ -80,7 +80,7 @@ namespace boost
             int_type const  m_zero;
 
         public:
-            lcast_put_unsigned(const T n_param, CharT* finish) BOOST_NOEXCEPT
+            lcast_put_unsigned(const T n_param, CharT* finish) noexcept
                 : m_value(n_param), m_finish(finish)
                 , m_czero(lcast_char_constants<CharT>::zero), m_zero(Traits::to_int_type(m_czero))
             {
@@ -137,7 +137,7 @@ namespace boost
             }
 
         private:
-            inline bool main_convert_iteration() BOOST_NOEXCEPT {
+            inline bool main_convert_iteration() noexcept {
                 --m_finish;
                 int_type const digit = static_cast<int_type>(m_value % 10U);
                 Traits::assign(*m_finish, Traits::to_char_type(m_zero + digit));
@@ -145,7 +145,7 @@ namespace boost
                 return !!m_value; // suppressing warnings
             }
 
-            inline CharT* main_convert_loop() BOOST_NOEXCEPT {
+            inline CharT* main_convert_loop() noexcept {
                 while (main_convert_iteration());
                 return m_finish;
             }
@@ -163,7 +163,7 @@ namespace boost
             const CharT* m_end;
 
         public:
-            lcast_ret_unsigned(T& value, const CharT* const begin, const CharT* end) BOOST_NOEXCEPT
+            lcast_ret_unsigned(T& value, const CharT* const begin, const CharT* end) noexcept
                 : m_multiplier_overflowed(false), m_multiplier(1), m_value(value), m_begin(begin), m_end(end)
             {
 #ifndef BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS
@@ -251,7 +251,7 @@ namespace boost
         private:
             // Iteration that does not care about grouping/separators and assumes that all
             // input characters are digits
-            inline bool main_convert_iteration() BOOST_NOEXCEPT {
+            inline bool main_convert_iteration() noexcept {
                 CharT const czero = lcast_char_constants<CharT>::zero;
                 T const maxv = (std::numeric_limits<T>::max)();
 
@@ -276,7 +276,7 @@ namespace boost
                 return true;
             }
 
-            bool main_convert_loop() BOOST_NOEXCEPT {
+            bool main_convert_loop() noexcept {
                 for ( ; m_end >= m_begin; --m_end) {
                     if (!main_convert_iteration()) {
                         return false;
