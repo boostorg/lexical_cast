@@ -14,7 +14,6 @@ target_include_directories(boost_lexical_cast INTERFACE include)
 
 target_link_libraries(boost_lexical_cast
   INTERFACE
-    Boost::assert
     Boost::config
     Boost::container
     Boost::core

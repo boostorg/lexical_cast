@@ -235,6 +235,10 @@ limitation of compiler options that you use.
 
 [section Changes]
 
+* [*boost 1.84.0 :]
+
+    * Dropped support of C++98 and C++03.
+
 * [*boost 1.56.0 :]
 
     * Added `boost::conversion::try_lexical_convert` functions.
