@@ -61,19 +61,19 @@ struct lcast_precision
 
     BOOST_STATIC_CONSTANT(unsigned int, precision_dec = limits::digits10 + 1U);
 
-    BOOST_STATIC_ASSERT(!is_specialized_dec ||
+    static_assert(!is_specialized_dec ||
             precision_dec <= streamsize_max + 0UL
-        );
+        , "");
 
     BOOST_STATIC_CONSTANT(unsigned long, precision_bin =
             2UL + limits::digits * 30103UL / 100000UL
         );
 
-    BOOST_STATIC_ASSERT(!is_specialized_bin ||
+    static_assert(!is_specialized_bin ||
             (limits::digits + 0UL < ULONG_MAX / 30103UL &&
             precision_bin > limits::digits10 + 0UL &&
             precision_bin <= streamsize_max + 0UL)
-        );
+        , "");
 
     BOOST_STATIC_CONSTANT(std::streamsize, value =
             is_specialized_bin ? precision_bin

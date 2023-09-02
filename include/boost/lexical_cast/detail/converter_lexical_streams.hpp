@@ -35,7 +35,6 @@
 #include <boost/limits.hpp>
 #include <boost/type_traits/conditional.hpp>
 #include <boost/type_traits/is_pointer.hpp>
-#include <boost/static_assert.hpp>
 #include <boost/detail/lcast_precision.hpp>
 #include <boost/detail/workaround.hpp>
 #include <boost/core/snprintf.hpp>
@@ -187,7 +186,7 @@ namespace boost {
 #ifndef BOOST_LCAST_NO_WCHAR_T
             template <class T>
             bool shl_char(T ch) {
-                BOOST_STATIC_ASSERT_MSG(( sizeof(T) <= sizeof(CharT)) ,
+                static_assert(sizeof(T) <= sizeof(CharT),
                     "boost::lexical_cast does not support narrowing of char types."
                     "Use boost::locale instead" );
 #ifndef BOOST_LEXICAL_CAST_ASSUME_C_LOCALE
@@ -210,7 +209,7 @@ namespace boost {
 
             template <class T>
             bool shl_char_array(T const* str_value) {
-                BOOST_STATIC_ASSERT_MSG(( sizeof(T) <= sizeof(CharT)),
+                static_assert(sizeof(T) <= sizeof(CharT),
                     "boost::lexical_cast does not support narrowing of char types."
                     "Use boost::locale instead" );
                 return shl_input_streamable(str_value);
@@ -227,7 +226,7 @@ namespace boost {
 #if defined(BOOST_NO_STRINGSTREAM) || defined(BOOST_NO_STD_LOCALE)
                 // If you have compilation error at this point, than your STL library
                 // does not support such conversions. Try updating it.
-                BOOST_STATIC_ASSERT((boost::is_same<char, CharT>::value));
+                static_assert(boost::is_same<char, CharT>::value, "");
 #endif
 
 #ifndef BOOST_NO_EXCEPTIONS
@@ -449,8 +448,8 @@ namespace boost {
             template <class C, std::size_t N>
             BOOST_DEDUCED_TYPENAME boost::disable_if<boost::is_const<C>, bool>::type
             operator<<(boost::array<C, N> const& input) BOOST_NOEXCEPT {
-                BOOST_STATIC_ASSERT_MSG(
-                    (sizeof(boost::array<const C, N>) == sizeof(boost::array<C, N>)),
+                static_assert(
+                    sizeof(boost::array<const C, N>) == sizeof(boost::array<C, N>),
                     "boost::array<C, N> and boost::array<const C, N> must have exactly the same layout."
                 );
                 return ((*this) << reinterpret_cast<boost::array<const C, N> const& >(input));
@@ -475,8 +474,8 @@ namespace boost {
             // Making a Boost.Array from std::array
             template <class C, std::size_t N>
             bool operator<<(std::array<C, N> const& input) BOOST_NOEXCEPT {
-                BOOST_STATIC_ASSERT_MSG(
-                    (sizeof(std::array<C, N>) == sizeof(boost::array<C, N>)),
+                static_assert(
+                    sizeof(std::array<C, N>) == sizeof(boost::array<C, N>),
                     "std::array and boost::array must have exactly the same layout. "
                     "Bug in implementation of std::array or boost::array."
                 );
@@ -553,13 +552,13 @@ namespace boost {
             template<typename InputStreamable>
             bool shr_using_base_class(InputStreamable& output)
             {
-                BOOST_STATIC_ASSERT_MSG(
-                    (!boost::is_pointer<InputStreamable>::value),
+                static_assert(
+                    !boost::is_pointer<InputStreamable>::value,
                     "boost::lexical_cast can not convert to pointers"
                 );
 
 #if defined(BOOST_NO_STRINGSTREAM) || defined(BOOST_NO_STD_LOCALE)
-                BOOST_STATIC_ASSERT_MSG((boost::is_same<char, CharT>::value),
+                static_assert(boost::is_same<char, CharT>::value,
                     "boost::lexical_cast can not convert, because your STL library does not "
                     "support such conversions. Try updating it."
                 );
@@ -599,7 +598,7 @@ namespace boost {
 
             template<class T>
             inline bool shr_xchar(T& output) BOOST_NOEXCEPT {
-                BOOST_STATIC_ASSERT_MSG(( sizeof(CharT) == sizeof(T) ),
+                static_assert(sizeof(CharT) == sizeof(T),
                     "boost::lexical_cast does not support narrowing of character types."
                     "Use boost::locale instead" );
                 bool const ok = (finish - start == 1);
@@ -684,8 +683,8 @@ namespace boost {
 
             template <class C, std::size_t N>
             bool operator>>(boost::array<C, N>& output) BOOST_NOEXCEPT {
-                BOOST_STATIC_ASSERT_MSG(
-                    (sizeof(std::array<C, N>) == sizeof(boost::array<C, N>)),
+                static_assert(
+                    sizeof(std::array<C, N>) == sizeof(boost::array<C, N>),
                     "std::array<C, N> and boost::array<C, N> must have exactly the same layout."
                 );
                 return ((*this) >> reinterpret_cast<std::array<C, N>& >(output));

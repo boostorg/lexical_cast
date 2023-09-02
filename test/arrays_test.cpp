@@ -356,7 +356,7 @@ void testing_std_array_input_conversion()
     BOOST_TEST(true);
 }
 
-int mian()
+int main()
 {
     testing_boost_array_output_conversion();
     testing_std_array_output_conversion();

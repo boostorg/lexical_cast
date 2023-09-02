@@ -37,7 +37,6 @@
 #include <boost/type_traits/is_float.hpp>
 #include <boost/type_traits/has_left_shift.hpp>
 #include <boost/type_traits/has_right_shift.hpp>
-#include <boost/static_assert.hpp>
 #include <boost/detail/lcast_precision.hpp>
 
 #include <boost/lexical_cast/detail/widest_char.hpp>
@@ -200,7 +199,7 @@ namespace boost {
             typedef boost::has_left_shift< std::basic_ostream< char >, T > result_t;
 
 #if defined(BOOST_LCAST_NO_WCHAR_T)
-            BOOST_STATIC_ASSERT_MSG((result_t::value),
+            static_assert(result_t::value,
                 "Source type is not std::ostream`able and std::wostream`s are not supported by your STL implementation");
             typedef char type;
 #else
@@ -208,7 +207,7 @@ namespace boost {
                 result_t::value, char, wchar_t
             >::type type;
 
-            BOOST_STATIC_ASSERT_MSG((result_t::value || boost::has_left_shift< std::basic_ostream< type >, T >::value),
+            static_assert(result_t::value || boost::has_left_shift< std::basic_ostream< type >, T >::value,
                 "Source type is neither std::ostream`able nor std::wostream`able");
 #endif
         };
@@ -233,7 +232,7 @@ namespace boost {
             typedef boost::has_right_shift<std::basic_istream<char>, T > result_t;
 
 #if defined(BOOST_LCAST_NO_WCHAR_T)
-            BOOST_STATIC_ASSERT_MSG((result_t::value),
+            static_assert(result_t::value,
                 "Target type is not std::istream`able and std::wistream`s are not supported by your STL implementation");
             typedef char type;
 #else
@@ -241,7 +240,7 @@ namespace boost {
                 result_t::value, char, wchar_t
             >::type type;
 
-            BOOST_STATIC_ASSERT_MSG((result_t::value || boost::has_right_shift<std::basic_istream<wchar_t>, T >::value),
+            static_assert(result_t::value || boost::has_right_shift<std::basic_istream<wchar_t>, T >::value,
                 "Target type is neither std::istream`able nor std::wistream`able");
 #endif
         };
@@ -361,7 +360,7 @@ namespace boost {
               );
 #else
             BOOST_STATIC_CONSTANT(std::size_t, value = 156);
-            BOOST_STATIC_ASSERT(sizeof(Source) * CHAR_BIT <= 256);
+            static_assert(sizeof(Source) * CHAR_BIT <= 256, "");
 #endif
         };
 
@@ -382,10 +381,10 @@ namespace boost {
         {
 
 #ifndef BOOST_LCAST_NO_COMPILE_TIME_PRECISION
-            BOOST_STATIC_ASSERT(
+            static_assert(
                     std::numeric_limits<Source>::max_exponent10 <=  999999L &&
                     std::numeric_limits<Source>::min_exponent10 >= -999999L
-                );
+                , "");
 
             BOOST_STATIC_CONSTANT(std::size_t, value =
                     5 + lcast_precision<Source>::value + 6
@@ -412,13 +411,13 @@ namespace boost {
             >::type char_type;
 
 #if !defined(BOOST_NO_CXX11_CHAR16_T) && defined(BOOST_NO_CXX11_UNICODE_LITERALS)
-            BOOST_STATIC_ASSERT_MSG(( !boost::is_same<char16_t, src_char_t>::value
-                                        && !boost::is_same<char16_t, target_char_t>::value),
+            static_assert(!boost::is_same<char16_t, src_char_t>::value
+                                        && !boost::is_same<char16_t, target_char_t>::value,
                 "Your compiler does not have full support for char16_t" );
 #endif
 #if !defined(BOOST_NO_CXX11_CHAR32_T) && defined(BOOST_NO_CXX11_UNICODE_LITERALS)
-            BOOST_STATIC_ASSERT_MSG(( !boost::is_same<char32_t, src_char_t>::value
-                                        && !boost::is_same<char32_t, target_char_t>::value),
+            static_assert(!boost::is_same<char32_t, src_char_t>::value
+                                        && !boost::is_same<char32_t, target_char_t>::value,
                 "Your compiler does not have full support for char32_t" );
 #endif
 

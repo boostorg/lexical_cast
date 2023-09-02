@@ -30,7 +30,6 @@
 #include <cstdio>
 #include <boost/limits.hpp>
 #include <boost/type_traits/conditional.hpp>
-#include <boost/static_assert.hpp>
 #include <boost/detail/workaround.hpp>
 
 
@@ -86,7 +85,7 @@ namespace boost
                 , m_czero(lcast_char_constants<CharT>::zero), m_zero(Traits::to_int_type(m_czero))
             {
 #ifndef BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS
-                BOOST_STATIC_ASSERT(!std::numeric_limits<T>::is_signed);
+                static_assert(!std::numeric_limits<T>::is_signed, "");
 #endif
             }
 
@@ -108,7 +107,7 @@ namespace boost
 
 #ifndef BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS
                 // Check that ulimited group is unreachable:
-                BOOST_STATIC_ASSERT(std::numeric_limits<T>::digits10 < CHAR_MAX);
+                static_assert(std::numeric_limits<T>::digits10 < CHAR_MAX, "");
 #endif
                 CharT const thousands_sep = np.thousands_sep();
                 std::string::size_type group = 0; // current group number
@@ -168,14 +167,14 @@ namespace boost
                 : m_multiplier_overflowed(false), m_multiplier(1), m_value(value), m_begin(begin), m_end(end)
             {
 #ifndef BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS
-                BOOST_STATIC_ASSERT(!std::numeric_limits<T>::is_signed);
+                static_assert(!std::numeric_limits<T>::is_signed, "");
 
                 // GCC when used with flag -std=c++0x may not have std::numeric_limits
                 // specializations for __int128 and unsigned __int128 types.
                 // Try compilation with -std=gnu++0x or -std=gnu++11.
                 //
                 // http://gcc.gnu.org/bugzilla/show_bug.cgi?id=40856
-                BOOST_STATIC_ASSERT_MSG(std::numeric_limits<T>::is_specialized,
+                static_assert(std::numeric_limits<T>::is_specialized,
                     "std::numeric_limits are not specialized for integral type passed to boost::lexical_cast"
                 );
 #endif

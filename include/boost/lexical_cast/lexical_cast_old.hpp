@@ -34,7 +34,6 @@
 #include <cstdio>
 #include <boost/limits.hpp>
 #include <boost/type_traits/is_pointer.hpp>
-#include <boost/static_assert.hpp>
 #include <boost/detail/lcast_precision.hpp>
 #include <boost/detail/workaround.hpp>
 

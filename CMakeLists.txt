@@ -21,7 +21,6 @@ target_link_libraries(boost_lexical_cast
     Boost::integer
     Boost::numeric_conversion
     Boost::range
-    Boost::static_assert
     Boost::throw_exception
     Boost::type_traits
 )

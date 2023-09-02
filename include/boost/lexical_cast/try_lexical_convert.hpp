@@ -204,7 +204,7 @@ namespace boost {
         template <typename Target, typename CharacterT>
         inline bool try_lexical_convert(const CharacterT* chars, std::size_t count, Target& result)
         {
-            BOOST_STATIC_ASSERT_MSG(
+            static_assert(
                 boost::detail::is_character<CharacterT>::value,
                 "This overload of try_lexical_convert is meant to be used only with arrays of characters."
             );
