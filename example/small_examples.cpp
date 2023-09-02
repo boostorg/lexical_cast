@@ -34,7 +34,7 @@ void number_to_file(int number, std::FILE* file)
 {
     using buf_t = std::array<char, 50>;
     buf_t buffer = boost::lexical_cast<buf_t>(number); // No dynamic memory allocation
-    std::fputs(buffer.begin(), file);
+    std::fputs(buffer.data(), file);
 }
 
 //] [/lexical_cast_fixed_buffer]
