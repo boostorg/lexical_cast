@@ -45,12 +45,10 @@ namespace boost
 #endif
         {}
 
-        const char *what() const noexcept override {
+        const char *what() const BOOST_NOEXCEPT_OR_NOTHROW override {
             return "bad lexical cast: "
                    "source type value could not be interpreted as target";
         }
-
-        ~bad_lexical_cast() override = default;
 
         bad_lexical_cast(const bad_lexical_cast&) = default;
         bad_lexical_cast& operator=(const bad_lexical_cast&) = default;
