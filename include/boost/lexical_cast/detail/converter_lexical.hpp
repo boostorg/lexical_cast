@@ -44,7 +44,7 @@
 
 #include <array>
 
-#include <boost/range/iterator_range_core.hpp>
+#include <boost/lexical_cast/detail/buffer_view.hpp>
 #include <boost/container/container_fwd.hpp>
 
 #include <boost/lexical_cast/detail/converter_lexical_streams.hpp>
@@ -54,6 +54,8 @@ namespace boost {
     // Forward declaration
     template<class T, std::size_t N>
     class array;
+    template<class IteratorT>
+    class iterator_range;
 
     namespace detail // normalize_single_byte_char<Char>
     {
@@ -109,6 +111,12 @@ namespace boost {
             Char,
             boost::detail::deduce_character_type_later< const Char* >
         > {};
+
+        template < typename Char >
+        struct stream_char_common< boost::conversion::detail::buffer_view< Char > >
+        {
+            typedef Char type;
+        };
 
         template < typename Char >
         struct stream_char_common< boost::iterator_range< Char* > >: public boost::conditional<
