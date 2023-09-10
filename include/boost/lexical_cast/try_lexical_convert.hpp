@@ -39,11 +39,11 @@
 #include <boost/type_traits/is_same.hpp>
 #include <boost/type_traits/is_arithmetic.hpp>
 
+#include <boost/lexical_cast/detail/buffer_view.hpp>
 #include <boost/lexical_cast/detail/is_character.hpp>
 #include <boost/lexical_cast/detail/converter_numeric.hpp>
 #include <boost/lexical_cast/detail/converter_lexical.hpp>
 
-#include <boost/range/iterator_range_core.hpp>
 #include <boost/container/container_fwd.hpp>
 
 namespace boost {
@@ -209,7 +209,8 @@ namespace boost {
                 "This overload of try_lexical_convert is meant to be used only with arrays of characters."
             );
             return ::boost::conversion::detail::try_lexical_convert(
-                ::boost::iterator_range<const CharacterT*>(chars, chars + count), result
+                ::boost::conversion::detail::make_buffer_view(chars, chars + count),
+                result
             );
         }
 

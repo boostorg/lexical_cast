@@ -69,11 +69,12 @@
 #include <boost/type_traits/make_unsigned.hpp>
 #include <boost/type_traits/is_integral.hpp>
 #include <boost/type_traits/is_float.hpp>
-#include <boost/range/iterator_range_core.hpp>
+#include <boost/lexical_cast/detail/buffer_view.hpp>
 #include <boost/container/container_fwd.hpp>
 #include <boost/integer.hpp>
 #include <boost/detail/basic_pointerbuf.hpp>
 #include <boost/core/noncopyable.hpp>
+#include <boost/core/enable_if.hpp>
 #ifndef BOOST_NO_CWCHAR
 #   include <cwchar>
 #endif
@@ -83,6 +84,8 @@ namespace boost {
     // Forward declaration
     template<class T, std::size_t N>
     class array;
+    template<class IteratorT>
+    class iterator_range;
 
     namespace detail // basic_unlockedbuf
     {
@@ -217,7 +220,11 @@ namespace boost {
 
             bool shl_char_array_limited(CharT const* str, std::size_t max_size) noexcept {
                 start = str;
-                finish = std::find(start, start + max_size, Traits::to_char_type(0));
+                finish = start;
+                const auto zero = Traits::to_char_type(0);
+                while (finish < start + max_size && zero != *finish) {
+                     ++ finish;
+                }
                 return true;
             }
 
@@ -363,30 +370,15 @@ namespace boost {
                 return true;
             }
 
-            template <class C>
-            typename boost::disable_if<boost::is_const<C>, bool>::type
-            operator<<(const iterator_range<C*>& rng) noexcept {
-                return (*this) << iterator_range<const C*>(rng.begin(), rng.end());
-            }
-
-            bool operator<<(const iterator_range<const CharT*>& rng) noexcept {
-                start = rng.begin();
-                finish = rng.end();
+            bool operator<<(boost::conversion::detail::buffer_view<CharT> rng) noexcept {
+                start = rng.begin;
+                finish = rng.end;
                 return true;
             }
 
-            bool operator<<(const iterator_range<const signed char*>& rng) noexcept {
-                return (*this) << iterator_range<const char*>(
-                    reinterpret_cast<const char*>(rng.begin()),
-                    reinterpret_cast<const char*>(rng.end())
-                );
-            }
-
-            bool operator<<(const iterator_range<const unsigned char*>& rng) noexcept {
-                return (*this) << iterator_range<const char*>(
-                    reinterpret_cast<const char*>(rng.begin()),
-                    reinterpret_cast<const char*>(rng.end())
-                );
+            template <class C>
+            bool operator<<(const iterator_range<C*>& rng) noexcept {
+                return (*this) << boost::conversion::detail::make_buffer_view(rng.begin(), rng.end());
             }
 
             bool operator<<(char ch)                    { return shl_char(ch); }
