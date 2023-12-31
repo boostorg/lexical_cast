@@ -32,6 +32,7 @@
 #include <string>
 #include <cstring>
 #include <cstdio>
+#include <boost/array.hpp>
 #include <boost/limits.hpp>
 #include <boost/type_traits/conditional.hpp>
 #include <boost/type_traits/is_pointer.hpp>
@@ -81,9 +82,6 @@
 
 namespace boost {
 
-    // Forward declaration
-    template<class T, std::size_t N>
-    class array;
     template<class IteratorT>
     class iterator_range;
 
