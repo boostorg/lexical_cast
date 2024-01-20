@@ -32,9 +32,9 @@
 #include <string>
 #include <cstring>
 #include <cstdio>
+#include <type_traits>
+
 #include <boost/limits.hpp>
-#include <boost/type_traits/conditional.hpp>
-#include <boost/type_traits/is_pointer.hpp>
 #include <boost/detail/lcast_precision.hpp>
 #include <boost/detail/workaround.hpp>
 #include <boost/core/snprintf.hpp>
@@ -66,15 +66,11 @@
 
 #include <array>
 
-#include <boost/type_traits/make_unsigned.hpp>
-#include <boost/type_traits/is_integral.hpp>
-#include <boost/type_traits/is_float.hpp>
 #include <boost/lexical_cast/detail/buffer_view.hpp>
 #include <boost/container/container_fwd.hpp>
 #include <boost/integer.hpp>
 #include <boost/detail/basic_pointerbuf.hpp>
 #include <boost/core/noncopyable.hpp>
-#include <boost/core/enable_if.hpp>
 #ifndef BOOST_NO_CWCHAR
 #   include <cwchar>
 #endif
@@ -141,13 +137,13 @@ namespace boost {
                 , std::size_t CharacterBufferSize
                 >
         class lexical_istream_limited_src: boost::noncopyable {
-            typedef typename boost::conditional<
+            typedef typename std::conditional<
                 RequiresStringbuffer,
                 typename out_stream_helper_trait<CharT, Traits>::out_stream_t,
                 do_not_construct_out_stream_t
             >::type deduced_out_stream_t;
 
-            typedef typename boost::conditional<
+            typedef typename std::conditional<
                 RequiresStringbuffer,
                 typename out_stream_helper_trait<CharT, Traits>::stringbuffer_t,
                 do_not_construct_out_buffer_t
@@ -233,7 +229,7 @@ namespace boost {
 #if defined(BOOST_NO_STRINGSTREAM) || defined(BOOST_NO_STD_LOCALE)
                 // If you have compilation error at this point, than your STL library
                 // does not support such conversions. Try updating it.
-                static_assert(boost::is_same<char, CharT>::value, "");
+                static_assert(std::is_same<char, CharT>::value, "");
 #endif
 
 #ifndef BOOST_NO_EXCEPTIONS
@@ -265,7 +261,7 @@ namespace boost {
             template <class T>
             inline bool shl_signed(const T n) {
                 CharT* tmp_finish = buffer + CharacterBufferSize;
-                typedef typename boost::make_unsigned<T>::type utype;
+                typedef typename std::make_unsigned<T>::type utype;
                 CharT* tmp_start = lcast_put_unsigned<Traits, utype, CharT>(lcast_to_unsigned(n), tmp_finish).convert();
                 if (n < 0) {
                     --tmp_start;
@@ -438,7 +434,7 @@ namespace boost {
 
             // Adding constness to characters. Constness does not change layout
             template <class C, std::size_t N>
-            typename boost::disable_if<boost::is_const<C>, bool>::type
+            typename std::enable_if<!std::is_const<C>::value, bool>::type
             operator<<(boost::array<C, N> const& input) noexcept {
                 static_assert(
                     sizeof(boost::array<const C, N>) == sizeof(boost::array<C, N>),
@@ -519,7 +515,7 @@ namespace boost {
                 if (start == finish) return false;
                 CharT const minus = lcast_char_constants<CharT>::minus;
                 CharT const plus = lcast_char_constants<CharT>::plus;
-                typedef typename make_unsigned<Type>::type utype;
+                using utype = typename std::make_unsigned<Type>::type;
                 utype out_tmp = 0;
                 bool const has_minus = Traits::eq(minus, *start);
 
@@ -545,12 +541,12 @@ namespace boost {
             bool shr_using_base_class(InputStreamable& output)
             {
                 static_assert(
-                    !boost::is_pointer<InputStreamable>::value,
+                    !std::is_pointer<InputStreamable>::value,
                     "boost::lexical_cast can not convert to pointers"
                 );
 
 #if defined(BOOST_NO_STRINGSTREAM) || defined(BOOST_NO_STD_LOCALE)
-                static_assert(boost::is_same<char, CharT>::value,
+                static_assert(std::is_same<char, CharT>::value,
                     "boost::lexical_cast can not convert, because your STL library does not "
                     "support such conversions. Try updating it."
                 );

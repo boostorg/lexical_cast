@@ -24,18 +24,16 @@
 #endif
 
 
-#include <boost/type_traits/conditional.hpp>
+#include <type_traits>
 
 namespace boost { namespace detail {
 
-    template <typename TargetChar, typename SourceChar>
-    struct widest_char {
-        typedef typename boost::conditional<
-            (sizeof(TargetChar) > sizeof(SourceChar))
-            , TargetChar
-            , SourceChar
-        >::type type;
-    };
+template <typename TargetChar, typename SourceChar>
+using widest_char = std::conditional<
+    (sizeof(TargetChar) > sizeof(SourceChar))
+    , TargetChar
+    , SourceChar
+>;
 
 }} // namespace boost::detail
 

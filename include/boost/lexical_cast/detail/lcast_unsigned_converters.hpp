@@ -28,10 +28,10 @@
 #include <string>
 #include <cstring>
 #include <cstdio>
-#include <boost/limits.hpp>
-#include <boost/type_traits/conditional.hpp>
-#include <boost/detail/workaround.hpp>
+#include <type_traits>
 
+#include <boost/limits.hpp>
+#include <boost/detail/workaround.hpp>
 
 #ifndef BOOST_NO_STD_LOCALE
 #   include <locale>
@@ -47,8 +47,6 @@
 #endif
 
 #include <boost/lexical_cast/detail/lcast_char_constants.hpp>
-#include <boost/type_traits/make_unsigned.hpp>
-#include <boost/type_traits/is_signed.hpp>
 #include <boost/core/noncopyable.hpp>
 
 namespace boost
@@ -57,8 +55,8 @@ namespace boost
     {
         template<class T>
         inline
-        typename boost::make_unsigned<T>::type lcast_to_unsigned(const T value) noexcept {
-            typedef typename boost::make_unsigned<T>::type result_type;
+        typename std::make_unsigned<T>::type lcast_to_unsigned(const T value) noexcept {
+            typedef typename std::make_unsigned<T>::type result_type;
             return value < 0
                 ? static_cast<result_type>(0u - static_cast<result_type>(value))
                 : static_cast<result_type>(value);
@@ -70,7 +68,7 @@ namespace boost
         template <class Traits, class T, class CharT>
         class lcast_put_unsigned: boost::noncopyable {
             typedef typename Traits::int_type int_type;
-            typename boost::conditional<
+            typename std::conditional<
                     (sizeof(unsigned) > sizeof(T))
                     , unsigned
                     , T

@@ -23,17 +23,9 @@
 #   pragma once
 #endif
 
-#include <boost/limits.hpp>
-#include <boost/type_traits/type_identity.hpp>
-#include <boost/type_traits/conditional.hpp>
-#include <boost/type_traits/make_unsigned.hpp>
-#include <boost/type_traits/is_signed.hpp>
-#include <boost/type_traits/is_integral.hpp>
-#include <boost/type_traits/is_arithmetic.hpp>
-#include <boost/type_traits/is_base_of.hpp>
-#include <boost/type_traits/is_float.hpp>
-#include <boost/type_traits/remove_volatile.hpp>
+#include <type_traits>
 
+#include <boost/limits.hpp>
 #include <boost/numeric/conversion/cast.hpp>
 
 namespace boost { namespace detail {
@@ -43,8 +35,8 @@ struct detect_precision_loss
 {
     typedef Source source_type;
     typedef boost::numeric::Trunc<Source> Rounder;
-    typedef typename conditional<
-        boost::is_arithmetic<Source>::value, Source, Source const&
+    typedef typename std::conditional<
+        std::is_arithmetic<Source>::value, Source, Source const&
     >::type argument_type ;
 
     static inline source_type nearbyint(argument_type s, bool& is_ok) noexcept {
@@ -66,8 +58,8 @@ template <typename Base, class Source>
 struct fake_precision_loss: public Base
 {
     typedef Source source_type ;
-    typedef typename conditional<
-        boost::is_arithmetic<Source>::value, Source, Source const&
+    typedef typename std::conditional<
+        std::is_arithmetic<Source>::value, Source, Source const&
     >::type argument_type ;
 
     static inline source_type nearbyint(argument_type s, bool& /*is_ok*/) noexcept {
@@ -92,8 +84,8 @@ inline bool noexcept_numeric_convert(const Source& arg, Target& result) noexcept
             detect_precision_loss<Source >
     > converter_orig_t;
 
-    typedef typename boost::conditional<
-        boost::is_base_of< detect_precision_loss<Source >, converter_orig_t >::value,
+    typedef typename std::conditional<
+        std::is_base_of< detect_precision_loss<Source >, converter_orig_t >::value,
         converter_orig_t,
         fake_precision_loss<converter_orig_t, Source>
     >::type converter_t;
@@ -118,10 +110,10 @@ template <typename Target, typename Source>
 struct lexical_cast_dynamic_num_ignoring_minus
 {
     static inline bool try_convert(const Source &arg, Target& result) noexcept {
-        typedef typename boost::conditional<
-                boost::is_float<Source>::value,
-                boost::type_identity<Source>,
-                boost::make_unsigned<Source>
+        typedef typename std::conditional<
+                std::is_floating_point<Source>::value,
+                std::enable_if<true, Source>,
+                std::make_unsigned<Source>
         >::type usource_lazy_t;
         typedef typename usource_lazy_t::type usource_t;
 
@@ -156,17 +148,17 @@ struct lexical_cast_dynamic_num_ignoring_minus
 template <typename Target, typename Source>
 struct dynamic_num_converter_impl
 {
-    typedef typename boost::remove_volatile<Source>::type source_type;
+    typedef typename std::remove_volatile<Source>::type source_type;
 
     static inline bool try_convert(source_type arg, Target& result) noexcept {
-        typedef typename boost::conditional<
-            boost::is_unsigned<Target>::value &&
-            (boost::is_signed<source_type>::value || boost::is_float<source_type>::value) &&
-            !(boost::is_same<source_type, bool>::value) &&
-            !(boost::is_same<Target, bool>::value),
+        using caster_type = typename std::conditional<
+            std::is_unsigned<Target>::value &&
+            (std::is_signed<source_type>::value || std::is_floating_point<source_type>::value) &&
+            !(std::is_same<source_type, bool>::value) &&
+            !(std::is_same<Target, bool>::value),
             lexical_cast_dynamic_num_ignoring_minus<Target, source_type>,
             lexical_cast_dynamic_num_not_ignoring_minus<Target, source_type>
-        >::type caster_type;
+        >::type;
 
         return caster_type::try_convert(arg, result);
     }

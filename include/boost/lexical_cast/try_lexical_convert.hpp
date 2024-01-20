@@ -33,11 +33,7 @@
 
 
 #include <string>
-#include <boost/type_traits/is_integral.hpp>
-#include <boost/type_traits/type_identity.hpp>
-#include <boost/type_traits/conditional.hpp>
-#include <boost/type_traits/is_same.hpp>
-#include <boost/type_traits/is_arithmetic.hpp>
+#include <type_traits>
 
 #include <boost/lexical_cast/detail/buffer_view.hpp>
 #include <boost/lexical_cast/detail/is_character.hpp>
@@ -51,92 +47,79 @@ namespace boost {
     {
         template<typename T>
         struct is_stdstring
-            : boost::false_type
+            : std::integral_constant<bool, false>
         {};
 
         template<typename CharT, typename Traits, typename Alloc>
         struct is_stdstring< std::basic_string<CharT, Traits, Alloc> >
-            : boost::true_type
+            : std::integral_constant<bool, true>
         {};
 
         // Sun Studio has problem with partial specialization of templates differing only in namespace.
         // We workaround that by making `is_booststring` trait, instead of specializing `is_stdstring` for `boost::container::basic_string`.
         template<typename T>
         struct is_booststring
-            : boost::false_type
+            : std::integral_constant<bool, false>
         {};
 
         template<typename CharT, typename Traits, typename Alloc>
         struct is_booststring< boost::container::basic_string<CharT, Traits, Alloc> >
-            : boost::true_type
+            : std::integral_constant<bool, true>
         {};
 
         template<typename Target, typename Source>
-        struct is_arithmetic_and_not_xchars
-        {
-            typedef boost::integral_constant<
-                bool,
-                !(boost::detail::is_character<Target>::value) &&
-                    !(boost::detail::is_character<Source>::value) &&
-                    boost::is_arithmetic<Source>::value &&
-                    boost::is_arithmetic<Target>::value
-                > type;
+        using is_arithmetic_and_not_xchars = std::integral_constant<
+            bool,
+            !(boost::detail::is_character<Target>::value) &&
+                !(boost::detail::is_character<Source>::value) &&
+                std::is_arithmetic<Source>::value &&
+                std::is_arithmetic<Target>::value
+        >;
 
-            BOOST_STATIC_CONSTANT(bool, value = (
-                type::value
-            ));
-        };
 
         /*
          * is_xchar_to_xchar<Target, Source>::value is true,
          * Target and Souce are char types of the same size 1 (char, signed char, unsigned char).
          */
         template<typename Target, typename Source>
-        struct is_xchar_to_xchar
-        {
-            typedef boost::integral_constant<
-                bool,
-                sizeof(Source) == sizeof(Target) &&
-                     sizeof(Source) == sizeof(char) &&
-                     boost::detail::is_character<Target>::value &&
-                     boost::detail::is_character<Source>::value
-                > type;
-
-            BOOST_STATIC_CONSTANT(bool, value = (
-                type::value
-            ));
-        };
+        using is_xchar_to_xchar = std::integral_constant<
+            bool,
+            sizeof(Source) == sizeof(Target) &&
+                 sizeof(Source) == sizeof(char) &&
+                 boost::detail::is_character<Target>::value &&
+                 boost::detail::is_character<Source>::value
+        >;
 
         template<typename Target, typename Source>
         struct is_char_array_to_stdstring
-            : boost::false_type
+            : std::integral_constant<bool, false>
         {};
 
         template<typename CharT, typename Traits, typename Alloc>
         struct is_char_array_to_stdstring< std::basic_string<CharT, Traits, Alloc>, CharT* >
-            : boost::true_type
+            : std::integral_constant<bool, true>
         {};
 
         template<typename CharT, typename Traits, typename Alloc>
         struct is_char_array_to_stdstring< std::basic_string<CharT, Traits, Alloc>, const CharT* >
-            : boost::true_type
+            : std::integral_constant<bool, true>
         {};
 
         // Sun Studio has problem with partial specialization of templates differing only in namespace.
         // We workaround that by making `is_char_array_to_booststring` trait, instead of specializing `is_char_array_to_stdstring` for `boost::container::basic_string`.
         template<typename Target, typename Source>
         struct is_char_array_to_booststring
-            : boost::false_type
+            : std::integral_constant<bool, false>
         {};
 
         template<typename CharT, typename Traits, typename Alloc>
         struct is_char_array_to_booststring< boost::container::basic_string<CharT, Traits, Alloc>, CharT* >
-            : boost::true_type
+            : std::integral_constant<bool, true>
         {};
 
         template<typename CharT, typename Traits, typename Alloc>
         struct is_char_array_to_booststring< boost::container::basic_string<CharT, Traits, Alloc>, const CharT* >
-            : boost::true_type
+            : std::integral_constant<bool, true>
         {};
 
         template <typename Target, typename Source>
@@ -166,17 +149,17 @@ namespace boost {
         {
             typedef typename boost::detail::array_to_pointer_decay<Source>::type src;
 
-            typedef boost::integral_constant<
+            typedef std::integral_constant<
                 bool,
                 boost::detail::is_xchar_to_xchar<Target, src >::value ||
                 boost::detail::is_char_array_to_stdstring<Target, src >::value ||
                 boost::detail::is_char_array_to_booststring<Target, src >::value ||
                 (
-                     boost::is_same<Target, src >::value &&
+                     std::is_same<Target, src >::value &&
                      (boost::detail::is_stdstring<Target >::value || boost::detail::is_booststring<Target >::value)
                 ) ||
                 (
-                     boost::is_same<Target, src >::value &&
+                     std::is_same<Target, src >::value &&
                      boost::detail::is_character<Target >::value
                 )
             > shall_we_copy_t;
@@ -186,10 +169,10 @@ namespace boost {
 
             // We do evaluate second `if_` lazily to avoid unnecessary instantiations
             // of `shall_we_copy_with_dynamic_check_t` and improve compilation times.
-            typedef typename boost::conditional<
+            typedef typename std::conditional<
                 shall_we_copy_t::value,
-                boost::type_identity<boost::detail::copy_converter_impl<Target, src > >,
-                boost::conditional<
+                std::enable_if<true, boost::detail::copy_converter_impl<Target, src > >,
+                std::conditional<
                      shall_we_copy_with_dynamic_check_t::value,
                      boost::detail::dynamic_num_converter_impl<Target, src >,
                      boost::detail::lexical_converter_impl<Target, src >

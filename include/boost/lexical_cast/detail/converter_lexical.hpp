@@ -29,14 +29,9 @@
 
 #include <cstddef>
 #include <string>
+#include <type_traits>
+
 #include <boost/limits.hpp>
-#include <boost/type_traits/integral_constant.hpp>
-#include <boost/type_traits/type_identity.hpp>
-#include <boost/type_traits/conditional.hpp>
-#include <boost/type_traits/is_integral.hpp>
-#include <boost/type_traits/is_float.hpp>
-#include <boost/type_traits/has_left_shift.hpp>
-#include <boost/type_traits/has_right_shift.hpp>
 #include <boost/detail/lcast_precision.hpp>
 
 #include <boost/lexical_cast/detail/widest_char.hpp>
@@ -92,21 +87,21 @@ namespace boost {
         // Returns one of char, wchar_t, char16_t, char32_t or deduce_character_type_later<T> types
         // Executed on Stage 1 (See deduce_source_char<T> and deduce_target_char<T>)
         template < typename Type >
-        struct stream_char_common: public boost::conditional<
+        struct stream_char_common: public std::conditional<
             boost::detail::is_character< Type >::value,
             Type,
             boost::detail::deduce_character_type_later< Type >
         > {};
 
         template < typename Char >
-        struct stream_char_common< Char* >: public boost::conditional<
+        struct stream_char_common< Char* >: public std::conditional<
             boost::detail::is_character< Char >::value,
             Char,
             boost::detail::deduce_character_type_later< Char* >
         > {};
 
         template < typename Char >
-        struct stream_char_common< const Char* >: public boost::conditional<
+        struct stream_char_common< const Char* >: public std::conditional<
             boost::detail::is_character< Char >::value,
             Char,
             boost::detail::deduce_character_type_later< const Char* >
@@ -119,14 +114,14 @@ namespace boost {
         };
 
         template < typename Char >
-        struct stream_char_common< boost::iterator_range< Char* > >: public boost::conditional<
+        struct stream_char_common< boost::iterator_range< Char* > >: public std::conditional<
             boost::detail::is_character< Char >::value,
             Char,
             boost::detail::deduce_character_type_later< boost::iterator_range< Char* > >
         > {};
 
         template < typename Char >
-        struct stream_char_common< boost::iterator_range< const Char* > >: public boost::conditional<
+        struct stream_char_common< boost::iterator_range< const Char* > >: public std::conditional<
             boost::detail::is_character< Char >::value,
             Char,
             boost::detail::deduce_character_type_later< boost::iterator_range< const Char* > >
@@ -145,14 +140,14 @@ namespace boost {
         };
 
         template < typename Char, std::size_t N >
-        struct stream_char_common< boost::array< Char, N > >: public boost::conditional<
+        struct stream_char_common< boost::array< Char, N > >: public std::conditional<
             boost::detail::is_character< Char >::value,
             Char,
             boost::detail::deduce_character_type_later< boost::array< Char, N > >
         > {};
 
         template < typename Char, std::size_t N >
-        struct stream_char_common< boost::array< const Char, N > >: public boost::conditional<
+        struct stream_char_common< boost::array< const Char, N > >: public std::conditional<
             boost::detail::is_character< Char >::value,
             Char,
             boost::detail::deduce_character_type_later< boost::array< const Char, N > >
@@ -160,14 +155,14 @@ namespace boost {
 
 #ifndef BOOST_NO_CXX11_HDR_ARRAY
         template < typename Char, std::size_t N >
-        struct stream_char_common< std::array<Char, N > >: public boost::conditional<
+        struct stream_char_common< std::array<Char, N > >: public std::conditional<
             boost::detail::is_character< Char >::value,
             Char,
             boost::detail::deduce_character_type_later< std::array< Char, N > >
         > {};
 
         template < typename Char, std::size_t N >
-        struct stream_char_common< std::array< const Char, N > >: public boost::conditional<
+        struct stream_char_common< std::array< const Char, N > >: public std::conditional<
             boost::detail::is_character< Char >::value,
             Char,
             boost::detail::deduce_character_type_later< std::array< const Char, N > >
@@ -175,8 +170,8 @@ namespace boost {
 #endif
 
 #ifdef BOOST_HAS_INT128
-        template <> struct stream_char_common< boost::int128_type >: public boost::type_identity< char > {};
-        template <> struct stream_char_common< boost::uint128_type >: public boost::type_identity< char > {};
+        template <> struct stream_char_common< boost::int128_type > { using type = char; };
+        template <> struct stream_char_common< boost::uint128_type > { using type = char; };
 #endif
 
 #if !defined(BOOST_LCAST_NO_WCHAR_T) && defined(BOOST_NO_INTRINSIC_WCHAR_T)
@@ -204,20 +199,28 @@ namespace boost {
         template < class T >
         struct deduce_source_char_impl< deduce_character_type_later< T > >
         {
-            typedef boost::has_left_shift< std::basic_ostream< char >, T > result_t;
+            template <class U>
+            static auto left_shift_type(long)
+                -> decltype( std::declval<std::basic_ostream< char >&>() << std::declval<const U&>(), char{});
 
-#if defined(BOOST_LCAST_NO_WCHAR_T)
-            static_assert(result_t::value,
-                "Source type is not std::ostream`able and std::wostream`s are not supported by your STL implementation");
-            typedef char type;
-#else
-            typedef typename boost::conditional<
-                result_t::value, char, wchar_t
-            >::type type;
-
-            static_assert(result_t::value || boost::has_left_shift< std::basic_ostream< type >, T >::value,
-                "Source type is neither std::ostream`able nor std::wostream`able");
+#if !defined(BOOST_LCAST_NO_WCHAR_T)
+            template <class U>
+            static auto left_shift_type(int)
+                -> decltype( std::declval<std::basic_ostream< wchar_t >&>() << std::declval<const U&>(), wchar_t{});
 #endif
+
+            template <class U>
+            static void left_shift_type(...);
+
+            using type = decltype(left_shift_type<T>(1L));
+
+            static_assert(!std::is_same<type, void>::value,
+#if defined(BOOST_LCAST_NO_WCHAR_T)
+                "Source type is not std::ostream`able and std::wostream`s are not supported by your STL implementation"
+#else
+                "Source type is neither std::ostream`able nor std::wostream`able"
+#endif
+            );
         };
     }
 
@@ -237,20 +240,28 @@ namespace boost {
         template < class T >
         struct deduce_target_char_impl< deduce_character_type_later<T> >
         {
-            typedef boost::has_right_shift<std::basic_istream<char>, T > result_t;
+            template <class U>
+            static auto right_shift_type(long)
+                -> decltype( std::declval<std::basic_istream< char >&>() >> std::declval<U&>(), char{});
 
-#if defined(BOOST_LCAST_NO_WCHAR_T)
-            static_assert(result_t::value,
-                "Target type is not std::istream`able and std::wistream`s are not supported by your STL implementation");
-            typedef char type;
-#else
-            typedef typename boost::conditional<
-                result_t::value, char, wchar_t
-            >::type type;
-
-            static_assert(result_t::value || boost::has_right_shift<std::basic_istream<wchar_t>, T >::value,
-                "Target type is neither std::istream`able nor std::wistream`able");
+#if !defined(BOOST_LCAST_NO_WCHAR_T)
+            template <class U>
+            static auto right_shift_type(int)
+                -> decltype( std::declval<std::basic_istream< wchar_t >&>() >> std::declval<U&>(), wchar_t{});
 #endif
+
+            template <class U>
+            static void right_shift_type(...);
+
+            using type = decltype(right_shift_type<T>(1L));
+
+            static_assert(!std::is_same<type, void>::value,
+#if defined(BOOST_LCAST_NO_WCHAR_T)
+                "Target type is not std::istream`able and std::wistream`s are not supported by your STL implementation"
+#else
+                "Target type is neither std::istream`able nor std::wistream`able"
+#endif
+            );
         };
     }
 
@@ -296,21 +307,21 @@ namespace boost {
         // template parameter. Otherwise we'll be using std::char_traits<Char>
         template < class Char, class T >
         struct extract_char_traits
-                : boost::false_type
+                : std::integral_constant<bool, false>
         {
             typedef std::char_traits< Char > trait_t;
         };
 
         template < class Char, class Traits, class Alloc >
         struct extract_char_traits< Char, std::basic_string< Char, Traits, Alloc > >
-            : boost::true_type
+            : std::integral_constant<bool, true>
         {
             typedef Traits trait_t;
         };
 
         template < class Char, class Traits, class Alloc>
         struct extract_char_traits< Char, boost::container::basic_string< Char, Traits, Alloc > >
-            : boost::true_type
+            : std::integral_constant<bool, true>
         {
             typedef Traits trait_t;
         };
@@ -357,19 +368,14 @@ namespace boost {
         // When is_specialized is false, the whole expression is 0.
         template <class Source>
         struct lcast_src_length<
-                    Source, typename boost::enable_if<boost::is_integral<Source> >::type
+                    Source, typename std::enable_if<std::is_integral<Source>::value >::type
                 >
         {
-#ifndef BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS
             BOOST_STATIC_CONSTANT(std::size_t, value =
                   std::numeric_limits<Source>::is_signed +
                   std::numeric_limits<Source>::is_specialized + /* == 1 */
                   std::numeric_limits<Source>::digits10 * 2
               );
-#else
-            BOOST_STATIC_CONSTANT(std::size_t, value = 156);
-            static_assert(sizeof(Source) * CHAR_BIT <= 256, "");
-#endif
         };
 
         // Helper for floating point types.
@@ -384,11 +390,9 @@ namespace boost {
         // sign + leading digit + decimal point + "e" + exponent sign == 5
         template<class Source>
         struct lcast_src_length<
-                Source, typename boost::enable_if<boost::is_float<Source> >::type
+                Source, typename std::enable_if<std::is_floating_point<Source>::value >::type
             >
         {
-
-#ifndef BOOST_LCAST_NO_COMPILE_TIME_PRECISION
             static_assert(
                     std::numeric_limits<Source>::max_exponent10 <=  999999L &&
                     std::numeric_limits<Source>::min_exponent10 >= -999999L
@@ -397,9 +401,6 @@ namespace boost {
             BOOST_STATIC_CONSTANT(std::size_t, value =
                     5 + lcast_precision<Source>::value + 6
                 );
-#else // #ifndef BOOST_LCAST_NO_COMPILE_TIME_PRECISION
-            BOOST_STATIC_CONSTANT(std::size_t, value = 156);
-#endif // #ifndef BOOST_LCAST_NO_COMPILE_TIME_PRECISION
         };
     }
 
@@ -408,7 +409,7 @@ namespace boost {
         template <class Source, class Target>
         struct lexical_cast_stream_traits {
             typedef typename boost::detail::array_to_pointer_decay<Source>::type src;
-            typedef typename boost::remove_cv<src>::type            no_cv_src;
+            typedef typename std::remove_cv<src>::type            no_cv_src;
 
             typedef boost::detail::deduce_source_char<no_cv_src>                           deduce_src_char_metafunc;
             typedef typename deduce_src_char_metafunc::type           src_char_t;
@@ -419,32 +420,32 @@ namespace boost {
             >::type char_type;
 
 #if !defined(BOOST_NO_CXX11_CHAR16_T) && defined(BOOST_NO_CXX11_UNICODE_LITERALS)
-            static_assert(!boost::is_same<char16_t, src_char_t>::value
-                                        && !boost::is_same<char16_t, target_char_t>::value,
+            static_assert(!std::is_same<char16_t, src_char_t>::value
+                                        && !std::is_same<char16_t, target_char_t>::value,
                 "Your compiler does not have full support for char16_t" );
 #endif
 #if !defined(BOOST_NO_CXX11_CHAR32_T) && defined(BOOST_NO_CXX11_UNICODE_LITERALS)
-            static_assert(!boost::is_same<char32_t, src_char_t>::value
-                                        && !boost::is_same<char32_t, target_char_t>::value,
+            static_assert(!std::is_same<char32_t, src_char_t>::value
+                                        && !std::is_same<char32_t, target_char_t>::value,
                 "Your compiler does not have full support for char32_t" );
 #endif
 
-            typedef typename boost::conditional<
+            typedef typename std::conditional<
                 boost::detail::extract_char_traits<char_type, Target>::value,
-                typename boost::detail::extract_char_traits<char_type, Target>,
-                typename boost::detail::extract_char_traits<char_type, no_cv_src>
+                boost::detail::extract_char_traits<char_type, Target>,
+                boost::detail::extract_char_traits<char_type, no_cv_src>
             >::type::trait_t traits;
 
-            typedef boost::integral_constant<
+            typedef std::integral_constant<
               bool,
-              boost::is_same<char, src_char_t>::value &&                                 // source is not a wide character based type
+              std::is_same<char, src_char_t>::value &&                                 // source is not a wide character based type
                 (sizeof(char) != sizeof(target_char_t)) &&  // target type is based on wide character
                 (!(boost::detail::is_character<no_cv_src>::value))
                 > is_string_widening_required_t;
 
-            typedef boost::integral_constant<
+            typedef std::integral_constant<
               bool,
-                !(boost::is_integral<no_cv_src>::value ||
+                !(std::is_integral<no_cv_src>::value ||
                   boost::detail::is_character<
                     typename deduce_src_char_metafunc::stage1_type          // if we did not get character type at stage1
                   >::value                                                           // then we have no optimization for that type

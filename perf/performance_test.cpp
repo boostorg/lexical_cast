@@ -17,6 +17,7 @@
 #include <boost/chrono.hpp>
 #include <fstream>
 #include <cstring>
+#include <type_traits>
 #include <boost/container/string.hpp>
 
 // File to output data
@@ -226,7 +227,7 @@ static inline void perf_test_impl(const FromT& in_val, const char* const conv) {
                 lexical_cast_time.count(),
                 ss_constr_time.count(),
                 ss_noconstr_time.count(),
-                boost::is_same<SprintfT, structure_fake>::value ? fake_test_value : printf_time.count()
+                std::is_same<SprintfT, structure_fake>::value ? fake_test_value : printf_time.count()
     );
 }
 

@@ -23,37 +23,29 @@
 #   pragma once
 #endif
 
-#include <boost/type_traits/integral_constant.hpp>
-#include <boost/type_traits/is_same.hpp>
+#include <type_traits>
 
-namespace boost {
+namespace boost { namespace detail {
 
-    namespace detail // is_character<...>
-    {
-        // returns true, if T is one of the character types
-        template < typename T >
-        struct is_character
-        {
-            typedef typename boost::integral_constant<
-                bool,
-                boost::is_same< T, char >::value ||
-                    #if !defined(BOOST_NO_STRINGSTREAM) && !defined(BOOST_NO_STD_WSTRING)
-                        boost::is_same< T, wchar_t >::value ||
-                    #endif
-                    #ifndef BOOST_NO_CXX11_CHAR16_T
-                        boost::is_same< T, char16_t >::value ||
-                    #endif
-                    #ifndef BOOST_NO_CXX11_CHAR32_T
-                        boost::is_same< T, char32_t >::value ||
-                    #endif
-                        boost::is_same< T, unsigned char >::value ||
-                        boost::is_same< T, signed char >::value
-            > type;
+// returns true, if T is one of the character types
+template < typename T >
+using is_character = std::integral_constant<
+    bool,
+    std::is_same< T, char >::value ||
+#if !defined(BOOST_NO_STRINGSTREAM) && !defined(BOOST_NO_STD_WSTRING)
+    std::is_same< T, wchar_t >::value ||
+#endif
+#ifndef BOOST_NO_CXX11_CHAR16_T
+    std::is_same< T, char16_t >::value ||
+#endif
+#ifndef BOOST_NO_CXX11_CHAR32_T
+    std::is_same< T, char32_t >::value ||
+#endif
+    std::is_same< T, unsigned char >::value ||
+    std::is_same< T, signed char >::value
+>;
 
-            BOOST_STATIC_CONSTANT(bool, value = (type::value) );
-        };
-    }
-}
+}}
 
 #endif // BOOST_LEXICAL_CAST_DETAIL_IS_CHARACTER_HPP
 

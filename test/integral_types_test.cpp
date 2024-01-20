@@ -26,7 +26,6 @@
 #include <boost/core/lightweight_test.hpp>
 
 #include <boost/type_traits/integral_promotion.hpp>
-#include <boost/type_traits/make_unsigned.hpp>
 #include <string>
 #include <vector>
 #include <memory>
@@ -545,7 +544,8 @@ struct test_if_specialized<true, T> {
 void test_conversion_from_to_int128()
 {
     test_if_specialized<
-        std::numeric_limits<boost::int128_type>::is_specialized,
+        std::numeric_limits<boost::int128_type>::is_specialized
+        && std::numeric_limits<boost::uint128_type>::is_specialized,
         boost::int128_type
     >::test();
 }
@@ -553,7 +553,8 @@ void test_conversion_from_to_int128()
 void test_conversion_from_to_uint128()
 {
     test_if_specialized<
-        std::numeric_limits<boost::int128_type>::is_specialized,
+        std::numeric_limits<boost::int128_type>::is_specialized
+        && std::numeric_limits<boost::uint128_type>::is_specialized,
         boost::uint128_type
     >::test();
 }
@@ -563,7 +564,7 @@ template <typename SignedT>
 void test_integral_conversions_on_min_max_impl()
 {
     typedef SignedT signed_t;
-    typedef typename boost::make_unsigned<signed_t>::type unsigned_t;
+    typedef typename std::make_unsigned<signed_t>::type unsigned_t;
 
     typedef std::numeric_limits<signed_t> s_limits;
     typedef std::numeric_limits<unsigned_t> uns_limits;
@@ -593,7 +594,14 @@ void test_integral_conversions_on_min_max()
 #endif
 
 #ifdef BOOST_LCAST_TEST_128
-    test_integral_conversions_on_min_max_impl<boost::int128_type>();
+    test_integral_conversions_on_min_max_impl<
+        typename std::conditional<
+            std::numeric_limits<boost::int128_type>::is_specialized
+            && std::numeric_limits<boost::uint128_type>::is_specialized,
+            boost::int128_type,
+            int
+        >::type
+    >();
 #endif
 #endif
 
