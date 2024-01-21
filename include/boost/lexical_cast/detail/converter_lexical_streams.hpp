@@ -152,11 +152,15 @@ namespace boost {
                 , std::size_t CharacterBufferSize
                 >
         class lexical_istream_limited_src: boost::noncopyable {
-            union {
+            union lazy_t {
                 CharT buffer[CharacterBufferSize];
                 out_stream_holder<CharT, Traits> stream;
+
+                lazy_t(){}  // initialize nothing
+                ~lazy_t(){}
             };
-            bool is_stream_inited;
+            lazy_t lazy;
+            bool is_lazy_stream_inited;
 
             // After the `operator <<`  finishes, `[start, finish)` is
             // the range to output by `operator >>`
@@ -164,22 +168,22 @@ namespace boost {
             const CharT*  finish;
 
             void init_stream() {
-                if (!is_stream_inited) {
-                    new (&stream) out_stream_holder<CharT, Traits>();
-                    is_stream_inited = true;
+                if (!is_lazy_stream_inited) {
+                    new (&lazy.stream) out_stream_holder<CharT, Traits>();
+                    is_lazy_stream_inited = true;
                 }
             }
 
         public:
             lexical_istream_limited_src() noexcept
-              : is_stream_inited(false)
-              , start(buffer)
-              , finish(buffer + CharacterBufferSize)
+              : is_lazy_stream_inited(false)
+              , start(lazy.buffer)
+              , finish(lazy.buffer + CharacterBufferSize)
             {}
 
             ~lexical_istream_limited_src() noexcept {
-                if (is_stream_inited) {
-                    stream.~out_stream_holder();
+                if (is_lazy_stream_inited) {
+                    lazy.stream.~out_stream_holder();
                 }
             }
 
@@ -194,7 +198,7 @@ namespace boost {
         private:
 /************************************ HELPER FUNCTIONS FOR OPERATORS << ( ... ) ********************************/
             bool shl_char(CharT ch) noexcept {
-                Traits::assign(buffer[0], ch);
+                Traits::assign(lazy.buffer[0], ch);
                 finish = start + 1;
                 return true;
             }
@@ -211,7 +215,7 @@ namespace boost {
 #else
                 CharT const w = static_cast<CharT>(ch);
 #endif
-                Traits::assign(buffer[0], w);
+                Traits::assign(lazy.buffer[0], w);
                 finish = start + 1;
                 return true;
             }
@@ -252,11 +256,11 @@ namespace boost {
                 init_stream();
 
 #ifndef BOOST_NO_EXCEPTIONS
-                stream.out_stream.exceptions(std::ios::badbit);
+                lazy.stream.out_stream.exceptions(std::ios::badbit);
                 try {
 #endif
-                bool const result = !(stream.out_stream << input).fail();
-                const auto* const p = stream.get_rdbuf();
+                bool const result = !(lazy.stream.out_stream << input).fail();
+                const auto* const p = lazy.stream.get_rdbuf();
                 start = p->pbase();
                 finish = p->pptr();
                 return result;
@@ -269,7 +273,7 @@ namespace boost {
 
             template <class T>
             inline bool shl_unsigned(const T n) {
-                CharT* tmp_finish = buffer + CharacterBufferSize;
+                CharT* tmp_finish = lazy.buffer + CharacterBufferSize;
                 start = lcast_put_unsigned<Traits, T, CharT>(n, tmp_finish).convert();
                 finish = tmp_finish;
                 return true;
@@ -277,7 +281,7 @@ namespace boost {
 
             template <class T>
             inline bool shl_signed(const T n) {
-                CharT* tmp_finish = buffer + CharacterBufferSize;
+                CharT* tmp_finish = lazy.buffer + CharacterBufferSize;
                 typedef typename boost::make_unsigned<T>::type utype;
                 CharT* tmp_start = lcast_put_unsigned<Traits, utype, CharT>(lcast_to_unsigned(n), tmp_finish).convert();
                 if (n < 0) {
@@ -293,7 +297,7 @@ namespace boost {
             template <class T, class SomeCharT>
             bool shl_real_type(const T& val, SomeCharT* /*begin*/) {
                 init_stream();
-                lcast_set_precision(stream.out_stream, &val);
+                lcast_set_precision(lazy.stream.out_stream, &val);
                 return shl_input_streamable(val);
             }
 
@@ -352,13 +356,13 @@ namespace boost {
 #endif
             template <class T>
             bool shl_real(T val) {
-                CharT* tmp_finish = buffer + CharacterBufferSize;
-                if (put_inf_nan(buffer, tmp_finish, val)) {
+                CharT* tmp_finish = lazy.buffer + CharacterBufferSize;
+                if (put_inf_nan(lazy.buffer, tmp_finish, val)) {
                     finish = tmp_finish;
                     return true;
                 }
 
-                return shl_real_type(val, static_cast<CharT*>(buffer));
+                return shl_real_type(val, static_cast<CharT*>(lazy.buffer));
             }
 
 /************************************ OPERATORS << ( ... ) ********************************/
@@ -379,7 +383,7 @@ namespace boost {
 
             bool operator<<(bool value) noexcept {
                 CharT const czero = lcast_char_constants<CharT>::zero;
-                Traits::assign(buffer[0], Traits::to_char_type(czero + value));
+                Traits::assign(lazy.buffer[0], Traits::to_char_type(czero + value));
                 finish = start + 1;
                 return true;
             }
