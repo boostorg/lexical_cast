@@ -14,10 +14,13 @@
 
 #include <boost/lexical_cast.hpp>
 
-#include <boost/chrono.hpp>
 #include <fstream>
 #include <cstring>
+
+#include <boost/array.hpp>
+#include <boost/chrono.hpp>
 #include <boost/container/string.hpp>
+#include <boost/range/iterator_range.hpp>
 
 // File to output data
 std::fstream fout;
