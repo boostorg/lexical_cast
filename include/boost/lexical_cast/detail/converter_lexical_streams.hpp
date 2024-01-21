@@ -111,11 +111,6 @@ namespace boost {
 
     namespace detail
     {
-        struct do_not_construct_out_buffer_t{};
-        struct do_not_construct_out_stream_t{
-            do_not_construct_out_stream_t(do_not_construct_out_buffer_t*){}
-        };
-
         template <class CharT, class Traits>
         struct out_stream_helper_trait {
 #if defined(BOOST_NO_STRINGSTREAM)
@@ -131,44 +126,62 @@ namespace boost {
             typedef basic_unlockedbuf<std::basic_streambuf<CharT, Traits>, CharT>   buffer_t;
 #endif
         };
+
+        template <class CharT, class Traits>
+        struct out_stream_holder {
+            typedef typename out_stream_helper_trait<CharT, Traits>::out_stream_t deduced_out_stream_t;
+            typedef typename out_stream_helper_trait<CharT, Traits>::stringbuffer_t deduced_out_buffer_t;
+
+            deduced_out_buffer_t out_buffer;
+            deduced_out_stream_t out_stream;
+
+            out_stream_holder(): out_buffer(), out_stream(&out_buffer) {}
+
+            const deduced_out_buffer_t* get_rdbuf() const {
+                return static_cast<deduced_out_buffer_t*>(
+                    out_stream.rdbuf()
+                );
+            }
+        };
     }
 
     namespace detail // optimized stream wrappers
     {
         template< class CharT // a result of widest_char transformation
                 , class Traits
-                , bool RequiresStringbuffer
                 , std::size_t CharacterBufferSize
                 >
         class lexical_istream_limited_src: boost::noncopyable {
-            typedef typename boost::conditional<
-                RequiresStringbuffer,
-                typename out_stream_helper_trait<CharT, Traits>::out_stream_t,
-                do_not_construct_out_stream_t
-            >::type deduced_out_stream_t;
-
-            typedef typename boost::conditional<
-                RequiresStringbuffer,
-                typename out_stream_helper_trait<CharT, Traits>::stringbuffer_t,
-                do_not_construct_out_buffer_t
-            >::type deduced_out_buffer_t;
-
-            deduced_out_buffer_t out_buffer;
-            deduced_out_stream_t out_stream;
-            CharT   buffer[CharacterBufferSize];
+            union {
+                CharT buffer[CharacterBufferSize];
+                out_stream_holder<CharT, Traits> stream;
+            };
+            bool is_stream_inited;
 
             // After the `operator <<`  finishes, `[start, finish)` is
             // the range to output by `operator >>`
             const CharT*  start;
             const CharT*  finish;
 
+            void init_stream() {
+                if (!is_stream_inited) {
+                    new (&stream) out_stream_holder<CharT, Traits>();
+                    is_stream_inited = true;
+                }
+            }
+
         public:
             lexical_istream_limited_src() noexcept
-              : out_buffer()
-              , out_stream(&out_buffer)
+              : is_stream_inited(false)
               , start(buffer)
               , finish(buffer + CharacterBufferSize)
             {}
+
+            ~lexical_istream_limited_src() noexcept {
+                if (is_stream_inited) {
+                    stream.~out_stream_holder();
+                }
+            }
 
             const CharT* cbegin() const noexcept {
                 return start;
@@ -236,14 +249,14 @@ namespace boost {
                 static_assert(boost::is_same<char, CharT>::value, "");
 #endif
 
+                init_stream();
+
 #ifndef BOOST_NO_EXCEPTIONS
-                out_stream.exceptions(std::ios::badbit);
+                stream.out_stream.exceptions(std::ios::badbit);
                 try {
 #endif
-                bool const result = !(out_stream << input).fail();
-                const deduced_out_buffer_t* const p = static_cast<deduced_out_buffer_t*>(
-                    out_stream.rdbuf()
-                );
+                bool const result = !(stream.out_stream << input).fail();
+                const auto* const p = stream.get_rdbuf();
                 start = p->pbase();
                 finish = p->pptr();
                 return result;
@@ -279,7 +292,8 @@ namespace boost {
 
             template <class T, class SomeCharT>
             bool shl_real_type(const T& val, SomeCharT* /*begin*/) {
-                lcast_set_precision(out_stream, &val);
+                init_stream();
+                lcast_set_precision(stream.out_stream, &val);
                 return shl_input_streamable(val);
             }
 
