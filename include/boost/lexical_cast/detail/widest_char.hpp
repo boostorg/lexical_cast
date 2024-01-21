@@ -28,14 +28,12 @@
 
 namespace boost { namespace detail {
 
-    template <typename TargetChar, typename SourceChar>
-    struct widest_char {
-        typedef typename boost::conditional<
-            (sizeof(TargetChar) > sizeof(SourceChar))
-            , TargetChar
-            , SourceChar
-        >::type type;
-    };
+template <typename TargetChar, typename SourceChar>
+using widest_char = boost::conditional<
+    (sizeof(TargetChar) > sizeof(SourceChar))
+    , TargetChar
+    , SourceChar
+>;
 
 }} // namespace boost::detail
 
