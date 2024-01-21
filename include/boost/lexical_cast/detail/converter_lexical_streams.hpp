@@ -436,44 +436,18 @@ namespace boost {
 #endif
             }
 
-            // Adding constness to characters. Constness does not change layout
             template <class C, std::size_t N>
-            typename boost::disable_if<boost::is_const<C>, bool>::type
-            operator<<(boost::array<C, N> const& input) noexcept {
-                static_assert(
-                    sizeof(boost::array<const C, N>) == sizeof(boost::array<C, N>),
-                    "boost::array<C, N> and boost::array<const C, N> must have exactly the same layout."
-                );
-                return ((*this) << reinterpret_cast<boost::array<const C, N> const& >(input));
+            bool operator<<(boost::array<C, N> const& input) noexcept {
+                static_assert(sizeof(C) == sizeof(CharT), "");
+                return shl_char_array_limited(reinterpret_cast<const CharT*>(input.data()), N);
             }
 
-            template <std::size_t N>
-            bool operator<<(boost::array<const CharT, N> const& input) noexcept {
-                return shl_char_array_limited(input.data(), N);
-            }
-
-            template <std::size_t N>
-            bool operator<<(boost::array<const unsigned char, N> const& input) noexcept {
-                return ((*this) << reinterpret_cast<boost::array<const char, N> const& >(input));
-            }
-
-            template <std::size_t N>
-            bool operator<<(boost::array<const signed char, N> const& input) noexcept {
-                return ((*this) << reinterpret_cast<boost::array<const char, N> const& >(input));
-            }
-
-#ifndef BOOST_NO_CXX11_HDR_ARRAY
-            // Making a Boost.Array from std::array
             template <class C, std::size_t N>
             bool operator<<(std::array<C, N> const& input) noexcept {
-                static_assert(
-                    sizeof(std::array<C, N>) == sizeof(boost::array<C, N>),
-                    "std::array and boost::array must have exactly the same layout. "
-                    "Bug in implementation of std::array or boost::array."
-                );
-                return ((*this) << reinterpret_cast<boost::array<C, N> const& >(input));
+                static_assert(sizeof(C) == sizeof(CharT), "");
+                return shl_char_array_limited(reinterpret_cast<const CharT*>(input.data()), N);
             }
-#endif
+
             template <class InStreamable>
             bool operator<<(const InStreamable& input)  { return shl_input_streamable(input); }
         };
@@ -604,13 +578,12 @@ namespace boost {
 
             template <std::size_t N, class ArrayT>
             bool shr_std_array(ArrayT& output) noexcept {
-                using namespace std;
                 const std::size_t size = static_cast<std::size_t>(finish - start);
                 if (size > N - 1) { // `-1` because we need to store \0 at the end
                     return false;
                 }
 
-                memcpy(&output[0], start, size * sizeof(CharT));
+                std::memcpy(&output[0], start, size * sizeof(CharT));
                 output[size] = Traits::to_char_type(0);
                 return true;
             }
@@ -658,28 +631,16 @@ namespace boost {
                 str.assign(start, finish); return true;
             }
 
-            template <std::size_t N>
-            bool operator>>(std::array<CharT, N>& output) noexcept {
+            template <class C, std::size_t N>
+            bool operator>>(std::array<C, N>& output) noexcept {
+                static_assert(sizeof(C) == sizeof(CharT), "");
                 return shr_std_array<N>(output);
-            }
-
-            template <std::size_t N>
-            bool operator>>(std::array<unsigned char, N>& output) noexcept {
-                return ((*this) >> reinterpret_cast<std::array<char, N>& >(output));
-            }
-
-            template <std::size_t N>
-            bool operator>>(std::array<signed char, N>& output) noexcept {
-                return ((*this) >> reinterpret_cast<std::array<char, N>& >(output));
             }
 
             template <class C, std::size_t N>
             bool operator>>(boost::array<C, N>& output) noexcept {
-                static_assert(
-                    sizeof(std::array<C, N>) == sizeof(boost::array<C, N>),
-                    "std::array<C, N> and boost::array<C, N> must have exactly the same layout."
-                );
-                return ((*this) >> reinterpret_cast<std::array<C, N>& >(output));
+                static_assert(sizeof(C) == sizeof(CharT), "");
+                return shr_std_array<N>(output);
             }
 
             bool operator>>(bool& output) noexcept {
