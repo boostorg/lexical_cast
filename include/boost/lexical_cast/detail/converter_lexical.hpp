@@ -35,8 +35,6 @@
 #include <boost/type_traits/conditional.hpp>
 #include <boost/type_traits/is_integral.hpp>
 #include <boost/type_traits/is_float.hpp>
-#include <boost/type_traits/has_left_shift.hpp>
-#include <boost/type_traits/has_right_shift.hpp>
 #include <boost/detail/lcast_precision.hpp>
 
 #include <boost/lexical_cast/detail/widest_char.hpp>
@@ -204,20 +202,29 @@ namespace boost {
         template < class T >
         struct deduce_source_char_impl< deduce_character_type_later< T > >
         {
-            typedef boost::has_left_shift< std::basic_ostream< char >, T > result_t;
+            template <class U>
+            static auto left_shift_type(long)
+                -> decltype( std::declval<std::basic_ostream< char >&>() << std::declval<const U&>(), char{});
 
-#if defined(BOOST_LCAST_NO_WCHAR_T)
-            static_assert(result_t::value,
-                "Source type is not std::ostream`able and std::wostream`s are not supported by your STL implementation");
-            typedef char type;
-#else
-            typedef typename boost::conditional<
-                result_t::value, char, wchar_t
-            >::type type;
-
-            static_assert(result_t::value || boost::has_left_shift< std::basic_ostream< type >, T >::value,
-                "Source type is neither std::ostream`able nor std::wostream`able");
+#if !defined(BOOST_LCAST_NO_WCHAR_T)
+            template <class U>
+            static auto left_shift_type(int)
+                -> decltype( std::declval<std::basic_ostream< wchar_t >&>() << std::declval<const U&>(), wchar_t{});
 #endif
+
+            template <class U>
+            static void left_shift_type(...);
+
+            using type = decltype(left_shift_type<T>(1L));
+
+            static_assert(!std::is_same<type, void>::value,
+#if defined(BOOST_LCAST_NO_WCHAR_T)
+                "Source type is not std::ostream`able and std::wostream`s are "
+                "not supported by your STL implementation"
+#else
+                "Source type is neither std::ostream`able nor std::wostream`able"
+#endif
+            );
         };
     }
 
@@ -237,20 +244,29 @@ namespace boost {
         template < class T >
         struct deduce_target_char_impl< deduce_character_type_later<T> >
         {
-            typedef boost::has_right_shift<std::basic_istream<char>, T > result_t;
+            template <class U>
+            static auto right_shift_type(long)
+                -> decltype( std::declval<std::basic_istream< char >&>() >> std::declval<U&>(), char{});
 
-#if defined(BOOST_LCAST_NO_WCHAR_T)
-            static_assert(result_t::value,
-                "Target type is not std::istream`able and std::wistream`s are not supported by your STL implementation");
-            typedef char type;
-#else
-            typedef typename boost::conditional<
-                result_t::value, char, wchar_t
-            >::type type;
-
-            static_assert(result_t::value || boost::has_right_shift<std::basic_istream<wchar_t>, T >::value,
-                "Target type is neither std::istream`able nor std::wistream`able");
+#if !defined(BOOST_LCAST_NO_WCHAR_T)
+            template <class U>
+            static auto right_shift_type(int)
+                -> decltype( std::declval<std::basic_istream< wchar_t >&>() >> std::declval<U&>(), wchar_t{});
 #endif
+
+            template <class U>
+            static void right_shift_type(...);
+
+            using type = decltype(right_shift_type<T>(1L));
+
+            static_assert(!std::is_same<type, void>::value,
+#if defined(BOOST_LCAST_NO_WCHAR_T)
+               "Target type is not std::istream`able and std::wistream`s are "
+               "not supported by your STL implementation"
+#else
+               "Target type is neither std::istream`able nor std::wistream`able"
+#endif
+            );
         };
     }
 
@@ -360,16 +376,11 @@ namespace boost {
                     Source, typename boost::enable_if<boost::is_integral<Source> >::type
                 >
         {
-#ifndef BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS
             BOOST_STATIC_CONSTANT(std::size_t, value =
                   std::numeric_limits<Source>::is_signed +
                   std::numeric_limits<Source>::is_specialized + /* == 1 */
                   std::numeric_limits<Source>::digits10 * 2
               );
-#else
-            BOOST_STATIC_CONSTANT(std::size_t, value = 156);
-            static_assert(sizeof(Source) * CHAR_BIT <= 256, "");
-#endif
         };
 
         // Helper for floating point types.
@@ -387,8 +398,6 @@ namespace boost {
                 Source, typename boost::enable_if<boost::is_float<Source> >::type
             >
         {
-
-#ifndef BOOST_LCAST_NO_COMPILE_TIME_PRECISION
             static_assert(
                     std::numeric_limits<Source>::max_exponent10 <=  999999L &&
                     std::numeric_limits<Source>::min_exponent10 >= -999999L
@@ -397,9 +406,6 @@ namespace boost {
             BOOST_STATIC_CONSTANT(std::size_t, value =
                     5 + lcast_precision<Source>::value + 6
                 );
-#else // #ifndef BOOST_LCAST_NO_COMPILE_TIME_PRECISION
-            BOOST_STATIC_CONSTANT(std::size_t, value = 156);
-#endif // #ifndef BOOST_LCAST_NO_COMPILE_TIME_PRECISION
         };
     }
 
