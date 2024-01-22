@@ -42,6 +42,7 @@ test-suite conversion
     [ run abstract_test.cpp ]
     [ run noncopyable_test.cpp ]
     [ run vc8_bug_test.cpp ]
+    [ run implicit_convert.cpp ]
     [ run wchars_test.cpp ]
     [ run float_types_test.cpp ]
     [ run inf_nan_test.cpp ]
@@ -64,6 +65,7 @@ test-suite conversion
     [ run stream_detection_test.cpp ]
     [ run stream_traits_test.cpp ]
     [ compile-fail to_pointer_test.cpp ]
+    [ compile-fail from_volatile.cpp ]
     [ run filesystem_test.cpp ../../filesystem/build//boost_filesystem/<link>static ]
     [ run try_lexical_convert.cpp ]
   ;

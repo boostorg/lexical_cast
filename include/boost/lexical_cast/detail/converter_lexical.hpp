@@ -448,26 +448,32 @@ namespace boost {
         {
             typedef lexical_cast_stream_traits<Source, Target>  stream_trait;
 
-            typedef detail::lexical_istream_limited_src<
+            typedef detail::lcast::optimized_src_stream<
                 typename stream_trait::char_type,
                 typename stream_trait::traits,
                 stream_trait::len_t::value + 1
-            > i_interpreter_type;
+            > optimized_src_stream;
+            
+            template <class T>
+            static auto detect_type(int)
+                -> decltype(std::declval<optimized_src_stream&>().stream_in(std::declval<lcast::exact<T>>()), optimized_src_stream{});
 
-            typedef detail::lexical_ostream_limited_src<
+            template <class T>
+            static lcast::ios_src_stream<typename stream_trait::char_type, typename stream_trait::traits> detect_type(...);
+
+            using from_src_stream = decltype(detect_type<Source>(1));
+
+            typedef detail::lcast::to_target_stream<
                 typename stream_trait::char_type,
                 typename stream_trait::traits
-            > o_interpreter_type;
+            > to_target_stream;
 
             static inline bool try_convert(const Source& arg, Target& result) {
-                i_interpreter_type i_interpreter;
-
-                // Disabling ADL, by directly specifying operators.
-                if (!(i_interpreter.operator <<(arg)))
+                from_src_stream src_stream;
+                if (!src_stream.stream_in(lcast::exact<Source>{arg}))
                     return false;
 
-                o_interpreter_type out(i_interpreter.cbegin(), i_interpreter.cend());
-
+                to_target_stream out(src_stream.cbegin(), src_stream.cend());
                 // Disabling ADL, by directly specifying operators.
                 if(!(out.operator >>(result)))
                     return false;

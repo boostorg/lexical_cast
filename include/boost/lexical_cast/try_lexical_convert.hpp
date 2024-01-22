@@ -150,6 +150,10 @@ namespace boost {
         template <typename Target, typename Source>
         inline bool try_lexical_convert(const Source& arg, Target& result)
         {
+            static_assert(
+                !boost::is_volatile<Source>::value,
+                "Boost.LexicalCast does not support volatile input");
+
             typedef typename boost::detail::array_to_pointer_decay<Source>::type src;
 
             typedef boost::integral_constant<
