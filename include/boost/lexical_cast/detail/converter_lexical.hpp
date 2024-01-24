@@ -474,8 +474,7 @@ namespace boost {
                     return false;
 
                 to_target_stream out(src_stream.cbegin(), src_stream.cend());
-                // Disabling ADL, by directly specifying operators.
-                if(!(out.operator >>(result)))
+                if(!(out.stream_out(result)))
                     return false;
 
                 return true;

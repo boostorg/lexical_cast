@@ -594,60 +594,60 @@ namespace boost { namespace detail { namespace lcast {
         }
 
     public:
-        bool operator>>(unsigned short& output)             { return shr_unsigned(output); }
-        bool operator>>(unsigned int& output)               { return shr_unsigned(output); }
-        bool operator>>(unsigned long int& output)          { return shr_unsigned(output); }
-        bool operator>>(short& output)                      { return shr_signed(output); }
-        bool operator>>(int& output)                        { return shr_signed(output); }
-        bool operator>>(long int& output)                   { return shr_signed(output); }
+        bool stream_out(unsigned short& output)             { return shr_unsigned(output); }
+        bool stream_out(unsigned int& output)               { return shr_unsigned(output); }
+        bool stream_out(unsigned long int& output)          { return shr_unsigned(output); }
+        bool stream_out(short& output)                      { return shr_signed(output); }
+        bool stream_out(int& output)                        { return shr_signed(output); }
+        bool stream_out(long int& output)                   { return shr_signed(output); }
 #if defined(BOOST_HAS_LONG_LONG)
-        bool operator>>(boost::ulong_long_type& output)     { return shr_unsigned(output); }
-        bool operator>>(boost::long_long_type& output)      { return shr_signed(output); }
+        bool stream_out(boost::ulong_long_type& output)     { return shr_unsigned(output); }
+        bool stream_out(boost::long_long_type& output)      { return shr_signed(output); }
 #elif defined(BOOST_HAS_MS_INT64)
-        bool operator>>(unsigned __int64& output)           { return shr_unsigned(output); }
-        bool operator>>(__int64& output)                    { return shr_signed(output); }
+        bool stream_out(unsigned __int64& output)           { return shr_unsigned(output); }
+        bool stream_out(__int64& output)                    { return shr_signed(output); }
 #endif
 
 #ifdef BOOST_HAS_INT128
-        bool operator>>(boost::uint128_type& output)        { return shr_unsigned(output); }
-        bool operator>>(boost::int128_type& output)         { return shr_signed(output); }
+        bool stream_out(boost::uint128_type& output)        { return shr_unsigned(output); }
+        bool stream_out(boost::int128_type& output)         { return shr_signed(output); }
 #endif
 
-        bool operator>>(char& output)                       { return shr_xchar(output); }
-        bool operator>>(unsigned char& output)              { return shr_xchar(output); }
-        bool operator>>(signed char& output)                { return shr_xchar(output); }
+        bool stream_out(char& output)                       { return shr_xchar(output); }
+        bool stream_out(unsigned char& output)              { return shr_xchar(output); }
+        bool stream_out(signed char& output)                { return shr_xchar(output); }
 #if !defined(BOOST_LCAST_NO_WCHAR_T) && !defined(BOOST_NO_INTRINSIC_WCHAR_T)
-        bool operator>>(wchar_t& output)                    { return shr_xchar(output); }
+        bool stream_out(wchar_t& output)                    { return shr_xchar(output); }
 #endif
 #if !defined(BOOST_NO_CXX11_CHAR16_T) && !defined(BOOST_NO_CXX11_UNICODE_LITERALS)
-        bool operator>>(char16_t& output)                   { return shr_xchar(output); }
+        bool stream_out(char16_t& output)                   { return shr_xchar(output); }
 #endif
 #if !defined(BOOST_NO_CXX11_CHAR32_T) && !defined(BOOST_NO_CXX11_UNICODE_LITERALS)
-        bool operator>>(char32_t& output)                   { return shr_xchar(output); }
+        bool stream_out(char32_t& output)                   { return shr_xchar(output); }
 #endif
         template<class Alloc>
-        bool operator>>(std::basic_string<CharT,Traits,Alloc>& str) {
+        bool stream_out(std::basic_string<CharT,Traits,Alloc>& str) {
             str.assign(start, finish); return true;
         }
 
         template<class Alloc>
-        bool operator>>(boost::container::basic_string<CharT,Traits,Alloc>& str) {
+        bool stream_out(boost::container::basic_string<CharT,Traits,Alloc>& str) {
             str.assign(start, finish); return true;
         }
 
         template <class C, std::size_t N>
-        bool operator>>(std::array<C, N>& output) noexcept {
+        bool stream_out(std::array<C, N>& output) noexcept {
             static_assert(sizeof(C) == sizeof(CharT), "");
             return shr_std_array<N>(output);
         }
 
         template <class C, std::size_t N>
-        bool operator>>(boost::array<C, N>& output) noexcept {
+        bool stream_out(boost::array<C, N>& output) noexcept {
             static_assert(sizeof(C) == sizeof(CharT), "");
             return shr_std_array<N>(output);
         }
 
-        bool operator>>(bool& output) noexcept {
+        bool stream_out(bool& output) noexcept {
             output = false; // Suppress warning about uninitalized variable
 
             if (start == finish) return false;
@@ -710,14 +710,14 @@ namespace boost { namespace detail { namespace lcast {
         }
 
     public:
-        bool operator>>(float& output) { return float_types_converter_internal(output); }
-        bool operator>>(double& output) { return float_types_converter_internal(output); }
-        bool operator>>(long double& output) { return float_types_converter_internal(output); }
+        bool stream_out(float& output) { return float_types_converter_internal(output); }
+        bool stream_out(double& output) { return float_types_converter_internal(output); }
+        bool stream_out(long double& output) { return float_types_converter_internal(output); }
 
         // Generic istream-based algorithm.
         // lcast_streambuf_for_target<InputStreamable>::value is true.
         template <typename InputStreamable>
-        bool operator>>(InputStreamable& output) {
+        bool stream_out(InputStreamable& output) {
             return shr_using_base_class(output);
         }
     };

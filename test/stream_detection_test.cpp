@@ -282,7 +282,7 @@ void test_mixed_stream_character_detection() {
     boost::lexical_cast<wistreamble_ostreamable>(wistreamble_ostreamable::value);
     BOOST_TEST_EQ(boost::lexical_cast<int>(wistreamble_ostreamable()), wistreamble_ostreamable::value);
 
-    //boost::lexical_cast<istreamble_wostreamable>(istreamble_wostreamable::value);
+    boost::lexical_cast<istreamble_wostreamable>(istreamble_wostreamable::value);
     BOOST_TEST_EQ(boost::lexical_cast<int>(istreamble_wostreamable()), istreamble_wostreamable::value);
 }
 
