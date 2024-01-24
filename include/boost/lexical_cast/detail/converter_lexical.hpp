@@ -189,7 +189,7 @@ namespace boost {
     namespace detail // deduce_source_char_impl<T>
     {
         // If type T is `deduce_character_type_later` type, then tries to deduce
-        // character type using boost::has_left_shift<T> metafunction.
+        // character type using streaming metafunctions.
         // Otherwise supplied type T is a character type, that must be normalized
         // using normalize_single_byte_char<Char>.
         // Executed at Stage 2  (See deduce_source_char<T> and deduce_target_char<T>)
@@ -291,18 +291,14 @@ namespace boost {
         struct deduce_target_char
         {
             typedef typename stream_char_common< T >::type stage1_type;
-            typedef typename deduce_target_char_impl< stage1_type >::type stage2_type;
-
-            typedef stage2_type type;
+            typedef typename deduce_target_char_impl< stage1_type >::type type;
         };
 
         template < class T >
         struct deduce_source_char
         {
             typedef typename stream_char_common< T >::type stage1_type;
-            typedef typename deduce_source_char_impl< stage1_type >::type stage2_type;
-
-            typedef stage2_type type;
+            typedef typename deduce_source_char_impl< stage1_type >::type type;
         };
     }
 
@@ -441,28 +437,6 @@ namespace boost {
                 typename boost::detail::extract_char_traits<char_type, no_cv_src>
             >::type::trait_t traits;
 
-            typedef boost::integral_constant<
-              bool,
-              boost::is_same<char, src_char_t>::value &&                                 // source is not a wide character based type
-                (sizeof(char) != sizeof(target_char_t)) &&  // target type is based on wide character
-                (!(boost::detail::is_character<no_cv_src>::value))
-                > is_string_widening_required_t;
-
-            typedef boost::integral_constant<
-              bool,
-                !(boost::is_integral<no_cv_src>::value ||
-                  boost::detail::is_character<
-                    typename deduce_src_char_metafunc::stage1_type          // if we did not get character type at stage1
-                  >::value                                                           // then we have no optimization for that type
-                 )
-                > is_source_input_not_optimized_t;
-
-            // If we have an optimized conversion for
-            // Source, we do not need to construct stringbuf.
-            BOOST_STATIC_CONSTANT(bool, requires_stringbuf =
-                (is_string_widening_required_t::value || is_source_input_not_optimized_t::value)
-            );
-
             typedef boost::detail::lcast_src_length<no_cv_src> len_t;
         };
     }
@@ -474,29 +448,33 @@ namespace boost {
         {
             typedef lexical_cast_stream_traits<Source, Target>  stream_trait;
 
-            typedef detail::lexical_istream_limited_src<
+            typedef detail::lcast::optimized_src_stream<
                 typename stream_trait::char_type,
                 typename stream_trait::traits,
-                stream_trait::requires_stringbuf,
                 stream_trait::len_t::value + 1
-            > i_interpreter_type;
+            > optimized_src_stream;
+            
+            template <class T>
+            static auto detect_type(int)
+                -> decltype(std::declval<optimized_src_stream&>().stream_in(std::declval<lcast::exact<T>>()), optimized_src_stream{});
 
-            typedef detail::lexical_ostream_limited_src<
+            template <class T>
+            static lcast::ios_src_stream<typename stream_trait::char_type, typename stream_trait::traits> detect_type(...);
+
+            using from_src_stream = decltype(detect_type<Source>(1));
+
+            typedef detail::lcast::to_target_stream<
                 typename stream_trait::char_type,
                 typename stream_trait::traits
-            > o_interpreter_type;
+            > to_target_stream;
 
             static inline bool try_convert(const Source& arg, Target& result) {
-                i_interpreter_type i_interpreter;
-
-                // Disabling ADL, by directly specifying operators.
-                if (!(i_interpreter.operator <<(arg)))
+                from_src_stream src_stream;
+                if (!src_stream.stream_in(lcast::exact<Source>{arg}))
                     return false;
 
-                o_interpreter_type out(i_interpreter.cbegin(), i_interpreter.cend());
-
-                // Disabling ADL, by directly specifying operators.
-                if(!(out.operator >>(result)))
+                to_target_stream out(src_stream.cbegin(), src_stream.cend());
+                if(!(out.stream_out(result)))
                     return false;
 
                 return true;

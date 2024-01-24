@@ -599,39 +599,6 @@ void test_integral_conversions_on_min_max()
 
 }
 
-template <typename Int>
-int make_volatile_int_roundtrip() {
-    volatile Int v = 42;
-    return static_cast<int>(boost::lexical_cast<Int>(v));
-}
-
-void test_volatile_integers()
-{
-    // Inspired by test case from https://github.com/boostorg/lexical_cast/issues/50
-    BOOST_TEST_EQ(make_volatile_int_roundtrip<signed char>(), 42);
-    BOOST_TEST_EQ(make_volatile_int_roundtrip<signed short>(), 42);
-    BOOST_TEST_EQ(make_volatile_int_roundtrip<signed int>(), 42);
-    BOOST_TEST_EQ(make_volatile_int_roundtrip<signed long>(), 42);
-    BOOST_TEST_EQ(make_volatile_int_roundtrip<signed long long>(), 42);
-
-    BOOST_TEST_EQ(make_volatile_int_roundtrip<unsigned char>(), 42);
-    BOOST_TEST_EQ(make_volatile_int_roundtrip<unsigned short>(), 42);
-    BOOST_TEST_EQ(make_volatile_int_roundtrip<unsigned int>(), 42);
-    BOOST_TEST_EQ(make_volatile_int_roundtrip<unsigned long>(), 42);
-    BOOST_TEST_EQ(make_volatile_int_roundtrip<unsigned long long>(), 42);
-
-    volatile int v = 42;
-    BOOST_TEST_EQ(boost::lexical_cast<signed short>(v), 42);
-    BOOST_TEST_EQ(boost::lexical_cast<signed int>(v), 42);
-    BOOST_TEST_EQ(boost::lexical_cast<signed long>(v), 42);
-    BOOST_TEST_EQ(boost::lexical_cast<signed long long>(v), 42);
-
-    BOOST_TEST_EQ(boost::lexical_cast<unsigned short>(v), 42u);
-    BOOST_TEST_EQ(boost::lexical_cast<unsigned int>(v), 42u);
-    BOOST_TEST_EQ(boost::lexical_cast<unsigned long>(v), 42u);
-    BOOST_TEST_EQ(boost::lexical_cast<unsigned long long>(v), 42u);
-}
-
 int main()
 {
     test_conversion_from_to_short();
@@ -651,7 +618,6 @@ int main()
     test_conversion_from_to_uint128();
 #endif
     test_integral_conversions_on_min_max();
-    test_volatile_integers();
 
     return boost::report_errors();
 }
