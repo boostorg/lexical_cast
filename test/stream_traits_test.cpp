@@ -11,6 +11,7 @@
 #include <boost/array.hpp>
 #include <boost/container/string.hpp>
 #include <boost/range/iterator_range.hpp>
+#include <boost/utility/string_view.hpp>
 
 template <class T>
 struct is_optimized_stream : boost::false_type {};
@@ -170,6 +171,14 @@ void test_metafunctions()
     test_optimized_types_to_wstring<const wchar_t*>();
     test_optimized_types_to_wstring<boost::iterator_range<const wchar_t*>>();
     test_optimized_types_to_wstring<boost::iterator_range<wchar_t*>>();
+
+    test_optimized_types_to_string<boost::string_view>();
+    test_optimized_types_to_wstring<boost::basic_string_view<wchar_t>>();
+
+#ifndef BOOST_NO_CXX17_HDR_STRING_VIEW
+    test_optimized_types_to_string<std::string_view>();
+    test_optimized_types_to_wstring<std::basic_string_view<wchar_t>>();
+#endif
 }
 
 int main()

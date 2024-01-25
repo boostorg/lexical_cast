@@ -58,6 +58,7 @@ test-suite conversion
         -<library>/boost/test//boost_unit_test_framework # uses lightweight_test
     ]
     [ run iterator_range_test.cpp ]
+    [ run string_view_test.cpp ]
     [ run arrays_test.cpp : : :
         <toolset>msvc:<cxxflags>/wd4512 # assignment operator could not be generated
     ]
