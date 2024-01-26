@@ -42,6 +42,10 @@
 
 #include <array>
 
+#ifndef BOOST_NO_CXX17_HDR_STRING_VIEW
+#include <string_view>
+#endif
+
 #include <boost/lexical_cast/detail/buffer_view.hpp>
 #include <boost/container/container_fwd.hpp>
 
@@ -54,6 +58,9 @@ namespace boost {
     class array;
     template<class IteratorT>
     class iterator_range;
+
+    // Forward declaration of boost::basic_string_view from Utility
+    template<class Ch, class Tr> class basic_string_view;
 
     namespace detail // normalize_single_byte_char<Char>
     {
@@ -171,6 +178,19 @@ namespace boost {
             boost::detail::deduce_character_type_later< std::array< const Char, N > >
         > {};
 #endif
+
+#ifndef BOOST_NO_CXX17_HDR_STRING_VIEW
+        template < class Char, class Traits >
+        struct stream_char_common< std::basic_string_view< Char, Traits > >
+        {
+            typedef Char type;
+        };
+#endif
+        template < class Char, class Traits >
+        struct stream_char_common< boost::basic_string_view< Char, Traits > >
+        {
+            typedef Char type;
+        };
 
 #ifdef BOOST_HAS_INT128
         template <> struct stream_char_common< boost::int128_type >: public boost::type_identity< char > {};
@@ -322,6 +342,21 @@ namespace boost {
 
         template < class Char, class Traits, class Alloc>
         struct extract_char_traits< Char, boost::container::basic_string< Char, Traits, Alloc > >
+            : boost::true_type
+        {
+            typedef Traits trait_t;
+        };
+
+#ifndef BOOST_NO_CXX17_HDR_STRING_VIEW
+        template < class Char, class Traits >
+        struct extract_char_traits< Char, std::basic_string_view< Char, Traits > >
+            : boost::true_type
+        {
+            typedef Traits trait_t;
+        };
+#endif
+        template < class Char, class Traits >
+        struct extract_char_traits< Char, boost::basic_string_view< Char, Traits > >
             : boost::true_type
         {
             typedef Traits trait_t;
