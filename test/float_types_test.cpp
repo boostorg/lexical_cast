@@ -303,6 +303,13 @@ void test_float_typess_for_overflows()
                 && lexical_cast<test_t>( (std::numeric_limits<double>::min)() )
                 <= (std::numeric_limits<double>::min)() + std::numeric_limits<test_t>::epsilon()
         );
+
+        BOOST_TEST(
+                (std::numeric_limits<double>::min)() / 2 - std::numeric_limits<test_t>::epsilon()
+                <= lexical_cast<test_t>( (std::numeric_limits<double>::min)() / 2 )
+                && lexical_cast<test_t>( (std::numeric_limits<double>::min)() / 2 )
+                <= (std::numeric_limits<double>::min)() / 2 + std::numeric_limits<test_t>::epsilon()
+        );
     }
 
     if ( sizeof(test_t) < sizeof(long double) )
@@ -313,6 +320,13 @@ void test_float_typess_for_overflows()
                 <= lexical_cast<test_t>( (std::numeric_limits<long double>::min)() )
                 && lexical_cast<test_t>( (std::numeric_limits<long double>::min)() )
                 <= (std::numeric_limits<long double>::min)() + std::numeric_limits<test_t>::epsilon()
+        );
+
+        BOOST_TEST(
+                (std::numeric_limits<long double>::min)() / 2 - std::numeric_limits<test_t>::epsilon()
+                <= lexical_cast<test_t>( (std::numeric_limits<long double>::min)() / 2 )
+                && lexical_cast<test_t>( (std::numeric_limits<long double>::min)() / 2 )
+                <= (std::numeric_limits<long double>::min)() / 2 + std::numeric_limits<test_t>::epsilon()
         );
     }
 }

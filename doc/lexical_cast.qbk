@@ -242,6 +242,7 @@ limitation of compiler options that you use.
       * less template instantiations and simpler maintainance;
       * support for `volatile` input types was dropped, following the C++ Standard Library trend.
     * Optimized formatting for std::basic_string_view and boost::basic_string_view
+    * Dropped dependency on Boost.NumericConversion and Boost.MPL
 
 * [*boost 1.84.0 :]
 
