@@ -43,7 +43,7 @@ struct ios_numeric_comparer_logic
     cmp(Source x, Source y) noexcept {
         return x == y
             || (boost::core::isnan(x) && boost::core::isnan(y))
-            || (x < std::numeric_limits<Target>::min())
+            || (x < (std::numeric_limits<Target>::min)())
         ;
     }
 
