@@ -509,7 +509,7 @@ namespace boost {
                     return false;
 
                 to_target_stream out(src_stream.cbegin(), src_stream.cend());
-                if(!(out.stream_out(result)))
+                if (!out.stream_out(result))
                     return false;
 
                 return true;
