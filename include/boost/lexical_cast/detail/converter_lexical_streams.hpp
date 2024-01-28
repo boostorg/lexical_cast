@@ -77,7 +77,6 @@
 #include <boost/type_traits/is_const.hpp>
 #include <boost/type_traits/is_reference.hpp>
 #include <boost/container/container_fwd.hpp>
-#include <boost/core/noncopyable.hpp>
 #include <boost/core/enable_if.hpp>
 #ifndef BOOST_NO_CWCHAR
 #   include <cwchar>
@@ -108,7 +107,7 @@ namespace boost { namespace detail { namespace lcast {
             , class Traits
             , std::size_t CharacterBufferSize
             >
-    class optimized_src_stream: boost::noncopyable {
+    class optimized_src_stream {
         CharT buffer[CharacterBufferSize];
 
         // After the `stream_in(`  finishes, `[start, finish)` is
@@ -116,6 +115,11 @@ namespace boost { namespace detail { namespace lcast {
         const CharT*  start;
         const CharT*  finish;
     public:
+        optimized_src_stream(optimized_src_stream&&) = delete;
+        optimized_src_stream(const optimized_src_stream&) = delete;
+        optimized_src_stream& operator=(optimized_src_stream&&) = delete;
+        optimized_src_stream& operator=(const optimized_src_stream&) = delete;
+
         optimized_src_stream() noexcept
           : start(buffer)
           , finish(buffer + CharacterBufferSize)
@@ -363,6 +367,11 @@ namespace boost { namespace detail { namespace lcast {
         const CharT*  start = nullptr;
         const CharT*  finish = nullptr;
     public:
+        ios_src_stream(ios_src_stream&&) = delete;
+        ios_src_stream(const ios_src_stream&) = delete;
+        ios_src_stream& operator=(ios_src_stream&&) = delete;
+        ios_src_stream& operator=(const ios_src_stream&) = delete;
+
         ios_src_stream(): out_buffer(), out_stream(&out_buffer) {}
 
         const CharT* cbegin() const noexcept {
@@ -463,12 +472,17 @@ namespace boost { namespace detail { namespace lcast {
 
 
     template <class CharT, class Traits>
-    class to_target_stream: boost::noncopyable {
+    class to_target_stream {
         //`[start, finish)` is the range to output by `operator >>`
         const CharT*        start;
         const CharT* const  finish;
 
     public:
+        to_target_stream(to_target_stream&&) = delete;
+        to_target_stream(const to_target_stream&) = delete;
+        to_target_stream& operator=(to_target_stream&&) = delete;
+        to_target_stream& operator=(const to_target_stream&) = delete;
+
         to_target_stream(const CharT* begin, const CharT* end) noexcept
           : start(begin)
           , finish(end)
