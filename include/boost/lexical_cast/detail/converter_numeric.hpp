@@ -35,34 +35,61 @@
 
 namespace boost { namespace detail {
 
-struct ios_numeric_comparer_logic
-{
-    template <class Source, class Target>
-    static inline
-    typename boost::enable_if_c<boost::is_floating_point<Source>::value, bool>::type
-    cmp(Source x, Source y) noexcept {
-        return x == y
-            || (boost::core::isnan(x) && boost::core::isnan(y))
-            || (x < (std::numeric_limits<Target>::min)())
-        ;
-    }
+template <class Source, class Target>
+bool ios_numeric_comparer_float(Source x, Source y) noexcept {
+    return x == y
+        || (boost::core::isnan(x) && boost::core::isnan(y))
+        || (x < (std::numeric_limits<Target>::min)())
+    ;
+}
 
-    template <class Source, class Target>
-    static inline
-    typename boost::enable_if_c<!boost::is_floating_point<Source>::value, bool>::type
-    cmp(Source x, Source y) noexcept {
-        return x == y;
-    }
-};
-
+// integral -> integral/floating point
 template <typename Target, typename Source>
-inline bool noexcept_numeric_convert(Source arg, Target& result) noexcept {
+typename boost::enable_if_c<
+    !boost::is_floating_point<Source>::value, bool
+>::type noexcept_numeric_convert(Source arg, Target& result) noexcept {
     const Target target_tmp = static_cast<Target>(arg);
     const Source arg_restored = static_cast<Source>(target_tmp);
-    if (ios_numeric_comparer_logic::cmp<Source, Target>(arg, arg_restored)) {
+    if (arg == arg_restored) {
         result = target_tmp;
         return true;
     }
+    return false;
+}
+
+
+// floating point -> floating point
+template <typename Target, typename Source>
+typename boost::enable_if_c<
+    boost::is_floating_point<Source>::value && boost::is_floating_point<Target>::value, bool
+>::type noexcept_numeric_convert(Source arg, Target& result) noexcept {
+    const Target target_tmp = static_cast<Target>(arg);
+    const Source arg_restored = static_cast<Source>(target_tmp);
+    if (detail::ios_numeric_comparer_float<Source, Target>(arg, arg_restored)) {
+        result = target_tmp;
+        return true;
+    }
+
+    return false;
+}
+
+// floating point -> integral
+template <typename Target, typename Source>
+typename boost::enable_if_c<
+    boost::is_floating_point<Source>::value && !boost::is_floating_point<Target>::value, bool
+>::type noexcept_numeric_convert(Source arg, Target& result) noexcept {
+    if (arg > static_cast<Source>((std::numeric_limits<Target>::max)())
+        || arg < static_cast<Source>((std::numeric_limits<Target>::min)())) {
+        return false;
+    }
+
+    const Target target_tmp = static_cast<Target>(arg);
+    const Source arg_restored = static_cast<Source>(target_tmp);
+    if (detail::ios_numeric_comparer_float<Source, Target>(arg, arg_restored)) {
+        result = target_tmp;
+        return true;
+    }
+
     return false;
 }
 
