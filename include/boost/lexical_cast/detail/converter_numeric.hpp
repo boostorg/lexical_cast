@@ -43,10 +43,17 @@ bool ios_numeric_comparer_float(Source x, Source y) noexcept {
     ;
 }
 
-// integral -> integral/floating point
+template <class RangeType, class T>
+constexpr bool is_out_of_range_for(T value) noexcept {
+    return value > static_cast<T>((std::numeric_limits<RangeType>::max)())
+        || value < static_cast<T>((std::numeric_limits<RangeType>::min)());
+}
+
+
+// integral -> integral
 template <typename Target, typename Source>
 typename boost::enable_if_c<
-    !boost::is_floating_point<Source>::value, bool
+    !boost::is_floating_point<Source>::value && !boost::is_floating_point<Target>::value, bool
 >::type noexcept_numeric_convert(Source arg, Target& result) noexcept {
     const Target target_tmp = static_cast<Target>(arg);
     const Source arg_restored = static_cast<Source>(target_tmp);
@@ -55,6 +62,16 @@ typename boost::enable_if_c<
         return true;
     }
     return false;
+}
+
+// integral -> floating point
+template <typename Target, typename Source>
+typename boost::enable_if_c<
+    !boost::is_floating_point<Source>::value && boost::is_floating_point<Target>::value, bool
+>::type noexcept_numeric_convert(Source arg, Target& result) noexcept {
+    const Target target_tmp = static_cast<Target>(arg);
+    result = target_tmp;
+    return true;
 }
 
 
@@ -78,8 +95,7 @@ template <typename Target, typename Source>
 typename boost::enable_if_c<
     boost::is_floating_point<Source>::value && !boost::is_floating_point<Target>::value, bool
 >::type noexcept_numeric_convert(Source arg, Target& result) noexcept {
-    if (arg > static_cast<Source>((std::numeric_limits<Target>::max)())
-        || arg < static_cast<Source>((std::numeric_limits<Target>::min)())) {
+    if (detail::is_out_of_range_for<Target>(arg)) {
         return false;
     }
 
@@ -114,7 +130,7 @@ struct lexical_cast_dynamic_num_ignoring_minus
 
         if (arg < 0) {
             const bool res = boost::detail::noexcept_numeric_convert<Target, usource_t>(0u - arg, result);
-            result = static_cast<Target>(0u - result);
+            result = static_cast<Target>(0u) - static_cast<Target>(result);
             return res;
         } else {
             return boost::detail::noexcept_numeric_convert<Target, usource_t>(arg, result);

@@ -599,6 +599,33 @@ void test_integral_conversions_on_min_max()
 
 }
 
+void test_negative_integral() {
+    // From https://github.com/boostorg/lexical_cast/issues/45
+    BOOST_TEST_EQ(boost::lexical_cast<int>("-6575543"), -6575543);
+
+    BOOST_TEST_EQ(boost::lexical_cast<int>(-6575543), -6575543);
+
+    BOOST_TEST_EQ(boost::lexical_cast<int>("+6575543"), +6575543);
+    BOOST_TEST_EQ(boost::lexical_cast<int>(6575543), 6575543);
+
+    if (sizeof(short) == 2 && CHAR_BIT == 8) {
+        BOOST_TEST_EQ(boost::lexical_cast<short>("-32768"), -32768);
+        BOOST_TEST_EQ(boost::lexical_cast<short>(-32768), -32768);
+        BOOST_TEST_EQ(boost::lexical_cast<unsigned short>("-32768"), 32768);
+        BOOST_TEST_EQ(boost::lexical_cast<unsigned short>(-32768), 32768);
+
+        BOOST_TEST_EQ(boost::lexical_cast<unsigned short>(65535), 65535);
+
+        BOOST_TEST_THROWS(boost::lexical_cast<unsigned short>(-65536), bad_lexical_cast);
+        BOOST_TEST_EQ(boost::lexical_cast<unsigned short>(-65535), 1);
+        BOOST_TEST_EQ(boost::lexical_cast<unsigned short>(-65534), 2);
+
+        BOOST_TEST_THROWS(boost::lexical_cast<short>(65535), bad_lexical_cast);
+        BOOST_TEST_THROWS(boost::lexical_cast<short>(-65536), bad_lexical_cast);
+        BOOST_TEST_THROWS(boost::lexical_cast<short>(-65535), bad_lexical_cast);
+    }
+}
+
 int main()
 {
     test_conversion_from_to_short();
@@ -618,6 +645,8 @@ int main()
     test_conversion_from_to_uint128();
 #endif
     test_integral_conversions_on_min_max();
+
+    test_negative_integral();
 
     return boost::report_errors();
 }

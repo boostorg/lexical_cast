@@ -159,7 +159,7 @@ namespace boost {
 
         typedef std::char_traits<char_type> traits;
         detail::lexical_stream<Target, Source, traits> interpreter;
-        Target result;
+        Target result{};
 
         if(!(interpreter << arg && interpreter >> result))
             boost::conversion::detail::throw_bad_cast<Source, Target>();
