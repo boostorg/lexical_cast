@@ -45,7 +45,13 @@ test-suite conversion
     [ run implicit_convert.cpp ]
     [ run wchars_test.cpp ]
     [ run float_types_test.cpp ]
-    [ run float_types_test.cpp : : : <define>BOOST_LEXICAL_CAST_DETAIL_TEST_ON_OLD : float_types_non_opt ]
+
+    # Make sure that LexicalCast works the same way as some of the C++ Standard Libraries
+    [ run float_types_test.cpp : : : <define>BOOST_LEXICAL_CAST_DETAIL_TEST_ON_OLD
+        <toolset>msvc:<build>no  # could have outdated behavior in some border cases
+        : float_types_non_opt
+    ]
+
     [ run inf_nan_test.cpp ]
     [ run containers_test.cpp : : : <toolset>gcc:<cxxflags>-Wno-long-long <toolset>clang:<cxxflags>-Wno-long-long ]
     [ run empty_input_test.cpp ]
