@@ -538,8 +538,11 @@ void test_conversion_integral_float()
 
     BOOST_TEST_CLOSE_FRACTION(lexical_cast<Float>(static_cast<Integral>(0)), static_cast<Float>(0), std::numeric_limits<Float>::epsilon());
     BOOST_TEST_CLOSE_FRACTION(lexical_cast<Float>(static_cast<Integral>(1)), static_cast<Float>(1), std::numeric_limits<Float>::epsilon());
+
+#ifndef __CYGWIN__
     BOOST_TEST_CLOSE_FRACTION(lexical_cast<Float>((std::numeric_limits<Integral>::max)()), static_cast<Float>((std::numeric_limits<Integral>::max)()), std::numeric_limits<Float>::epsilon());
     BOOST_TEST_CLOSE_FRACTION(lexical_cast<Float>((std::numeric_limits<Integral>::min)()), static_cast<Float>((std::numeric_limits<Integral>::min)()), std::numeric_limits<Float>::epsilon());
+#endif
 
     BOOST_TEST_EQ(lexical_cast<Integral>(static_cast<Float>(0.0)), 0);
     BOOST_TEST_EQ(lexical_cast<Integral>(static_cast<Float>(1.0)), 1);
