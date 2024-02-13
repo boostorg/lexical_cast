@@ -45,6 +45,13 @@ test-suite conversion
     [ run implicit_convert.cpp ]
     [ run wchars_test.cpp ]
     [ run float_types_test.cpp ]
+
+    # Make sure that LexicalCast works the same way as some of the C++ Standard Libraries
+    [ run float_types_test.cpp : : : <define>BOOST_LEXICAL_CAST_DETAIL_TEST_ON_OLD
+        <toolset>msvc:<build>no  # could have outdated behavior in some border cases
+        : float_types_non_opt
+    ]
+
     [ run inf_nan_test.cpp ]
     [ run containers_test.cpp : : : <toolset>gcc:<cxxflags>-Wno-long-long <toolset>clang:<cxxflags>-Wno-long-long ]
     [ run empty_input_test.cpp ]
@@ -55,7 +62,6 @@ test-suite conversion
     [ run no_exceptions_test.cpp : : : <exception-handling>off
         <define>_HAS_EXCEPTIONS=0 # MSVC stdlib
         <define>_STLP_NO_EXCEPTIONS # STLPort
-        -<library>/boost/test//boost_unit_test_framework # uses lightweight_test
     ]
     [ run iterator_range_test.cpp ]
     [ run string_view_test.cpp ]
