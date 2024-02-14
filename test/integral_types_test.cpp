@@ -171,9 +171,9 @@ void test_conversion_from_integral_to_string(CharT)
         T const max_val = (limits::max)();
         T const half_max_val = max_val / 2;
         T const cnt = lcast_integral_test_counter; // to suppress warnings
-        unsigned int const counter = cnt < half_max_val ? cnt : half_max_val;
+        T const counter = cnt < half_max_val ? cnt : half_max_val;
 
-        unsigned int i;
+        T i = 0;
 
         // Test values around min:
         t = min_val;
@@ -267,10 +267,10 @@ void test_conversion_from_string_to_integral(CharT)
     {
         T const half_max_val = max_val / 2;
         T const cnt = lcast_integral_test_counter; // to suppress warnings
-        unsigned int const counter = cnt < half_max_val ? cnt : half_max_val;
+        T const counter = cnt < half_max_val ? cnt : half_max_val;
 
         T t;
-        unsigned int i;
+        T i;
 
         // Test values around min:
         t = min_val;

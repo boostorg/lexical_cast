@@ -120,6 +120,9 @@ struct lexical_cast_dynamic_num_not_ignoring_minus
 struct lexical_cast_dynamic_num_ignoring_minus
 {
     template <typename Target, typename Source>
+#if defined(__clang__) && (__clang_major__ > 3 || __clang_minor__ > 6)
+    __attribute__((no_sanitize("unsigned-integer-overflow")))
+#endif
     static inline bool try_convert(Source arg, Target& result) noexcept {
         typedef typename boost::conditional<
                 boost::is_float<Source>::value,
@@ -129,8 +132,10 @@ struct lexical_cast_dynamic_num_ignoring_minus
         typedef typename usource_lazy_t::type usource_t;
 
         if (arg < 0) {
-            const bool res = boost::detail::noexcept_numeric_convert<Target, usource_t>(0u - arg, result);
-            result = static_cast<Target>(0u) - static_cast<Target>(result);
+            const bool res = boost::detail::noexcept_numeric_convert<Target, usource_t>(
+                static_cast<usource_t>(0u - static_cast<usource_t>(arg)), result
+            );
+            result = static_cast<Target>(0u - result);
             return res;
         } else {
             return boost::detail::noexcept_numeric_convert<Target, usource_t>(arg, result);

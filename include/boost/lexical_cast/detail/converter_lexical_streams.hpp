@@ -490,6 +490,9 @@ namespace boost { namespace detail { namespace lcast {
 
     private:
         template <typename Type>
+#if defined(__clang__) && (__clang_major__ > 3 || __clang_minor__ > 6)
+        __attribute__((no_sanitize("unsigned-integer-overflow")))
+#endif
         bool shr_unsigned(Type& output) {
             if (start == finish) return false;
             CharT const minus = lcast_char_constants<CharT>::minus;
@@ -511,6 +514,9 @@ namespace boost { namespace detail { namespace lcast {
         }
 
         template <typename Type>
+#if defined(__clang__) && (__clang_major__ > 3 || __clang_minor__ > 6)
+        __attribute__((no_sanitize("unsigned-integer-overflow")))
+#endif
         bool shr_signed(Type& output) {
             if (start == finish) return false;
             CharT const minus = lcast_char_constants<CharT>::minus;
