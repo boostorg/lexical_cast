@@ -322,47 +322,6 @@ namespace boost {
         };
     }
 
-    namespace detail // extract_char_traits template
-    {
-        // We are attempting to get char_traits<> from T
-        // template parameter. Otherwise we'll be using std::char_traits<Char>
-        template < class Char, class T >
-        struct extract_char_traits
-                : boost::false_type
-        {
-            typedef std::char_traits< Char > trait_t;
-        };
-
-        template < class Char, class Traits, class Alloc >
-        struct extract_char_traits< Char, std::basic_string< Char, Traits, Alloc > >
-            : boost::true_type
-        {
-            typedef Traits trait_t;
-        };
-
-        template < class Char, class Traits, class Alloc>
-        struct extract_char_traits< Char, boost::container::basic_string< Char, Traits, Alloc > >
-            : boost::true_type
-        {
-            typedef Traits trait_t;
-        };
-
-#ifndef BOOST_NO_CXX17_HDR_STRING_VIEW
-        template < class Char, class Traits >
-        struct extract_char_traits< Char, std::basic_string_view< Char, Traits > >
-            : boost::true_type
-        {
-            typedef Traits trait_t;
-        };
-#endif
-        template < class Char, class Traits >
-        struct extract_char_traits< Char, boost::basic_string_view< Char, Traits > >
-            : boost::true_type
-        {
-            typedef Traits trait_t;
-        };
-    }
-
     namespace detail // array_to_pointer_decay<T>
     {
         template<class T>
@@ -466,11 +425,7 @@ namespace boost {
                 "Your compiler does not have full support for char32_t" );
 #endif
 
-            typedef typename boost::conditional<
-                boost::detail::extract_char_traits<char_type, Target>::value,
-                typename boost::detail::extract_char_traits<char_type, Target>,
-                typename boost::detail::extract_char_traits<char_type, no_cv_src>
-            >::type::trait_t traits;
+            typedef std::char_traits<char_type> traits;
 
             typedef boost::detail::lcast_src_length<no_cv_src> len_t;
         };
