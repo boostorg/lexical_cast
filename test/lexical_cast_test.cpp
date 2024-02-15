@@ -390,7 +390,6 @@ void test_no_whitespace_stripping()
     BOOST_TEST_THROWS(lexical_cast<int>("123 "), bad_lexical_cast);
 }
 
-#ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 void test_traits()
 {
     typedef std::basic_string<char, my_traits<char> > my_string;
@@ -399,6 +398,8 @@ void test_traits()
     BOOST_TEST(boost::lexical_cast<char>(s) == s[0]);
     BOOST_TEST(boost::lexical_cast<my_string>(s) == s);
     BOOST_TEST(boost::lexical_cast<my_string>(-1) == "-1");
+    BOOST_TEST(boost::lexical_cast<int>(my_string("42")) == 42);
+    BOOST_TEST(boost::lexical_cast<double>(my_string("1.0")) == 1.0);
 }
 
 void test_wtraits()
@@ -408,9 +409,9 @@ void test_wtraits()
     my_string const s(L"s");
     BOOST_TEST(boost::lexical_cast<wchar_t>(s) == s[0]);
     BOOST_TEST(boost::lexical_cast<my_string>(s) == s);
-    //BOOST_TEST(boost::lexical_cast<my_string>(-1) == L"-1");
-    // Commented out because gcc 3.3 doesn't support this:
-    // basic_ostream<wchar_t, my_traits<wchar_t> > o; o << -1;
+    BOOST_TEST(boost::lexical_cast<my_string>(-1) == L"-1");
+    BOOST_TEST(boost::lexical_cast<int>(my_string(L"42")) == 42);
+    BOOST_TEST(boost::lexical_cast<double>(my_string(L"1.0")) == 1.0);
 }
 
 void test_allocator()
@@ -456,8 +457,6 @@ void test_wallocator()
     BOOST_TEST(boost::lexical_cast<my_string>(std::wstring(L"s")) == s);
 #endif
 }
-
-#endif
 
 
 void test_char_types_conversions()
@@ -578,12 +577,11 @@ int main()
 #endif
     test_bad_lexical_cast();
     test_no_whitespace_stripping();
-#ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+
     test_traits();
     test_wtraits();
     test_allocator();
     test_wallocator();
-#endif
 
     test_char_types_conversions();
     operators_overload_test();

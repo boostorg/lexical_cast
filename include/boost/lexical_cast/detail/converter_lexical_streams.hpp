@@ -264,15 +264,15 @@ namespace boost { namespace detail { namespace lcast {
             ), bool
         >::type;
 
-        template<class Alloc>
-        bool stream_in(lcast::exact<std::basic_string<CharT,Traits,Alloc>> x) noexcept {
+        template<class CharTraits, class Alloc>
+        bool stream_in(lcast::exact<std::basic_string<CharT,CharTraits,Alloc>> x) noexcept {
             start = x.payload.data();
             finish = start + x.payload.length();
             return true;
         }
 
-        template<class Alloc>
-        bool stream_in(lcast::exact<boost::container::basic_string<CharT,Traits,Alloc>> x) noexcept {
+        template<class CharTraits, class Alloc>
+        bool stream_in(lcast::exact<boost::container::basic_string<CharT,CharTraits,Alloc>> x) noexcept {
             start = x.payload.data();
             finish = start + x.payload.length();
             return true;
@@ -342,15 +342,15 @@ namespace boost { namespace detail { namespace lcast {
         }
 
 #ifndef BOOST_NO_CXX17_HDR_STRING_VIEW
-        template <class C>
+        template <class C, class CharTraits>
         enable_if_compatible_char_t<C>
-        stream_in(lcast::exact<std::basic_string_view<C, Traits>> x) noexcept {
+        stream_in(lcast::exact<std::basic_string_view<C, CharTraits>> x) noexcept {
             return shl_char_array_limited(reinterpret_cast<const CharT*>(x.payload.data()), x.payload.size());
         }
 #endif
-        template <class C>
+        template <class C, class CharTraits>
         enable_if_compatible_char_t<C>
-        stream_in(lcast::exact<boost::basic_string_view<C, Traits>> x) noexcept {
+        stream_in(lcast::exact<boost::basic_string_view<C, CharTraits>> x) noexcept {
             return shl_char_array_limited(reinterpret_cast<const CharT*>(x.payload.data()), x.payload.size());
         }
     };
@@ -648,13 +648,13 @@ namespace boost { namespace detail { namespace lcast {
 #if !defined(BOOST_NO_CXX11_CHAR32_T) && !defined(BOOST_NO_CXX11_UNICODE_LITERALS)
         bool stream_out(char32_t& output)                   { return shr_xchar(output); }
 #endif
-        template<class Alloc>
-        bool stream_out(std::basic_string<CharT,Traits,Alloc>& str) {
+        template<class CharTraits, class Alloc>
+        bool stream_out(std::basic_string<CharT,CharTraits,Alloc>& str) {
             str.assign(start, finish); return true;
         }
 
-        template<class Alloc>
-        bool stream_out(boost::container::basic_string<CharT,Traits,Alloc>& str) {
+        template<class CharTraits, class Alloc>
+        bool stream_out(boost::container::basic_string<CharT,CharTraits,Alloc>& str) {
             str.assign(start, finish); return true;
         }
 

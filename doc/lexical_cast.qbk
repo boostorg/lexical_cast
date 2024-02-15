@@ -239,10 +239,13 @@ limitation of compiler options that you use.
 
     * Significant rewrite of the internal logic to separate optimized and C++ Standard Library IO-based streams:
       * C++ Standard Library based streams now constructed in less cases leading to [*better performance];
-      * less template instantiations and simpler maintainance;
+      * less template instantiations and simpler code;
+      * always use `std::char_traits` (do not use custom traits from input/output types as it leads to linktime or runtime errors);
       * support for `volatile` input types was dropped, following the C++ Standard Library trend.
     * Optimized conversions from std::basic_string_view and boost::basic_string_view
-    * Dropped dependency on Boost.NumericConversion and Boost.MPL
+    * Dropped dependency on Boost.NumericConversion and Boost.MPL. Fixed some cases
+      of converting floting point types to arithmetics.
+    * The library now works fine with `-fno-sanitize-recover=integer`.
 
 * [*boost 1.84.0 :]
 
