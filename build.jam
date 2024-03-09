@@ -1,0 +1,30 @@
+# Copyright René Ferdinand Rivera Morell 2023
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at
+# http://www.boost.org/LICENSE_1_0.txt)
+
+import project ;
+
+project /boost/lexical_cast
+    : common-requirements
+        <source>/boost/array//boost_array
+        <source>/boost/assert//boost_assert
+        <source>/boost/config//boost_config
+        <source>/boost/container//boost_container
+        <source>/boost/core//boost_core
+        <source>/boost/integer//boost_integer
+        <source>/boost/numeric_conversion//boost_numeric_conversion
+        <source>/boost/range//boost_range
+        <source>/boost/static_assert//boost_static_assert
+        <source>/boost/throw_exception//boost_throw_exception
+        <source>/boost/type_traits//boost_type_traits
+        <include>include
+    ;
+
+explicit
+    [ alias boost_lexical_cast ]
+    [ alias all : boost_lexical_cast test ]
+    ;
+
+call-if : boost-library lexical_cast
+    ;
