@@ -198,7 +198,6 @@ namespace boost { namespace detail { namespace lcast {
         }
 
         bool shl_real_type(float val, char* begin) {
-            using namespace std;
             const double val_as_double = val;
             finish = start +
                 boost::core::snprintf(begin, CharacterBufferSize,
@@ -207,7 +206,6 @@ namespace boost { namespace detail { namespace lcast {
         }
 
         bool shl_real_type(double val, char* begin) {
-            using namespace std;
             finish = start +
                 boost::core::snprintf(begin, CharacterBufferSize,
                 "%.*g", static_cast<int>(boost::detail::lcast_get_precision<double>()), val);
@@ -216,7 +214,6 @@ namespace boost { namespace detail { namespace lcast {
 
 #ifndef __MINGW32__
         bool shl_real_type(long double val, char* begin) {
-            using namespace std;
             finish = start +
                 boost::core::snprintf(begin, CharacterBufferSize,
                 "%.*Lg", static_cast<int>(boost::detail::lcast_get_precision<long double>()), val );
@@ -228,28 +225,32 @@ namespace boost { namespace detail { namespace lcast {
         }
 #endif
 
-#if !defined(BOOST_LCAST_NO_WCHAR_T) && !defined(BOOST_NO_SWPRINTF) && !defined(__MINGW32__)
+#if !defined(BOOST_LCAST_NO_WCHAR_T)
         bool shl_real_type(float val, wchar_t* begin) {
-            using namespace std;
             const double val_as_double = val;
-            finish = start + swprintf(begin, CharacterBufferSize,
-                                   L"%.*g",
-                                   static_cast<int>(boost::detail::lcast_get_precision<float >()),
-                                   val_as_double );
+            finish = start + boost::core::swprintf(
+                begin, CharacterBufferSize, L"%.*g",
+                static_cast<int>(boost::detail::lcast_get_precision<float >()),
+                val_as_double
+            );
             return finish > start;
         }
 
         bool shl_real_type(double val, wchar_t* begin) {
-            using namespace std;
-            finish = start + swprintf(begin, CharacterBufferSize,
-                                      L"%.*g", static_cast<int>(boost::detail::lcast_get_precision<double >()), val );
+            finish = start + boost::core::swprintf(
+              begin, CharacterBufferSize, L"%.*g",
+              static_cast<int>(boost::detail::lcast_get_precision<double>()),
+              val
+            );
             return finish > start;
         }
 
         bool shl_real_type(long double val, wchar_t* begin) {
-            using namespace std;
-            finish = start + swprintf(begin, CharacterBufferSize,
-                                      L"%.*Lg", static_cast<int>(boost::detail::lcast_get_precision<long double >()), val );
+            finish = start + boost::core::swprintf(
+                begin, CharacterBufferSize, L"%.*Lg",
+                static_cast<int>(boost::detail::lcast_get_precision<long double>()),
+                val
+            );
             return finish > start;
         }
 #endif
