@@ -32,7 +32,7 @@ project
         <toolset>clang:<cxxflags>-Wno-c99-extensions
 
         <library>/boost/array//boost_array
-        <library>/boost/range//boostrange
+        <library>/boost/range//boost_range
         <library>/boost/utility//boost_utility
     ;
 
