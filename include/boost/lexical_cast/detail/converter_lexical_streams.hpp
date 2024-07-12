@@ -346,13 +346,17 @@ namespace boost { namespace detail { namespace lcast {
         template <class C, class CharTraits>
         enable_if_compatible_char_t<C>
         stream_in(lcast::exact<std::basic_string_view<C, CharTraits>> x) noexcept {
-            return shl_char_array_limited(reinterpret_cast<const CharT*>(x.payload.data()), x.payload.size());
+            start = reinterpret_cast<const CharT*>(x.payload.data());
+            finish = start + x.payload.size();
+            return true;
         }
 #endif
         template <class C, class CharTraits>
         enable_if_compatible_char_t<C>
         stream_in(lcast::exact<boost::basic_string_view<C, CharTraits>> x) noexcept {
-            return shl_char_array_limited(reinterpret_cast<const CharT*>(x.payload.data()), x.payload.size());
+            start = reinterpret_cast<const CharT*>(x.payload.data());
+            finish = start + x.payload.size();
+            return true;
         }
     };
 
