@@ -221,7 +221,7 @@ namespace boost { namespace detail { namespace lcast {
         }
 #else
         bool shl_real_type(lcast::exact<long double> val, char* begin) {
-            return shl_real_type(lcast::exact<double>{static_cast<double>(val)}, begin);
+            return shl_real_type(lcast::exact<double>{static_cast<double>(val.payload)}, begin);
         }
 #endif
 
@@ -434,7 +434,7 @@ namespace boost { namespace detail { namespace lcast {
                 return true;
             }
 
-            lcast_set_precision(out_stream, &val);
+            boost::detail::lcast_set_precision(out_stream, &val);
             return shl_input_streamable(val);
         }
 
@@ -583,7 +583,7 @@ namespace boost { namespace detail { namespace lcast {
             try {
 #endif
             stream.unsetf(std::ios::skipws);
-            lcast_set_precision(stream, static_cast<InputStreamable*>(0));
+            boost::detail::lcast_set_precision(stream, static_cast<InputStreamable*>(0));
 
             return (stream >> output)
                 && (stream.get() == Traits::eof());
