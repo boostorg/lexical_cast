@@ -48,5 +48,11 @@ int main() {
     Value value(128);
     BOOST_TEST_EQ(boost::lexical_cast<std::string>(value), "128");
 
+    Value value_nan(std::numeric_limits<double>::quiet_NaN());
+    BOOST_TEST_EQ(boost::lexical_cast<std::string>(value_nan), "nan");
+
+    Value value_inf(std::numeric_limits<double>::infinity());
+    BOOST_TEST_EQ(boost::lexical_cast<std::string>(value_inf), "inf");
+
     return boost::report_errors();
 }
