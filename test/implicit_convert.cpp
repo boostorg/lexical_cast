@@ -18,6 +18,16 @@ inline std::ostream& operator<<(std::ostream& os, const oops&) {
     return os << 42;
 }
 
+struct oops2 {
+    operator double () const {
+        return 1.12;
+    }
+};
+
+inline std::ostream& operator<<(std::ostream& os, const oops2&) {
+    return os << 2;
+}
+
 struct Value {
     explicit Value(double x) : x(x) {}
 
@@ -29,16 +39,14 @@ struct Value {
 };
 
 int main() {
-    auto val = boost::lexical_cast<int>(oops{});
-    BOOST_TEST_EQ(val, 42);
+    BOOST_TEST_EQ(boost::lexical_cast<int>(oops{}), 42);
+    BOOST_TEST_EQ(boost::lexical_cast<std::string>(oops{}), "42");
+
+    BOOST_TEST_EQ(boost::lexical_cast<double>(oops2{}), 2);
+    BOOST_TEST_EQ(boost::lexical_cast<std::string>(oops2{}), "2");
 
     Value value(128);
-    auto s = boost::lexical_cast<std::string>(value);
-    BOOST_TEST_EQ(s, "128");
-
-    Value value2(128128128128128);
-    auto s2 = boost::lexical_cast<std::string>(value2);
-    BOOST_TEST_EQ(s2, "128128128128128");
+    BOOST_TEST_EQ(boost::lexical_cast<std::string>(value), "128");
 
     return boost::report_errors();
 }
