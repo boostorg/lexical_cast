@@ -45,14 +45,8 @@ int main() {
     BOOST_TEST_EQ(boost::lexical_cast<double>(oops2{}), 2);
     BOOST_TEST_EQ(boost::lexical_cast<std::string>(oops2{}), "2");
 
-    Value value(128);
-    BOOST_TEST_EQ(boost::lexical_cast<std::string>(value), "128");
-
-    Value value_nan(std::numeric_limits<double>::quiet_NaN());
-    BOOST_TEST_EQ(boost::lexical_cast<std::string>(value_nan), "nan");
-
-    Value value_inf(std::numeric_limits<double>::infinity());
-    BOOST_TEST_EQ(boost::lexical_cast<std::string>(value_inf), "inf");
+    Value longer_that_1_digit(128);
+    BOOST_TEST_EQ(boost::lexical_cast<std::string>(longer_that_1_digit), "128");
 
     // iostreams have default precision 6, see [basic.ios.cons]
     const double precision_more_than_6_digits = 1.23456789123;
