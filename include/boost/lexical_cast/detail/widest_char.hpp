@@ -18,13 +18,18 @@
 #ifndef BOOST_LEXICAL_CAST_DETAIL_WIDEST_CHAR_HPP
 #define BOOST_LEXICAL_CAST_DETAIL_WIDEST_CHAR_HPP
 
+#include <boost/lexical_cast/detail/config.hpp>
+
+#if !defined(BOOST_USE_MODULES) || defined(BOOST_LEXICAL_CAST_INTERFACE_UNIT)
+
+#ifndef BOOST_LEXICAL_CAST_INTERFACE_UNIT
 #include <boost/config.hpp>
 #ifdef BOOST_HAS_PRAGMA_ONCE
 #   pragma once
 #endif
 
-
 #include <boost/type_traits/conditional.hpp>
+#endif  // #ifndef BOOST_LEXICAL_CAST_INTERFACE_UNIT
 
 namespace boost { namespace detail {
 
@@ -36,6 +41,8 @@ using widest_char = boost::conditional<
 >;
 
 }} // namespace boost::detail
+
+#endif  // #if !defined(BOOST_USE_MODULES) || defined(BOOST_LEXICAL_CAST_INTERFACE_UNIT)
 
 #endif // BOOST_LEXICAL_CAST_DETAIL_WIDEST_CHAR_HPP
 

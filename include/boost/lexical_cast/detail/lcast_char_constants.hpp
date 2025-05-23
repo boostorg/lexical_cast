@@ -18,10 +18,16 @@
 #ifndef BOOST_LEXICAL_CAST_DETAIL_LCAST_CHAR_CONSTANTS_HPP
 #define BOOST_LEXICAL_CAST_DETAIL_LCAST_CHAR_CONSTANTS_HPP
 
+#include <boost/lexical_cast/detail/config.hpp>
+
+#if !defined(BOOST_USE_MODULES) || defined(BOOST_LEXICAL_CAST_INTERFACE_UNIT)
+
+#ifndef BOOST_LEXICAL_CAST_INTERFACE_UNIT
 #include <boost/config.hpp>
 #ifdef BOOST_HAS_PRAGMA_ONCE
 #   pragma once
 #endif
+#endif  // #ifndef BOOST_LEXICAL_CAST_INTERFACE_UNIT
 
 namespace boost
 {
@@ -41,6 +47,7 @@ namespace boost
     }
 } // namespace boost
 
+#endif  // #if !defined(BOOST_USE_MODULES) || defined(BOOST_LEXICAL_CAST_INTERFACE_UNIT)
 
 #endif // BOOST_LEXICAL_CAST_DETAIL_LCAST_CHAR_CONSTANTS_HPP
 
