@@ -18,6 +18,11 @@
 #ifndef BOOST_LEXICAL_CAST_DETAIL_CONVERTER_LEXICAL_HPP
 #define BOOST_LEXICAL_CAST_DETAIL_CONVERTER_LEXICAL_HPP
 
+#include <boost/lexical_cast/detail/config.hpp>
+
+#if !defined(BOOST_USE_MODULES) || defined(BOOST_LEXICAL_CAST_INTERFACE_UNIT)
+
+#ifndef BOOST_LEXICAL_CAST_INTERFACE_UNIT
 #include <boost/config.hpp>
 #ifdef BOOST_HAS_PRAGMA_ONCE
 #   pragma once
@@ -27,6 +32,7 @@
 #define BOOST_LCAST_NO_WCHAR_T
 #endif
 
+#include <array>
 #include <cstddef>
 #include <string>
 #include <type_traits>
@@ -42,10 +48,14 @@
 #ifndef BOOST_NO_CXX17_HDR_STRING_VIEW
 #include <string_view>
 #endif
-
-#include <boost/lexical_cast/detail/buffer_view.hpp>
 #include <boost/container/container_fwd.hpp>
+#endif
 
+#endif  // #ifndef BOOST_LEXICAL_CAST_INTERFACE_UNIT
+
+#include <boost/lexical_cast/detail/widest_char.hpp>
+#include <boost/lexical_cast/detail/is_character.hpp>
+#include <boost/lexical_cast/detail/buffer_view.hpp>
 #include <boost/lexical_cast/detail/converter_lexical_streams.hpp>
 
 namespace boost {
@@ -478,6 +488,8 @@ namespace boost {
 } // namespace boost
 
 #undef BOOST_LCAST_NO_WCHAR_T
+
+#endif  // #if !defined(BOOST_USE_MODULES) || defined(BOOST_LEXICAL_CAST_INTERFACE_UNIT)
 
 #endif // BOOST_LEXICAL_CAST_DETAIL_CONVERTER_LEXICAL_HPP
 

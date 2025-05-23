@@ -18,6 +18,11 @@
 #ifndef BOOST_LEXICAL_CAST_DETAIL_CONVERTER_NUMERIC_HPP
 #define BOOST_LEXICAL_CAST_DETAIL_CONVERTER_NUMERIC_HPP
 
+#include <boost/lexical_cast/detail/config.hpp>
+
+#if !defined(BOOST_USE_MODULES) || defined(BOOST_LEXICAL_CAST_INTERFACE_UNIT)
+
+#ifndef BOOST_LEXICAL_CAST_INTERFACE_UNIT
 #include <boost/config.hpp>
 #ifdef BOOST_HAS_PRAGMA_ONCE
 #   pragma once
@@ -27,6 +32,8 @@
 #include <boost/core/cmath.hpp>
 #include <boost/limits.hpp>
 #include <boost/lexical_cast/detail/type_traits.hpp>
+
+#endif  // #ifndef BOOST_LEXICAL_CAST_INTERFACE_UNIT
 
 namespace boost { namespace detail {
 
@@ -175,6 +182,8 @@ struct dynamic_num_converter_impl
 };
 
 }} // namespace boost::detail
+
+#endif  // #if !defined(BOOST_USE_MODULES) || defined(BOOST_LEXICAL_CAST_INTERFACE_UNIT)
 
 #endif // BOOST_LEXICAL_CAST_DETAIL_CONVERTER_NUMERIC_HPP
 
