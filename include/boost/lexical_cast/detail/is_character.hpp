@@ -18,6 +18,11 @@
 #ifndef BOOST_LEXICAL_CAST_DETAIL_IS_CHARACTER_HPP
 #define BOOST_LEXICAL_CAST_DETAIL_IS_CHARACTER_HPP
 
+#include <boost/lexical_cast/detail/config.hpp>
+
+#if !defined(BOOST_USE_MODULES) || defined(BOOST_LEXICAL_CAST_INTERFACE_UNIT)
+
+#ifndef BOOST_LEXICAL_CAST_INTERFACE_UNIT
 #include <boost/config.hpp>
 #ifdef BOOST_HAS_PRAGMA_ONCE
 #   pragma once
@@ -25,6 +30,7 @@
 
 #include <boost/type_traits/integral_constant.hpp>
 #include <boost/type_traits/is_same.hpp>
+#endif  // #ifndef BOOST_LEXICAL_CAST_INTERFACE_UNIT
 
 namespace boost { namespace detail {
 
@@ -47,6 +53,8 @@ using is_character = boost::integral_constant<
 >;
 
 }}
+
+#endif  // #if !defined(BOOST_USE_MODULES) || defined(BOOST_LEXICAL_CAST_INTERFACE_UNIT)
 
 #endif // BOOST_LEXICAL_CAST_DETAIL_IS_CHARACTER_HPP
 

@@ -18,6 +18,11 @@
 #ifndef BOOST_LEXICAL_CAST_DETAIL_INF_NAN_HPP
 #define BOOST_LEXICAL_CAST_DETAIL_INF_NAN_HPP
 
+#include <boost/lexical_cast/detail/config.hpp>
+
+#if !defined(BOOST_USE_MODULES) || defined(BOOST_LEXICAL_CAST_INTERFACE_UNIT)
+
+#ifndef BOOST_LEXICAL_CAST_INTERFACE_UNIT
 #include <boost/config.hpp>
 #ifdef BOOST_HAS_PRAGMA_ONCE
 #   pragma once
@@ -32,6 +37,7 @@
 #include <boost/core/cmath.hpp>
 #include <cstddef>
 #include <cstring>
+#endif  // #ifndef BOOST_LEXICAL_CAST_INTERFACE_UNIT
 
 #include <boost/lexical_cast/detail/lcast_char_constants.hpp>
 
@@ -182,6 +188,8 @@ namespace boost {
 } // namespace boost
 
 #undef BOOST_LCAST_NO_WCHAR_T
+
+#endif  // #if !defined(BOOST_USE_MODULES) || defined(BOOST_LEXICAL_CAST_INTERFACE_UNIT)
 
 #endif // BOOST_LEXICAL_CAST_DETAIL_INF_NAN_HPP
 
