@@ -198,7 +198,7 @@ namespace boost { namespace detail { namespace lcast {
         }
 
         bool shl_real_type(lcast::exact<float> val, char* begin) {
-            const double val_as_double = val.payload;
+            const double val_as_double = static_cast<double>(val.payload);
             finish = start +
                 boost::core::snprintf(begin, CharacterBufferSize,
                 "%.*g", static_cast<int>(boost::detail::lcast_precision<float>::value), val_as_double);
@@ -227,7 +227,7 @@ namespace boost { namespace detail { namespace lcast {
 
 #if !defined(BOOST_LCAST_NO_WCHAR_T)
         bool shl_real_type(lcast::exact<float> val, wchar_t* begin) {
-            const double val_as_double = val.payload;
+            const double val_as_double = static_cast<double>(val.payload);
             finish = start + boost::core::swprintf(
                 begin, CharacterBufferSize, L"%.*g",
                 static_cast<int>(boost::detail::lcast_precision<float>::value),
