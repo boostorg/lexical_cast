@@ -18,6 +18,11 @@
 #ifndef BOOST_LEXICAL_CAST_TRY_LEXICAL_CONVERT_HPP
 #define BOOST_LEXICAL_CAST_TRY_LEXICAL_CONVERT_HPP
 
+#include <boost/lexical_cast/detail/config.hpp>
+
+#if !defined(BOOST_USE_MODULES) || defined(BOOST_LEXICAL_CAST_INTERFACE_UNIT)
+
+#ifndef BOOST_LEXICAL_CAST_INTERFACE_UNIT
 #include <boost/config.hpp>
 #ifdef BOOST_HAS_PRAGMA_ONCE
 #   pragma once
@@ -25,6 +30,7 @@
 
 #include <boost/type_traits/conditional.hpp>
 #include <boost/type_traits/is_arithmetic.hpp>
+#endif
 
 #include <boost/lexical_cast/detail/buffer_view.hpp>
 #include <boost/lexical_cast/detail/is_character.hpp>
@@ -83,11 +89,15 @@ namespace boost {
     }} // namespace conversion::detail
 
     namespace conversion {
+BOOST_LEXICAL_CAST_BEGIN_MODULE_EXPORT
         // ADL barrier
         using ::boost::conversion::detail::try_lexical_convert;
+BOOST_LEXICAL_CAST_END_MODULE_EXPORT
     }
 
 } // namespace boost
+
+#endif  // #if !defined(BOOST_USE_MODULES) || defined(BOOST_LEXICAL_CAST_INTERFACE_UNIT)
 
 #endif // BOOST_LEXICAL_CAST_TRY_LEXICAL_CONVERT_HPP
 
