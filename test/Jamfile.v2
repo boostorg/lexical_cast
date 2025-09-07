@@ -80,7 +80,7 @@ test-suite conversion
     [ run stream_traits_test.cpp ]
     [ compile-fail to_pointer_test.cpp ]
     [ compile-fail from_volatile.cpp ]
-    [ run filesystem_test.cpp /boost/filesystem//boost_filesystem/<link>static ]
+    [ run filesystem_test.cpp /boost/filesystem//boost_filesystem ]
     [ run try_lexical_convert.cpp ]
   ;
 
