@@ -8,10 +8,11 @@
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt).
 
+#include <type_traits>
+
 #include <boost/lexical_cast.hpp>
 
 #include <boost/core/cmath.hpp>
-#include <boost/type_traits/is_same.hpp>
 
 #include <boost/core/lightweight_test.hpp>
 
@@ -46,7 +47,7 @@ bool is_neg_nan(T value)
     * It is a IA64 feature, or it is a boost::math feature, not a lexical_cast bug */
 #if defined(__ia64__) || defined(_M_IA64)
     return (boost::core::isnan)(value)
-            && ( boost::is_same<T, long double >::value || (boost::core::signbit)(value) );
+            && ( std::is_same<T, long double >::value || (boost::core::signbit)(value) );
 #else
     return (boost::core::isnan)(value) && (boost::core::signbit)(value);
 #endif
