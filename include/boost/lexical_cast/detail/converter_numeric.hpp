@@ -26,7 +26,6 @@
 #include <type_traits>
 #include <boost/core/cmath.hpp>
 #include <boost/limits.hpp>
-#include <boost/type_traits/type_identity.hpp>
 #include <boost/lexical_cast/detail/type_traits.hpp>
 
 namespace boost { namespace detail {
@@ -122,7 +121,7 @@ struct lexical_cast_dynamic_num_ignoring_minus
     static inline bool try_convert(Source arg, Target& result) noexcept {
         typedef typename std::conditional<
                 std::is_floating_point<Source>::value,
-                boost::type_identity<Source>,
+                std::conditional<true, Source, Source>,  // std::type_identity emulation
                 boost::detail::lcast::make_unsigned<Source>
         >::type usource_lazy_t;
         typedef typename usource_lazy_t::type usource_t;
