@@ -48,7 +48,7 @@ boost_test(TYPE run SOURCES no_exceptions_test.cpp
 )
 
 boost_test(TYPE run SOURCES iterator_range_test.cpp LINK_LIBRARIES Boost::range)
-boost_test(TYPE run SOURCES string_view_test.cpp)
+boost_test(TYPE run SOURCES string_view_test.cpp LINK_LIBRARIES Boost::utility)
 boost_test(TYPE run SOURCES arrays_test.cpp LINK_LIBRARIES Boost::array)
 boost_test(TYPE run SOURCES integral_types_test.cpp LINK_LIBRARIES Boost::type_traits)
 boost_test(TYPE run SOURCES stream_detection_test.cpp)
