@@ -31,7 +31,6 @@
 #include <string>
 #include <type_traits>
 #include <boost/limits.hpp>
-#include <boost/type_traits/type_identity.hpp>
 #include <boost/detail/lcast_precision.hpp>
 
 #include <boost/lexical_cast/detail/widest_char.hpp>
@@ -66,19 +65,19 @@ namespace boost {
         template < class Char >
         struct normalize_single_byte_char
         {
-            typedef Char type;
+            using type = Char;
         };
 
         template <>
         struct normalize_single_byte_char< signed char >
         {
-            typedef char type;
+            using type = char;
         };
 
         template <>
         struct normalize_single_byte_char< unsigned char >
         {
-            typedef char type;
+            using type = char;
         };
     }
 
@@ -118,7 +117,7 @@ namespace boost {
         template < typename Char >
         struct stream_char_common< boost::conversion::detail::buffer_view< Char > >
         {
-            typedef Char type;
+            using type = Char;
         };
 
         template < typename Char >
@@ -138,13 +137,13 @@ namespace boost {
         template < class Char, class Traits, class Alloc >
         struct stream_char_common< std::basic_string< Char, Traits, Alloc > >
         {
-            typedef Char type;
+            using type = Char;
         };
 
         template < class Char, class Traits, class Alloc >
         struct stream_char_common< boost::container::basic_string< Char, Traits, Alloc > >
         {
-            typedef Char type;
+            using type = Char;
         };
 
         template < typename Char, std::size_t N >
@@ -181,25 +180,31 @@ namespace boost {
         template < class Char, class Traits >
         struct stream_char_common< std::basic_string_view< Char, Traits > >
         {
-            typedef Char type;
+            using type = Char;
         };
 #endif
         template < class Char, class Traits >
         struct stream_char_common< boost::basic_string_view< Char, Traits > >
         {
-            typedef Char type;
+            using type = Char;
         };
 
 #ifdef BOOST_HAS_INT128
-        template <> struct stream_char_common< boost::int128_type >: public boost::type_identity< char > {};
-        template <> struct stream_char_common< boost::uint128_type >: public boost::type_identity< char > {};
+        template <> struct stream_char_common< boost::int128_type >
+        {
+            using type = char;
+        };
+        template <> struct stream_char_common< boost::uint128_type >
+        {
+            using type = char;
+        };
 #endif
 
 #if !defined(BOOST_LCAST_NO_WCHAR_T) && defined(BOOST_NO_INTRINSIC_WCHAR_T)
         template <>
         struct stream_char_common< wchar_t >
         {
-            typedef char type;
+            using type = char;
         };
 #endif
     }
