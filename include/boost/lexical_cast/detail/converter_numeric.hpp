@@ -41,7 +41,8 @@ bool ios_numeric_comparer_float(Source x, Source y) noexcept {
 template <class RangeType, class T>
 constexpr bool is_out_of_range_for(T value) noexcept {
     return value > static_cast<T>((std::numeric_limits<RangeType>::max)())
-        || value < static_cast<T>((std::numeric_limits<RangeType>::min)());
+        || value < static_cast<T>((std::numeric_limits<RangeType>::min)())
+        || boost::core::isnan(value);
 }
 
 
@@ -96,7 +97,7 @@ typename std::enable_if<
 
     const Target target_tmp = static_cast<Target>(arg);
     const Source arg_restored = static_cast<Source>(target_tmp);
-    if (detail::ios_numeric_comparer_float<Source, Target>(arg, arg_restored)) {
+    if (arg == arg_restored /* special values are handled in detail::is_out_of_range_for */) {
         result = target_tmp;
         return true;
     }
