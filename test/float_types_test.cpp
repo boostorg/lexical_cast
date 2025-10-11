@@ -569,6 +569,11 @@ void test_conversion_integral_float()
     BOOST_TEST_THROWS(lexical_cast<Integral>((std::numeric_limits<Float>::max)()), bad_lexical_cast);
     BOOST_TEST_THROWS(lexical_cast<Integral>((std::numeric_limits<Float>::epsilon)()), bad_lexical_cast);
     BOOST_TEST_THROWS(lexical_cast<Integral>((std::numeric_limits<Float>::lowest)()), bad_lexical_cast);
+
+    BOOST_TEST_THROWS(lexical_cast<Integral>(std::numeric_limits<Float>::quiet_NaN()), bad_lexical_cast);
+    BOOST_TEST_THROWS(lexical_cast<Integral>(-std::numeric_limits<Float>::quiet_NaN()), bad_lexical_cast);
+    BOOST_TEST_THROWS(lexical_cast<Integral>(std::numeric_limits<Float>::infinity()), bad_lexical_cast);
+    BOOST_TEST_THROWS(lexical_cast<Integral>(-std::numeric_limits<Float>::infinity()), bad_lexical_cast);
 }
 
 
