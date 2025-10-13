@@ -294,7 +294,7 @@ namespace boost { namespace detail { namespace lcast {
         bool stream_in(lcast::exact<unsigned char> x)           { return shl_char(static_cast<char>(x.payload)); }
         bool stream_in(lcast::exact<signed char> x)             { return shl_char(static_cast<char>(x.payload)); }
 
-#if !defined(BOOST_LCAST_NO_WCHAR_T)
+#if !defined(BOOST_NO_INTRINSIC_WCHAR_T)
         template <class C>
         typename std::enable_if<boost::detail::is_character<C>::value, bool>::type
                 stream_in(lcast::exact<C> x)                    { return shl_char(x.payload); }
