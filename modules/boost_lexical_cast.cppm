@@ -13,25 +13,10 @@ module;
 #include <boost/config/workaround.hpp>
 #include <boost/container/container_fwd.hpp>
 #include <boost/core/cmath.hpp>
-#include <boost/core/enable_if.hpp>
 #include <boost/core/noncopyable.hpp>
 #include <boost/core/snprintf.hpp>
 #include <boost/limits.hpp>
 #include <boost/throw_exception.hpp>
-#include <boost/type_traits/conditional.hpp>
-#include <boost/type_traits/integral_constant.hpp>
-#include <boost/type_traits/is_arithmetic.hpp>
-#include <boost/type_traits/is_const.hpp>
-#include <boost/type_traits/is_enum.hpp>
-#include <boost/type_traits/is_float.hpp>
-#include <boost/type_traits/is_integral.hpp>
-#include <boost/type_traits/is_pointer.hpp>
-#include <boost/type_traits/is_reference.hpp>
-#include <boost/type_traits/is_same.hpp>
-#include <boost/type_traits/is_signed.hpp>
-#include <boost/type_traits/is_unsigned.hpp>
-#include <boost/type_traits/make_unsigned.hpp>
-#include <boost/type_traits/type_identity.hpp>
 
 
 #ifndef BOOST_LEXICAL_CAST_USE_STD_MODULE
@@ -53,6 +38,7 @@ module;
 #include <string>
 #include <string_view>
 #include <typeinfo>
+#include <type_traits>
 #endif
 
 #define BOOST_LEXICAL_CAST_INTERFACE_UNIT

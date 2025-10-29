@@ -48,8 +48,8 @@
 #ifndef BOOST_NO_CXX17_HDR_STRING_VIEW
 #include <string_view>
 #endif
+
 #include <boost/container/container_fwd.hpp>
-#endif
 
 #endif  // #ifndef BOOST_LEXICAL_CAST_INTERFACE_UNIT
 
