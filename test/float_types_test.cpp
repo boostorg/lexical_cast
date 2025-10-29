@@ -15,6 +15,7 @@
 #include "lexical_cast_old.hpp"
 #endif
 
+#include <sstream>
 #include <type_traits>
 
 #include <boost/cstdint.hpp>

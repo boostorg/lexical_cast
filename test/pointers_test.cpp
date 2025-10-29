@@ -12,6 +12,8 @@
 
 #include <boost/core/lightweight_test.hpp>
 
+#include <sstream>
+
 #if defined(BOOST_NO_STRINGSTREAM)
             typedef std::strstream ss_t;
 #else
