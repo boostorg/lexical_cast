@@ -51,6 +51,8 @@ namespace boost {
 
     namespace conversion { namespace detail {
 
+BOOST_LEXICAL_CAST_BEGIN_MODULE_EXPORT
+
         template <typename Target, typename Source>
         inline bool try_lexical_convert(const Source& arg, Target& result)
         {
@@ -84,6 +86,7 @@ namespace boost {
                 result
             );
         }
+BOOST_LEXICAL_CAST_END_MODULE_EXPORT
 
     }} // namespace conversion::detail
 

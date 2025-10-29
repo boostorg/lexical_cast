@@ -34,7 +34,6 @@
 #include <cstdio>
 #include <type_traits>
 #include <boost/limits.hpp>
-#include <boost/detail/lcast_precision.hpp>
 #include <boost/config/workaround.hpp>
 
 #ifdef BOOST_NO_STRINGSTREAM
@@ -43,6 +42,7 @@
 #include <sstream>
 #endif
 
+#include <boost/lexical_cast/detail/lcast_precision.hpp>
 #include <boost/lexical_cast/bad_lexical_cast.hpp>
 #include <boost/lexical_cast/detail/widest_char.hpp>
 

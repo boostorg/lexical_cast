@@ -37,11 +37,6 @@
 #include <string>
 #include <type_traits>
 #include <boost/limits.hpp>
-#include <boost/detail/lcast_precision.hpp>
-
-#include <boost/lexical_cast/detail/widest_char.hpp>
-#include <boost/lexical_cast/detail/is_character.hpp>
-#include <boost/lexical_cast/detail/type_traits.hpp>
 
 #include <array>
 
@@ -53,6 +48,7 @@
 
 #endif  // #ifndef BOOST_LEXICAL_CAST_INTERFACE_UNIT
 
+#include <boost/lexical_cast/detail/lcast_precision.hpp>
 #include <boost/lexical_cast/detail/widest_char.hpp>
 #include <boost/lexical_cast/detail/is_character.hpp>
 #include <boost/lexical_cast/detail/buffer_view.hpp>

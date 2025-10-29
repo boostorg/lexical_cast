@@ -3,7 +3,7 @@
 # Distributed under the Boost Software License, Version 1.0.
 # https://www.boost.org/LICENSE_1_0.txt
 
-cmake_minimum_required(VERSION 3.5...3.31)
+cmake_minimum_required(VERSION 3.5...4.0)
 
 project(boost_lexical_cast VERSION "${BOOST_SUPERPROJECT_VERSION}" LANGUAGES CXX)
 
@@ -37,6 +37,8 @@ target_link_libraries(boost_lexical_cast
     Boost::core
     Boost::throw_exception
 )
+
+add_library(Boost::lexical_cast ALIAS boost_lexical_cast)
 
 if(BUILD_TESTING)
   add_subdirectory(test)

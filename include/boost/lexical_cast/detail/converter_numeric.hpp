@@ -31,9 +31,10 @@
 #include <type_traits>
 #include <boost/core/cmath.hpp>
 #include <boost/limits.hpp>
-#include <boost/lexical_cast/detail/type_traits.hpp>
 
 #endif  // #ifndef BOOST_LEXICAL_CAST_INTERFACE_UNIT
+
+#include <boost/lexical_cast/detail/type_traits.hpp>
 
 namespace boost { namespace detail {
 

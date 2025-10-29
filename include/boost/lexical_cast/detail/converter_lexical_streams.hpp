@@ -39,8 +39,6 @@
 #include <type_traits>
 
 #include <boost/limits.hpp>
-#include <boost/detail/lcast_precision.hpp>
-#include <boost/lexical_cast/detail/type_traits.hpp>
 #include <boost/config/workaround.hpp>
 #include <boost/core/snprintf.hpp>
 
@@ -82,6 +80,8 @@
 #include <boost/lexical_cast/detail/lcast_unsigned_converters.hpp>
 #include <boost/lexical_cast/detail/lcast_basic_unlockedbuf.hpp>
 #include <boost/lexical_cast/detail/inf_nan.hpp>
+#include <boost/lexical_cast/detail/lcast_precision.hpp>
+#include <boost/lexical_cast/detail/type_traits.hpp>
 
 // Forward declarations
 namespace boost {

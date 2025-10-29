@@ -18,6 +18,7 @@ module;
 #include <boost/limits.hpp>
 #include <boost/throw_exception.hpp>
 
+#include <boost/detail/basic_pointerbuf.hpp>
 
 #ifndef BOOST_LEXICAL_CAST_USE_STD_MODULE
 #include <array>
