@@ -36,11 +36,11 @@ add_subdirectory(../../ boostorg/lexical_cast)
 
 enable_testing()
 
-#if (BOOST_USE_MODULES)
-#    add_executable(boost_any_module_usage ../modules/usage_sample.cpp)
-#    target_link_libraries(boost_any_module_usage PRIVATE Boost::any)
-#    add_test(NAME boost_any_module_usage COMMAND boost_any_module_usage)
-#endif()
+if (BOOST_USE_MODULES)
+    add_executable(boost_lexical_cast_module_usage ../modules/usage_sample.cpp)
+    target_link_libraries(boost_lexical_cast_module_usage PRIVATE Boost::lexical_cast)
+    add_test(NAME boost_lexical_cast_module_usage COMMAND boost_lexical_cast_module_usage)
+endif()
 
 list(APPEND RUN_TESTS_SOURCES
     lexical_cast_test.cpp

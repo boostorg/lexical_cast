@@ -4,7 +4,7 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 // To compile manually use a command like the folowing:
-// clang++ -I ../include -std=c++20 --precompile -x c++-module any.cppm
+// clang++ -I ../include -std=c++20 --precompile -x c++-module boost_lexical_cast.cppm
 
 module;
 
