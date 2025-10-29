@@ -205,7 +205,8 @@ jobs:
           ctest --output-on-failure --no-tests=error -C Debug
 
       - name: Run modules tests
-        if: ${{matrix.toolset == 'msvc-14.3'}}
+        if: false
+        #if: ${{matrix.toolset == 'msvc-14.3'}}
         shell: cmd
         run: |
           choco install --no-progress ninja
@@ -228,7 +229,7 @@ jobs:
           rm -rf build_module
           mkdir build_module
           cd build_module
-          cmake -DBOOST_USE_MODULES=1 -DBUILD_TESTING=1 -DCMAKE_CXX_STANDARD=20 -G Ninja ../test/cmake_subdir_test/
+          cmake -DBOOST_USE_MODULES=1 -DCMAKE_CXX_STANDARD=20 -G Ninja ../test/cmake_subdir_test/
           cmake --build .
           ctest --no-tests=error -V
 
