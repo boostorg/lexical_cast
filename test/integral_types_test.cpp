@@ -29,6 +29,7 @@
 
 #include <boost/type_traits/integral_promotion.hpp>
 #include <string>
+#include <sstream>
 #include <vector>
 #include <memory>
 #include <type_traits>
