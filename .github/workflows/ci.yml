@@ -36,7 +36,7 @@ jobs:
             os: ubuntu-22.04
           - toolset: clang
             cxxstd: "11,14,17,20"
-            os: macos-13
+            os: macos-latest
           - toolset: clang-19
             cxxstd: "20,23"
             os: ubuntu-24.04
