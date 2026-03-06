@@ -8,6 +8,13 @@
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt).
 
+#include <sstream>
+#include <type_traits>
+
+#include <boost/cstdint.hpp>
+#include <boost/core/lightweight_test.hpp>
+#include <boost/lexical_cast/detail/type_traits.hpp>
+
 #ifndef BOOST_LEXICAL_CAST_DETAIL_TEST_ON_OLD
 #include <boost/lexical_cast.hpp>
 #else
@@ -15,12 +22,6 @@
 #include "lexical_cast_old.hpp"
 #endif
 
-#include <sstream>
-#include <type_traits>
-
-#include <boost/cstdint.hpp>
-#include <boost/core/lightweight_test.hpp>
-#include <boost/lexical_cast/detail/type_traits.hpp>
 
 #ifndef BOOST_TEST_CLOSE_FRACTION
 // Naiive, but works for most tests in this file 
