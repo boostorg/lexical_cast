@@ -17,9 +17,8 @@ add_subdirectory(../../../move boostorg/move)
 add_subdirectory(../../../throw_exception boostorg/throw_exception)
 add_subdirectory(../../../type_traits boostorg/type_traits)
 
-add_subdirectory(../../ boostorg/lexical_cast)
-
 enable_testing()
+add_subdirectory(../../ boostorg/lexical_cast)
 
 if (BOOST_USE_MODULES)
     add_executable(boost_lexical_cast_module_usage ../modules/usage_sample.cpp)
