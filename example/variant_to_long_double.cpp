@@ -10,7 +10,9 @@
     In this example we'll make a `to_long_double` method that converts value of the Boost.Variant to `long double`.
 */
 
+#ifdef BOOST_USE_MODULES
 #include <compare>
+#endif
 #include <boost/variant.hpp>
 
 #include <boost/lexical_cast.hpp>
