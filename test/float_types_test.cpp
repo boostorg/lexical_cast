@@ -13,13 +13,14 @@
 
 #include <boost/cstdint.hpp>
 #include <boost/core/lightweight_test.hpp>
-#include <boost/lexical_cast/detail/type_traits.hpp>
 
 #ifndef BOOST_LEXICAL_CAST_DETAIL_TEST_ON_OLD
+#include <boost/lexical_cast/detail/type_traits.hpp>
 #include <boost/lexical_cast.hpp>
 #else
 // Make sure that tests work the same way on non-optimized version
 #include "lexical_cast_old.hpp"
+#include <boost/lexical_cast/detail/type_traits.hpp>
 #endif
 
 

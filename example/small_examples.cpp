@@ -4,11 +4,11 @@
 // (See the accompanying file LICENSE_1_0.txt
 // or a copy at <http://www.boost.org/LICENSE_1_0.txt>.)
 
-#include <boost/lexical_cast.hpp>
-
 #include <array>
 #include <string>
 #include <cstdio>
+
+#include <boost/lexical_cast.hpp>
 
 #ifdef BOOST_MSVC
 #  pragma warning(disable: 4996) // `strerror` is not safe

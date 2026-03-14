@@ -21,6 +21,9 @@
 
 #include <cstdlib>
 
+#if defined(BOOST_USE_MODULES)
+#undef BOOST_USE_MODULES
+#endif
 #include <boost/lexical_cast.hpp>
 
 #include "escape_struct.hpp"

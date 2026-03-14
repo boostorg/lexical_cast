@@ -10,8 +10,10 @@
     In this example we'll make a `to_long_double` method that converts value of the Boost.Variant to `long double`.
 */
 
-#include <boost/lexical_cast.hpp>
+#include <compare>
 #include <boost/variant.hpp>
+
+#include <boost/lexical_cast.hpp>
 
 struct to_long_double_functor: boost::static_visitor<long double> {
     template <class T>
