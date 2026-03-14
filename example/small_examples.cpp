@@ -6,6 +6,7 @@
 
 #include <array>
 #include <string>
+#include <string.h>
 #include <cstdio>
 
 #include <boost/lexical_cast.hpp>
