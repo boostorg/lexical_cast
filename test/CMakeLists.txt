@@ -64,6 +64,10 @@ target_compile_definitions(lexical_cast_no_exceptions_test
 )
 if(MVSC)
     target_compile_definitions(lexical_cast_no_exceptions_test PRIVATE BOOST_NO_EXCEPTIONS)
+    target_compile_options(lexical_cast_no_exceptions_test PRIVATE
+        $<$<CXX_COMPILER_ID:MSVC>:/EHs-c->
+        $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-fno-exceptions>
+    )
 endif()
 target_compile_options(lexical_cast_no_exceptions_test PRIVATE "-fno-exceptions")
 

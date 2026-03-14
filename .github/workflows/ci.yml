@@ -209,7 +209,7 @@ jobs:
           cd ../boost-root/
           mkdir __build
           cd __build
-          cmake -DBUILD_TESTING=1 -DBOOST_INCLUDE_LIBRARIES=lexical_cast ..
+          cmake -DBUILD_TESTING=1 -DBOOST_INCLUDE_LIBRARIES=lexical_cast -G Ninja ..
           cmake --build . --target tests --config Debug
           ctest --output-on-failure --no-tests=error -C Debug
 
@@ -228,7 +228,7 @@ jobs:
           cmake --build .
           ctest --no-tests=error -V
 
-      - name: Run modules tests wihtout 'import std;'
+      - name: Run modules tests without 'import std;'
         if: ${{matrix.toolset == 'msvc-14.3'}}
         shell: cmd
         run: |
