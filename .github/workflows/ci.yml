@@ -83,8 +83,9 @@ jobs:
           cd ../boost-root/libs/lexical_cast
           cmake -S test/cmake_subdir_test -B build_module \
             -GNinja \
+            -DBUILD_TESTING=1 \
             -DBOOST_USE_MODULES=1 \
-            -DCMAKE_C_COMPILER=clang++-19 \
+            -DCMAKE_CXX_COMPILER=clang++-19 \
             -DCMAKE_C_COMPILER=clang-19
           cmake --build build_module
           ctest --test-dir build_module -V --no-tests=error
@@ -96,6 +97,7 @@ jobs:
           cd ../boost-root/libs/lexical_cast
           cmake -S test/cmake_subdir_test -B build_module \
             -GNinja \
+            -DBUILD_TESTING=1 \
             -DBOOST_USE_MODULES=1 \
             -DCMAKE_CXX_COMPILER=clang++-19 \
             -DCMAKE_C_COMPILER=clang-19 \
