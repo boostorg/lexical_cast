@@ -62,6 +62,9 @@ target_compile_definitions(lexical_cast_no_exceptions_test
       _HAS_EXCEPTIONS=0 # MSVC stdlib
       _STLP_NO_EXCEPTIONS # STLPort
 )
+if(MVSC)
+    target_compile_definitions(lexical_cast_no_exceptions_test PRIVATE BOOST_NO_EXCEPTIONS)
+endif()
 target_compile_options(lexical_cast_no_exceptions_test PRIVATE "-fno-exceptions")
 
 boost_lexical_cast_add_test(iterator_range_test Boost::range)
