@@ -59,8 +59,8 @@ boost_lexical_cast_add_test_impl(lexical_cast_no_exceptions_test no_exceptions_t
 target_include_directories(lexical_cast_no_exceptions_test PRIVATE ../include)
 target_compile_definitions(lexical_cast_no_exceptions_test
     PRIVATE
-      HAS_EXCEPTIONS=0 # MSVC stdlib
-      STLP_NO_EXCEPTIONS # STLPort
+      _HAS_EXCEPTIONS=0 # MSVC stdlib
+      _STLP_NO_EXCEPTIONS # STLPort
 )
 target_compile_options(lexical_cast_no_exceptions_test PRIVATE "-fno-exceptions")
 
