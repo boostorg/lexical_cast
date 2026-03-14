@@ -41,8 +41,9 @@ boost_lexical_cast_add_test(empty_input_test Boost::range)
 boost_lexical_cast_add_test(pointers_test "")
 
 if(MSVC)
-    boost_lexical_cast_add_test(typedefed_wchar_test "")
-    target_compile_options(lexical_cast_typedefed_wchar_test PRIVATE "/Zc:wchar_t-")
+    add_executable(lexical_cast_typedefed_wchar_test_compile typedefed_wchar_test.cpp)
+    target_compile_options(lexical_cast_typedefed_wchar_test_compile PRIVATE "/Zc:wchar_t-")
+
     boost_lexical_cast_add_test(typedefed_wchar_test_runtime "")
     target_compile_options(lexical_cast_typedefed_wchar_test_runtime PRIVATE "/Zc:wchar_t-")
 endif()
