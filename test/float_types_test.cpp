@@ -305,7 +305,6 @@ void test_float_typess_for_overflows()
     // VC9 can fail the following tests on floats and doubles when using stingstream...
     BOOST_TEST_THROWS(lexical_cast<test_t>("1"+s_max_value), bad_lexical_cast);
     BOOST_TEST_THROWS(lexical_cast<test_t>("9"+s_max_value), bad_lexical_cast);
-#endif
 
     if ( std::is_same<test_t,float>::value )
     {
@@ -342,6 +341,7 @@ void test_float_typess_for_overflows()
                 <= (std::numeric_limits<long double>::min)() / 2 + std::numeric_limits<test_t>::epsilon()
         );
     }
+#endif
 }
 
 #undef CHECK_CLOSE_ABS_DIFF
