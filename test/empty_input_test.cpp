@@ -10,13 +10,13 @@
 
 #include <boost/range/iterator_range.hpp>
 
-#include "escape_struct.hpp"
-
 #include <boost/core/lightweight_test.hpp>
 
 #include <vector>
 
 #include <boost/lexical_cast.hpp>
+
+#include "escape_struct.hpp"
 
 using namespace boost;
 
