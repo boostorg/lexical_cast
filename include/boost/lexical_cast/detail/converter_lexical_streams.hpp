@@ -585,6 +585,7 @@ namespace boost { namespace detail { namespace lcast {
             stream.exceptions(std::ios::badbit);
             try {
 #endif
+            stream.imbue(std::locale(setlocale(LC_ALL, NULL)));
             stream.unsetf(std::ios::skipws);
             boost::detail::lcast_set_precision(stream, static_cast<InputStreamable*>(0));
 
