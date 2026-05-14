@@ -89,6 +89,7 @@ void test_conversion_to_int()
 {
     BOOST_TEST_EQ(1, lexical_cast<int>('1'));
     BOOST_TEST_EQ(0, lexical_cast<int>('0'));
+    BOOST_TEST_EQ(-1, lexical_cast<int>("-1"));
     BOOST_TEST_THROWS(lexical_cast<int>('A'), bad_lexical_cast);
     BOOST_TEST_EQ(1, lexical_cast<int>(1));
     BOOST_TEST_EQ(1, lexical_cast<int>(1.0));
@@ -119,6 +120,14 @@ void test_conversion_to_int()
         lexical_cast<int>(std::string("")), bad_lexical_cast);
     BOOST_TEST_THROWS(
         lexical_cast<int>(std::string("Test")), bad_lexical_cast);
+}
+
+void test_conversion_to_unsigned_int()
+{
+    BOOST_TEST_EQ(1, lexical_cast<unsigned int>('1'));
+    BOOST_TEST_EQ(0, lexical_cast<unsigned int>('0'));
+    BOOST_TEST_THROWS(lexical_cast<unsigned int>("-1"), bad_lexical_cast);
+    BOOST_TEST_THROWS(lexical_cast<unsigned int>('A'), bad_lexical_cast);
 }
 
 void test_conversion_with_nonconst_char()
@@ -570,6 +579,7 @@ int main()
 {
     test_conversion_to_char();
     test_conversion_to_int();
+    test_conversion_to_unsigned_int();
     test_conversion_to_double();
     test_conversion_to_bool();
     test_conversion_from_to_wchar_t_alias();

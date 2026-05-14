@@ -505,20 +505,16 @@ namespace boost { namespace detail { namespace lcast {
             if (start == finish) return false;
             CharT const minus = lcast_char_constants<CharT>::minus;
             CharT const plus = lcast_char_constants<CharT>::plus;
-            bool const has_minus = Traits::eq(minus, *start);
+            if (Traits::eq(minus, *start)) {
+                return false;
+            }
 
             /* We won`t use `start' any more, so no need in decrementing it after */
-            if (has_minus || Traits::eq(plus, *start)) {
+            if (Traits::eq(plus, *start)) {
                 ++start;
             }
 
-            bool const succeed = lcast_ret_unsigned<Traits, Type, CharT>(output, start, finish).convert();
-
-            if (has_minus) {
-                output = static_cast<Type>(0u - output);
-            }
-
-            return succeed;
+            return lcast_ret_unsigned<Traits, Type, CharT>(output, start, finish).convert();
         }
 
         template <typename Type>
