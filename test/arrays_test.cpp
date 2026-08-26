@@ -26,16 +26,85 @@ using namespace boost;
 
 namespace user_namespace {
 
-struct user_type{};
+struct user_type {
+    char payload;
+};
 
 template <std::size_t Size>
-inline std::ostream& operator<<(std::ostream& os, const boost::array<user_type, Size>& ) {
-    return os << "array<user_type, " << Size << ">";
+inline std::ostream& operator<<(std::ostream& os, const boost::array<user_type, Size>& array) {
+    for (const auto& x : array) {
+        os << '@' << x.payload;
+    }
+    return os;
 }
 
 template <std::size_t Size>
-inline std::ostream& operator<<(std::ostream& os, const std::array<user_type, Size>& ) {
-    return os << "array<user_type, " << Size << ">";
+inline std::ostream& operator<<(std::ostream& os, const std::array<user_type, Size>& array) {
+    for (const auto& x : array) {
+        os << '@' << x.payload;
+    }
+    return os;
+}
+
+template <std::size_t Size>
+inline std::istream& operator>>(std::istream& is, boost::array<user_type, Size>& array) {
+    for (auto& x : array) {
+        char at{};
+        is >> at >> x.payload;
+        BOOST_TEST_EQ(at, 'a');
+    }
+    return is;
+}
+
+template <std::size_t Size>
+inline std::istream& operator>>(std::istream& is, std::array<user_type, Size>& array) {
+    for (auto& x : array) {
+        char at{};
+        is >> at >> x.payload;
+    }
+    return is;
+}
+
+
+
+struct another_user_type {
+    char payload;
+    char payload1 = '-';
+};
+
+template <std::size_t Size>
+inline std::ostream& operator<<(std::ostream& os, const boost::array<another_user_type, Size>& array) {
+    for (const auto& x : array) {
+        os << '@' << x.payload;
+    }
+    return os;
+}
+
+template <std::size_t Size>
+inline std::ostream& operator<<(std::ostream& os, const std::array<another_user_type, Size>& array) {
+    for (const auto& x : array) {
+        os << '@' << x.payload;
+    }
+    return os;
+}
+
+template <std::size_t Size>
+inline std::istream& operator>>(std::istream& is, boost::array<another_user_type, Size>& array) {
+    for (auto& x : array) {
+        char at{};
+        is >> at >> x.payload;
+        BOOST_TEST_EQ(at, 'a');
+    }
+    return is;
+}
+
+template <std::size_t Size>
+inline std::istream& operator>>(std::istream& is, std::array<user_type, Size>& array) {
+    for (auto& x : array) {
+        char at{};
+        is >> at >> x.payload;
+    }
+    return is;
 }
 
 }
@@ -50,6 +119,7 @@ static void testing_template_array_output_on_spec_value(T val)
     typedef ArrayT<signed char, 4>        sarr_type;
     typedef ArrayT<signed char, 3>        sshort_arr_type;
     typedef ArrayT<user_namespace::user_type, 2> user_arr_type;
+    typedef ArrayT<user_namespace::another_user_type, 2> another_user_arr_type;
 
     std::string ethalon("100");
     using namespace std;
@@ -80,10 +150,26 @@ static void testing_template_array_output_on_spec_value(T val)
 
     {
         auto res1 = lexical_cast<std::string>(user_arr_type{
-            user_namespace::user_type{},
-            user_namespace::user_type{},
+            user_namespace::user_type{'a'},
+            user_namespace::user_type{'z'},
         });
-        BOOST_TEST_EQ(res1, "array<user_type, 2>");
+        BOOST_TEST_EQ(res1, "@a@z");
+
+        auto res2 = lexical_cast<user_arr_type>("@b@y");
+        BOOST_TEST_EQ(res2[0].payload, 'b');
+        BOOST_TEST_EQ(res2[1].payload, 'y');
+    }
+
+    {
+        auto res1 = lexical_cast<std::string>(another_user_arr_type{
+            user_namespace::another_user_type{'a'},
+            user_namespace::another_user_type{'z'},
+        });
+        BOOST_TEST_EQ(res1, "@a@z");
+
+        auto res2 = lexical_cast<another_user_arr_type>("@b@y");
+        BOOST_TEST_EQ(res2[0].payload, 'b');
+        BOOST_TEST_EQ(res2[1].payload, 'y');
     }
 
 #if !defined(BOOST_NO_STRINGSTREAM) && !defined(BOOST_NO_STD_WSTRING) && !defined(_LIBCPP_VERSION)
