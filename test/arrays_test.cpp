@@ -24,6 +24,22 @@ using namespace boost;
 #define BOOST_LC_RUNU32
 #endif
 
+namespace user_namespace {
+
+struct user_type{};
+
+template <std::size_t Size>
+inline std::ostream& operator<<(std::ostream& os, const boost::array<user_type, Size>& ) {
+    return os << "array<user_type, " << Size << ">";
+}
+
+template <std::size_t Size>
+inline std::ostream& operator<<(std::ostream& os, const std::array<user_type, Size>& ) {
+    return os << "array<user_type, " << Size << ">";
+}
+
+}
+
 template <template <class, std::size_t> class ArrayT, class T>
 static void testing_template_array_output_on_spec_value(T val)
 {
@@ -33,6 +49,7 @@ static void testing_template_array_output_on_spec_value(T val)
     typedef ArrayT<unsigned char, 1>      ushort_arr_type;
     typedef ArrayT<signed char, 4>        sarr_type;
     typedef ArrayT<signed char, 3>        sshort_arr_type;
+    typedef ArrayT<user_namespace::user_type, 2> user_arr_type;
 
     std::string ethalon("100");
     using namespace std;
@@ -59,6 +76,14 @@ static void testing_template_array_output_on_spec_value(T val)
         const sarr_type res2 = lexical_cast<sarr_type>(val);
         BOOST_TEST_EQ(reinterpret_cast<const char*>(&res2[0]), ethalon);
         BOOST_TEST_THROWS(lexical_cast<sshort_arr_type>(val), boost::bad_lexical_cast);
+    }
+
+    {
+        auto res1 = lexical_cast<std::string>(user_arr_type{
+            user_namespace::user_type{},
+            user_namespace::user_type{},
+        });
+        BOOST_TEST_EQ(res1, "array<user_type, 2>");
     }
 
 #if !defined(BOOST_NO_STRINGSTREAM) && !defined(BOOST_NO_STD_WSTRING) && !defined(_LIBCPP_VERSION)
@@ -249,13 +274,11 @@ void testing_boost_array_output_conversion()
 
 void testing_std_array_output_conversion()
 {
-#ifndef BOOST_NO_CXX11_HDR_ARRAY
     testing_template_array_output_on_char_value<std::array>();
     testing_template_array_output_on_spec_value<std::array>(100);
     testing_template_array_output_on_spec_value<std::array>(static_cast<short>(100));
     testing_template_array_output_on_spec_value<std::array>(static_cast<unsigned short>(100));
     testing_template_array_output_on_spec_value<std::array>(static_cast<unsigned int>(100));
-#endif
 
     BOOST_TEST(true);
 }
@@ -354,10 +377,7 @@ void testing_boost_array_input_conversion()
 
 void testing_std_array_input_conversion()
 {
-#ifndef BOOST_NO_CXX11_HDR_ARRAY
     testing_generic_array_input_conversion<std::array>();
-#endif
-
     BOOST_TEST(true);
 }
 
