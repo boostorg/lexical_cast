@@ -51,7 +51,7 @@ inline std::istream& operator>>(std::istream& is, boost::array<user_type, Size>&
     for (auto& x : array) {
         char at{};
         is >> at >> x.payload;
-        BOOST_TEST_EQ(at, 'a');
+        BOOST_TEST_EQ(at, '@');
     }
     return is;
 }
@@ -93,13 +93,13 @@ inline std::istream& operator>>(std::istream& is, boost::array<another_user_type
     for (auto& x : array) {
         char at{};
         is >> at >> x.payload;
-        BOOST_TEST_EQ(at, 'a');
+        BOOST_TEST_EQ(at, '@');
     }
     return is;
 }
 
 template <std::size_t Size>
-inline std::istream& operator>>(std::istream& is, std::array<user_type, Size>& array) {
+inline std::istream& operator>>(std::istream& is, std::array<another_user_type, Size>& array) {
     for (auto& x : array) {
         char at{};
         is >> at >> x.payload;
