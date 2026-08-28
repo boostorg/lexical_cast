@@ -68,8 +68,18 @@ inline std::istream& operator>>(std::istream& is, std::array<user_type, Size>& a
 
 
 struct another_user_type {
+    another_user_type()
+        : payload('\0')
+        , payload1('-')
+    {}
+
+    another_user_type(char in_payload, char in_payload1)
+        : payload(in_payload)
+        , payload1(in_payload1)
+    {}
+
     char payload;
-    char payload1 = '-';
+    char payload1;
 };
 
 template <std::size_t Size>
@@ -162,8 +172,8 @@ static void testing_template_array_output_on_spec_value(T val)
 
     {
         auto res1 = lexical_cast<std::string>(another_user_arr_type{
-            user_namespace::another_user_type{'a', '-'},
-            user_namespace::another_user_type{'z', '-'},
+            user_namespace::another_user_type('a', '-'),
+            user_namespace::another_user_type('z', '-'),
         });
         BOOST_TEST_EQ(res1, "@a@z");
 
