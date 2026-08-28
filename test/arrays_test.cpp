@@ -162,8 +162,8 @@ static void testing_template_array_output_on_spec_value(T val)
 
     {
         auto res1 = lexical_cast<std::string>(another_user_arr_type{
-            user_namespace::another_user_type{'a'},
-            user_namespace::another_user_type{'z'},
+            user_namespace::another_user_type{'a', '-'},
+            user_namespace::another_user_type{'z', '-'},
         });
         BOOST_TEST_EQ(res1, "@a@z");
 
