@@ -3,22 +3,26 @@
 # Distributed under the Boost Software License, Version 1.0.
 # https://www.boost.org/LICENSE_1_0.txt
 
-cmake_minimum_required(VERSION 3.5...4.0)
+cmake_minimum_required(VERSION 3.5...4.4)
 
 project(boost_lexical_cast VERSION "${BOOST_SUPERPROJECT_VERSION}" LANGUAGES CXX)
 
-
-if (BOOST_USE_MODULES)
-    add_library(boost_lexical_cast)
+if(BOOST_USE_MODULES)
+    add_library(boost_lexical_cast STATIC)
     target_sources(boost_lexical_cast PUBLIC
-        FILE_SET modules_public TYPE CXX_MODULES FILES
-            ${CMAKE_CURRENT_LIST_DIR}/modules/boost_lexical_cast.cppm
+        FILE_SET CXX_MODULES
+            BASE_DIRS modules
+            FILES modules/boost_lexical_cast.cppm
     )
 
     target_compile_features(boost_lexical_cast PUBLIC cxx_std_20)
     target_compile_definitions(boost_lexical_cast PUBLIC BOOST_USE_MODULES)
-    if (CMAKE_CXX_COMPILER_IMPORT_STD)
-        target_compile_definitions(boost_lexical_cast PRIVATE BOOST_LEXICAL_CAST_USE_STD_MODULE)
+    if(NOT CMAKE_CXX_STANDARD)
+        set(CMAKE_CXX_STANDARD 20)
+    endif()
+    if (CMAKE_CXX_MODULE_STD AND CMAKE_CXX_STANDARD IN_LIST CMAKE_CXX_COMPILER_IMPORT_STD)
+        target_compile_definitions(boost_lexical_cast PUBLIC BOOST_LEXICAL_CAST_USE_STD_MODULE)
+        target_compile_features(boost_lexical_cast PUBLIC cxx_std_23)
         message(STATUS "Using `import std;`")
     else()
         message(STATUS "`import std;` is not available")

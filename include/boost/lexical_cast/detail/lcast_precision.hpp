@@ -10,6 +10,8 @@
 
 #include <boost/lexical_cast/detail/config.hpp>
 
+#include <climits> // ULONG_MAX
+
 #if !defined(BOOST_USE_MODULES) || defined(BOOST_LEXICAL_CAST_INTERFACE_UNIT)
 
 #ifndef BOOST_LEXICAL_CAST_INTERFACE_UNIT
@@ -18,9 +20,8 @@
 #   pragma once
 #endif
 
-#include <climits>
 #include <ios>
-#include <limits>
+#include <boost/limits.hpp>
 
 #endif  // #ifndef BOOST_LEXICAL_CAST_INTERFACE_UNIT
 

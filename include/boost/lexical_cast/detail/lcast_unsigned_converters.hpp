@@ -20,6 +20,8 @@
 
 #include <boost/lexical_cast/detail/config.hpp>
 
+#include <climits> // CHAR_MAX
+
 #if !defined(BOOST_USE_MODULES) || defined(BOOST_LEXICAL_CAST_INTERFACE_UNIT)
 
 #ifndef BOOST_LEXICAL_CAST_INTERFACE_UNIT
@@ -28,7 +30,6 @@
 #   pragma once
 #endif
 
-#include <climits>
 #include <cstddef>
 #include <string>
 #include <cstring>
