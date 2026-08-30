@@ -24,6 +24,101 @@ using namespace boost;
 #define BOOST_LC_RUNU32
 #endif
 
+namespace user_namespace {
+
+struct user_type {
+    char payload;
+};
+
+template <std::size_t Size>
+inline std::ostream& operator<<(std::ostream& os, const boost::array<user_type, Size>& array) {
+    for (const auto& x : array) {
+        os << '@' << x.payload;
+    }
+    return os;
+}
+
+template <std::size_t Size>
+inline std::ostream& operator<<(std::ostream& os, const std::array<user_type, Size>& array) {
+    for (const auto& x : array) {
+        os << '@' << x.payload;
+    }
+    return os;
+}
+
+template <std::size_t Size>
+inline std::istream& operator>>(std::istream& is, boost::array<user_type, Size>& array) {
+    for (auto& x : array) {
+        char at{};
+        is >> at >> x.payload;
+        BOOST_TEST_EQ(at, '@');
+    }
+    return is;
+}
+
+template <std::size_t Size>
+inline std::istream& operator>>(std::istream& is, std::array<user_type, Size>& array) {
+    for (auto& x : array) {
+        char at{};
+        is >> at >> x.payload;
+    }
+    return is;
+}
+
+
+
+struct another_user_type {
+    another_user_type()
+        : payload('\0')
+        , payload1('-')
+    {}
+
+    another_user_type(char in_payload, char in_payload1)
+        : payload(in_payload)
+        , payload1(in_payload1)
+    {}
+
+    char payload;
+    char payload1;
+};
+
+template <std::size_t Size>
+inline std::ostream& operator<<(std::ostream& os, const boost::array<another_user_type, Size>& array) {
+    for (const auto& x : array) {
+        os << '@' << x.payload;
+    }
+    return os;
+}
+
+template <std::size_t Size>
+inline std::ostream& operator<<(std::ostream& os, const std::array<another_user_type, Size>& array) {
+    for (const auto& x : array) {
+        os << '@' << x.payload;
+    }
+    return os;
+}
+
+template <std::size_t Size>
+inline std::istream& operator>>(std::istream& is, boost::array<another_user_type, Size>& array) {
+    for (auto& x : array) {
+        char at{};
+        is >> at >> x.payload;
+        BOOST_TEST_EQ(at, '@');
+    }
+    return is;
+}
+
+template <std::size_t Size>
+inline std::istream& operator>>(std::istream& is, std::array<another_user_type, Size>& array) {
+    for (auto& x : array) {
+        char at{};
+        is >> at >> x.payload;
+    }
+    return is;
+}
+
+}
+
 template <template <class, std::size_t> class ArrayT, class T>
 static void testing_template_array_output_on_spec_value(T val)
 {
@@ -33,6 +128,8 @@ static void testing_template_array_output_on_spec_value(T val)
     typedef ArrayT<unsigned char, 1>      ushort_arr_type;
     typedef ArrayT<signed char, 4>        sarr_type;
     typedef ArrayT<signed char, 3>        sshort_arr_type;
+    typedef ArrayT<user_namespace::user_type, 2> user_arr_type;
+    typedef ArrayT<user_namespace::another_user_type, 2> another_user_arr_type;
 
     std::string ethalon("100");
     using namespace std;
@@ -59,6 +156,30 @@ static void testing_template_array_output_on_spec_value(T val)
         const sarr_type res2 = lexical_cast<sarr_type>(val);
         BOOST_TEST_EQ(reinterpret_cast<const char*>(&res2[0]), ethalon);
         BOOST_TEST_THROWS(lexical_cast<sshort_arr_type>(val), boost::bad_lexical_cast);
+    }
+
+    {
+        auto res1 = lexical_cast<std::string>(user_arr_type{
+            user_namespace::user_type{'a'},
+            user_namespace::user_type{'z'},
+        });
+        BOOST_TEST_EQ(res1, "@a@z");
+
+        auto res2 = lexical_cast<user_arr_type>("@b@y");
+        BOOST_TEST_EQ(res2[0].payload, 'b');
+        BOOST_TEST_EQ(res2[1].payload, 'y');
+    }
+
+    {
+        auto res1 = lexical_cast<std::string>(another_user_arr_type{
+            user_namespace::another_user_type('a', '-'),
+            user_namespace::another_user_type('z', '-'),
+        });
+        BOOST_TEST_EQ(res1, "@a@z");
+
+        auto res2 = lexical_cast<another_user_arr_type>("@b@y");
+        BOOST_TEST_EQ(res2[0].payload, 'b');
+        BOOST_TEST_EQ(res2[1].payload, 'y');
     }
 
 #if !defined(BOOST_NO_STRINGSTREAM) && !defined(BOOST_NO_STD_WSTRING) && !defined(_LIBCPP_VERSION)
@@ -249,13 +370,11 @@ void testing_boost_array_output_conversion()
 
 void testing_std_array_output_conversion()
 {
-#ifndef BOOST_NO_CXX11_HDR_ARRAY
     testing_template_array_output_on_char_value<std::array>();
     testing_template_array_output_on_spec_value<std::array>(100);
     testing_template_array_output_on_spec_value<std::array>(static_cast<short>(100));
     testing_template_array_output_on_spec_value<std::array>(static_cast<unsigned short>(100));
     testing_template_array_output_on_spec_value<std::array>(static_cast<unsigned int>(100));
-#endif
 
     BOOST_TEST(true);
 }
@@ -354,10 +473,7 @@ void testing_boost_array_input_conversion()
 
 void testing_std_array_input_conversion()
 {
-#ifndef BOOST_NO_CXX11_HDR_ARRAY
     testing_generic_array_input_conversion<std::array>();
-#endif
-
     BOOST_TEST(true);
 }
 

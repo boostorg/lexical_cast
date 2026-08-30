@@ -96,6 +96,16 @@ namespace boost {
 
 namespace boost { namespace detail { namespace lcast {
 
+    template <class C, class CharT>
+    using enable_if_compatible_char_t = typename std::enable_if<
+        std::is_same<const C, const CharT>::value || (
+            std::is_same<const char, const CharT>::value && (
+                std::is_same<const C, const unsigned char>::value ||
+                std::is_same<const C, const signed char>::value
+            )
+        ), bool
+    >::type;
+
     template <typename T>
     struct exact {
         static_assert(!std::is_const<T>::value, "");
@@ -256,16 +266,6 @@ namespace boost { namespace detail { namespace lcast {
         }
 #endif
     public:
-        template <class C>
-        using enable_if_compatible_char_t = typename std::enable_if<
-            std::is_same<const C, const CharT>::value || (
-                std::is_same<const char, const CharT>::value && (
-                    std::is_same<const C, const unsigned char>::value ||
-                    std::is_same<const C, const signed char>::value
-                )
-            ), bool
-        >::type;
-
         template<class CharTraits, class Alloc>
         bool stream_in(lcast::exact<std::basic_string<CharT,CharTraits,Alloc>> x) noexcept {
             start = x.payload.data();
@@ -294,7 +294,7 @@ namespace boost { namespace detail { namespace lcast {
         }
 
         template <class C>
-        enable_if_compatible_char_t<C>
+        enable_if_compatible_char_t<C, CharT>
         stream_in(lcast::exact<boost::iterator_range<C*>> x) noexcept {
             auto buf = boost::conversion::detail::make_buffer_view(x.payload.begin(), x.payload.end());
             return stream_in(lcast::exact<decltype(buf)>{buf});
@@ -311,7 +311,7 @@ namespace boost { namespace detail { namespace lcast {
 #endif
 
         template <class Type>
-        enable_if_compatible_char_t<Type>
+        enable_if_compatible_char_t<Type, CharT>
                 stream_in(lcast::exact<Type*> x)                { return shl_char_array(reinterpret_cast<CharT const*>(x.payload)); }
 
         template <class Type>
@@ -334,20 +334,20 @@ namespace boost { namespace detail { namespace lcast {
         }
 
         template <class C, std::size_t N>
-        enable_if_compatible_char_t<C>
+        enable_if_compatible_char_t<C, CharT>
         stream_in(lcast::exact<boost::array<C, N>> x) noexcept {
             return shl_char_array_limited(reinterpret_cast<const CharT*>(x.payload.data()), N);
         }
 
         template <class C, std::size_t N>
-        enable_if_compatible_char_t<C>
+        enable_if_compatible_char_t<C, CharT>
         stream_in(lcast::exact<std::array<C, N>> x) noexcept {
             return shl_char_array_limited(reinterpret_cast<const CharT*>(x.payload.data()), N);
         }
 
 #ifndef BOOST_NO_CXX17_HDR_STRING_VIEW
         template <class C, class CharTraits>
-        enable_if_compatible_char_t<C>
+        enable_if_compatible_char_t<C, CharT>
         stream_in(lcast::exact<std::basic_string_view<C, CharTraits>> x) noexcept {
             start = reinterpret_cast<const CharT*>(x.payload.data());
             finish = start + x.payload.size();
@@ -355,7 +355,7 @@ namespace boost { namespace detail { namespace lcast {
         }
 #endif
         template <class C, class CharTraits>
-        enable_if_compatible_char_t<C>
+        enable_if_compatible_char_t<C, CharT>
         stream_in(lcast::exact<boost::basic_string_view<C, CharTraits>> x) noexcept {
             start = reinterpret_cast<const CharT*>(x.payload.data());
             finish = start + x.payload.size();
@@ -667,14 +667,14 @@ namespace boost { namespace detail { namespace lcast {
         }
 
         template <class C, std::size_t N>
-        bool stream_out(std::array<C, N>& output) noexcept {
-            static_assert(sizeof(C) == sizeof(CharT), "");
+        enable_if_compatible_char_t<C, CharT>
+        stream_out(std::array<C, N>& output) noexcept {
             return shr_std_array<N>(output);
         }
 
         template <class C, std::size_t N>
-        bool stream_out(boost::array<C, N>& output) noexcept {
-            static_assert(sizeof(C) == sizeof(CharT), "");
+        enable_if_compatible_char_t<C, CharT>
+        stream_out(boost::array<C, N>& output) noexcept {
             return shr_std_array<N>(output);
         }
 
