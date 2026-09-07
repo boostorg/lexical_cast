@@ -33,7 +33,6 @@ exception
 filesystem
 function
 function_types
-functional
 fusion
 integer
 intrusive
@@ -50,7 +49,6 @@ range
 regex
 scope
 smart_ptr
-static_assert
 system
 test
 tokenizer
