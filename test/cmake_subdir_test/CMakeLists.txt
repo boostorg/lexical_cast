@@ -68,6 +68,7 @@ foreach(dep IN LISTS deps)
 endforeach()
 
 enable_testing()
+set(BUILD_TESTING ON)
 add_subdirectory(../../ boostorg/lexical_cast)
 
 if (BOOST_USE_MODULES)
