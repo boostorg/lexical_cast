@@ -220,7 +220,7 @@ jobs:
           call "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvarsall.bat" x64
           cd ../boost-root/libs/lexical_cast
           rm -rf build_module
-          cmake -DBOOST_USE_MODULES=1 -DCMAKE_CXX_STANDARD=23 -DCMAKE_EXPERIMENTAL_CXX_IMPORT_STD=0e5b6991-d74f-4b3d-a41c-cf096e0b2508 -G Ninja -B build_module ../test/cmake_subdir_test/
+          cmake -DBOOST_USE_MODULES=1 -DCMAKE_CXX_STANDARD=23 -DCMAKE_EXPERIMENTAL_CXX_IMPORT_STD=0e5b6991-d74f-4b3d-a41c-cf096e0b2508 -G Ninja -B build_module -S test/cmake_subdir_test/
           cmake --build build_module
           ctest --test-dir build_module --no-tests=error -V
 
@@ -232,7 +232,7 @@ jobs:
           call "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvarsall.bat" x64
           cd ../boost-root/libs/lexical_cast
           rm -rf build_module
-          cmake -DBOOST_USE_MODULES=1 -DCMAKE_CXX_STANDARD=20 -G Ninja -B build_module ../test/cmake_subdir_test/
+          cmake -DBOOST_USE_MODULES=1 -DCMAKE_CXX_STANDARD=20 -G Ninja -B build_module -S test/cmake_subdir_test/
           cmake --build build_module
           ctest --test-dir build_module --no-tests=error -V
 
