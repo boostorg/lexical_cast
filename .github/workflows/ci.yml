@@ -222,6 +222,7 @@ jobs:
           rm -rf build_module
           cmake -DBOOST_USE_MODULES=1 -DCMAKE_CXX_STANDARD=23 -DCMAKE_EXPERIMENTAL_CXX_IMPORT_STD=0e5b6991-d74f-4b3d-a41c-cf096e0b2508 -G Ninja -B build_module -S test/cmake_subdir_test/
           cmake --build build_module
+          tree build_module
           ctest --test-dir build_module --no-tests=error -V
 
       - name: Run modules tests without 'import std;'
@@ -234,6 +235,7 @@ jobs:
           rm -rf build_module
           cmake -DBOOST_USE_MODULES=1 -DCMAKE_CXX_STANDARD=20 -G Ninja -B build_module -S test/cmake_subdir_test/
           cmake --build build_module
+          tree build_module
           ctest --test-dir build_module --no-tests=error -V
 
       - name: Run tests
