@@ -36,10 +36,13 @@
 #include <string>
 #include <cstring>
 #include <cstdio>
+#include <clocale>
+#include <cfloat>
 #include <type_traits>
 
 #include <boost/limits.hpp>
 #include <boost/config/workaround.hpp>
+#include <boost/charconv/to_chars.hpp>
 #include <boost/core/snprintf.hpp>
 
 #ifndef BOOST_NO_STD_LOCALE
@@ -208,61 +211,84 @@ namespace boost { namespace detail { namespace lcast {
             return true;
         }
 
-        bool shl_real_type(lcast::exact<float> val, char* begin) {
-            const double val_as_double = static_cast<double>(val.payload);
-            finish = start +
-                boost::core::snprintf(begin, CharacterBufferSize,
-                "%.*g", static_cast<int>(boost::detail::lcast_precision<float>::value), val_as_double);
-            return finish > start;
+        template<class T>
+        using enable_if_real = typename std::enable_if<
+            std::is_same<T, float>::value || std::is_same<T, double>::value ||
+            std::is_same<T, long double>::value, bool
+        >::type;
+
+        template<class T>
+        boost::charconv::to_chars_result format_real(T value, char* data) {
+            return boost::charconv::to_chars(data, data + CharacterBufferSize, value,
+                boost::charconv::chars_format::general,
+                static_cast<int>(boost::detail::lcast_precision<T>::value));
         }
 
-        bool shl_real_type(lcast::exact<double> val, char* begin) {
-            finish = start +
-                boost::core::snprintf(begin, CharacterBufferSize,
-                "%.*g", static_cast<int>(boost::detail::lcast_precision<double>::value), val.payload);
-            return finish > start;
-        }
-
-#ifndef __MINGW32__
-        bool shl_real_type(lcast::exact<long double> val, char* begin) {
-            finish = start +
-                boost::core::snprintf(begin, CharacterBufferSize,
-                "%.*Lg", static_cast<int>(boost::detail::lcast_precision<long double>::value), val.payload );
-            return finish > start;
-        }
+        boost::charconv::to_chars_result format_real(long double value, char* data) {
+#if LDBL_MANT_DIG == DBL_MANT_DIG && LDBL_MAX_EXP == DBL_MAX_EXP
+            return format_real(static_cast<double>(value), data);
 #else
-        bool shl_real_type(lcast::exact<long double> val, char* begin) {
-            return shl_real_type(lcast::exact<double>{static_cast<double>(val.payload)}, begin);
-        }
+            // Extended-precision general formatting is not yet supported correctly
+            // by Charconv (boostorg/charconv#158). Normalize printf's C-locale point
+            // before applying the C++ locale below.
+            const int count = boost::core::snprintf(data, CharacterBufferSize, "%.*Lg",
+                static_cast<int>(boost::detail::lcast_precision<long double>::value), value);
+            if (count < 0 || static_cast<std::size_t>(count) >= CharacterBufferSize) {
+                return {data, std::errc::value_too_large};
+            }
+
+            std::size_t length = static_cast<std::size_t>(count);
+            const char* const decimal = std::localeconv()->decimal_point;
+            const std::size_t decimal_size = std::strlen(decimal);
+            if (decimal_size && (decimal_size != 1 || decimal[0] != '.')) {
+                if (char* const point = std::strstr(data, decimal)) {
+                    std::memmove(point + 1, point + decimal_size,
+                        length - static_cast<std::size_t>(point - data) - decimal_size + 1);
+                    *point = '.';
+                    length -= decimal_size - 1;
+                }
+            }
+            return {data + length, std::errc()};
 #endif
+        }
+
+        template<class T>
+        enable_if_real<T> shl_real_type(lcast::exact<T> val, char* begin) {
+            const auto result = format_real(val.payload, begin);
+            if (result.ec != std::errc()) {
+                return false;
+            }
+#ifndef BOOST_LEXICAL_CAST_ASSUME_C_LOCALE
+            const char decimal = BOOST_USE_FACET(std::numpunct<char>, std::locale()).decimal_point();
+            for (char* p = begin; p != result.ptr; ++p) {
+                if (*p == '.') {
+                    *p = decimal;
+                }
+            }
+#endif
+            finish = start + (result.ptr - begin);
+            return true;
+        }
 
 #if !defined(BOOST_LCAST_NO_WCHAR_T)
-        bool shl_real_type(lcast::exact<float> val, wchar_t* begin) {
-            const double val_as_double = static_cast<double>(val.payload);
-            finish = start + boost::core::swprintf(
-                begin, CharacterBufferSize, L"%.*g",
-                static_cast<int>(boost::detail::lcast_precision<float>::value),
-                val_as_double
-            );
-            return finish > start;
-        }
-
-        bool shl_real_type(lcast::exact<double> val, wchar_t* begin) {
-            finish = start + boost::core::swprintf(
-              begin, CharacterBufferSize, L"%.*g",
-              static_cast<int>(boost::detail::lcast_precision<double>::value),
-              val.payload
-            );
-            return finish > start;
-        }
-
-        bool shl_real_type(lcast::exact<long double> val, wchar_t* begin) {
-            finish = start + boost::core::swprintf(
-                begin, CharacterBufferSize, L"%.*Lg",
-                static_cast<int>(boost::detail::lcast_precision<long double>::value),
-                val.payload
-            );
-            return finish > start;
+        template<class T>
+        enable_if_real<T> shl_real_type(lcast::exact<T> val, wchar_t* begin) {
+            char data[CharacterBufferSize];
+            const auto result = format_real(val.payload, data);
+            if (result.ec != std::errc()) {
+                return false;
+            }
+#ifndef BOOST_LEXICAL_CAST_ASSUME_C_LOCALE
+            const wchar_t decimal = BOOST_USE_FACET(std::numpunct<wchar_t>, std::locale()).decimal_point();
+#else
+            const wchar_t decimal = L'.';
+#endif
+            const std::size_t length = static_cast<std::size_t>(result.ptr - data);
+            for (std::size_t i = 0; i < length; ++i) {
+                begin[i] = data[i] == '.' ? decimal : static_cast<wchar_t>(data[i]);
+            }
+            finish = start + length;
+            return true;
         }
 #endif
     public:

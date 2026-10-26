@@ -36,6 +36,7 @@ endif()
 target_include_directories(boost_lexical_cast ${__scope} include)
 target_link_libraries(boost_lexical_cast
   ${__scope}
+    Boost::charconv
     Boost::config
     Boost::container
     Boost::core

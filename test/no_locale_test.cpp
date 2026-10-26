@@ -132,6 +132,9 @@ void test_empty_5()
 
 int main()
 {
+    BOOST_TEST_EQ(boost::lexical_cast<std::string>(1.25f), std::string("1.25"));
+    BOOST_TEST_EQ(boost::lexical_cast<std::string>(1.25), std::string("1.25"));
+    BOOST_TEST_EQ(boost::lexical_cast<std::string>(1.25L), std::string("1.25"));
     test_empty_1();
     test_empty_2();
     test_empty_3();

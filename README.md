@@ -1,6 +1,12 @@
 # [Boost.LexicalCast](https://boost.org/libs/lexical_cast)
 Boost.LexicalCast is one of the [Boost C++ Libraries](https://github.com/boostorg). This library is meant for general literal text conversions, such as an int represented a string, or vice-versa.
 
+### Building and linking
+
+Floating-point formatting uses Boost.Charconv. Link against `Boost::lexical_cast`
+with CMake or `/boost/lexical_cast//boost_lexical_cast` with B2 to get the required
+Charconv library dependency. When building manually, link `boost_charconv`.
+
 ### Test results
 
 @               | Build         | Tests coverage | More info

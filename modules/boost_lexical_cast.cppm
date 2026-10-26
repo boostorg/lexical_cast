@@ -14,6 +14,7 @@ module;
 #include <boost/container/container_fwd.hpp>
 #include <boost/core/cmath.hpp>
 #include <boost/core/noncopyable.hpp>
+#include <boost/charconv/to_chars.hpp>
 #include <boost/core/snprintf.hpp>
 #include <boost/limits.hpp>
 #include <boost/throw_exception.hpp>
@@ -23,6 +24,8 @@ module;
 #ifndef BOOST_LEXICAL_CAST_USE_STD_MODULE
 #include <array>
 #include <climits>
+#include <clocale>
+#include <cfloat>
 #include <cstddef>
 #include <cstdio>
 #include <cstring>

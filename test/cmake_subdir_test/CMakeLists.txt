@@ -10,6 +10,7 @@ project(lexical_cast_subdir_test LANGUAGES CXX)
 set(deps
 
 # Library dependencies
+charconv
 config
 container
 core
@@ -72,7 +73,7 @@ add_subdirectory(../../ boostorg/lexical_cast)
 enable_testing()
 
 if (BOOST_USE_MODULES)
-    add_executable(boost_lexical_cast_module_usage ../modules/usage_sample.cpp)
+    add_executable(boost_lexical_cast_module_usage ../../modules/usage_sample.cpp)
     target_link_libraries(boost_lexical_cast_module_usage PRIVATE Boost::lexical_cast)
     add_test(NAME boost_lexical_cast_module_usage COMMAND boost_lexical_cast_module_usage)
 endif()
@@ -80,6 +81,7 @@ endif()
 
 # Subset of tests
 list(APPEND RUN_TESTS_SOURCES
+    locale_float_test.cpp
     inf_nan_test.cpp
     try_lexical_convert.cpp
     abstract_test.cpp

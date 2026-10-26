@@ -51,6 +51,7 @@ test-suite conversion
     [ run implicit_convert.cpp ]
     [ run wchars_test.cpp ]
     [ run float_types_test.cpp ]
+    [ run locale_float_test.cpp ]
 
     # Make sure that LexicalCast works the same way as some of the C++ Standard Libraries
     [ run float_types_test.cpp : : : <define>BOOST_LEXICAL_CAST_DETAIL_TEST_ON_OLD

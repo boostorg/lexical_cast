@@ -233,6 +233,21 @@ limitation of compiler options that you use.
 
 [endsect]
 
+[section Building and linking]
+
+Floating-point formatting uses Boost.Charconv. CMake users should link the
+`Boost::lexical_cast` target, and B2 users should use
+`/boost/lexical_cast//boost_lexical_cast`; these targets supply the Charconv
+library dependency. When building manually, link the `boost_charconv` library.
+
+Formatting uses the current C++ locale's decimal point for both narrow and
+wide output. `BOOST_LEXICAL_CAST_ASSUME_C_LOCALE` keeps a `.` decimal point.
+Extended-precision `long double` retains the printf formatter while
+Boost.Charconv's precision support for that type is incomplete; its C-locale
+decimal point is normalized before applying the C++ locale.
+
+[endsect]
+
 [section C++20 module]
 
 [caution C++20 module support is on early stage, targets, flags and behavior may change in the future]

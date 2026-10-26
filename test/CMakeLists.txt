@@ -28,6 +28,7 @@ boost_lexical_cast_add_test(vc8_bug_test "")
 boost_lexical_cast_add_test(implicit_convert "")
 boost_lexical_cast_add_test(wchars_test "")
 boost_lexical_cast_add_test(float_types_test "")
+boost_lexical_cast_add_test(locale_float_test "")
 
 if(NOT MSVC)
     # Make sure that LexicalCast works the same way as some of the C++ Standard Libraries
@@ -55,7 +56,7 @@ target_compile_definitions(lexical_cast_no_locale_test
       BOOST_LEXICAL_CAST_ASSUME_C_LOCALE
 )
 
-boost_lexical_cast_add_test_impl(lexical_cast_no_exceptions_test no_exceptions_test.cpp "Boost::container;Boost::range")
+boost_lexical_cast_add_test_impl(lexical_cast_no_exceptions_test no_exceptions_test.cpp "Boost::container;Boost::range;Boost::charconv")
 target_include_directories(lexical_cast_no_exceptions_test PRIVATE ../include)
 target_compile_definitions(lexical_cast_no_exceptions_test
     PRIVATE
